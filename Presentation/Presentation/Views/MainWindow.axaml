@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:app="clr-namespace:ImageManipulator.Presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+		xmlns:rxui="clr-namespace:Avalonia.ReactiveUI;assembly=Avalonia.ReactiveUI"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ImageManipulator.Presentation.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Presentation">
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel />
+	</Design.DataContext>
+	<!--<Window.Resources>
+	xmlns:ext="using:ImageManipulator.Application.Common.Converters"
+		<ext:ImageConverter x:Key="imageConverter" />
+	</Window.Resources>-->
+	<StackPanel>
+		<StackPanel Orientation="Horizontal">
+			<Menu>
+				<MenuItem Header="_File">
+					<MenuItem Header="New" Command="{Binding AddNewTab}" />
+					<MenuItem Header="Open..." Command="{Binding GetImageToTab}" />
+					<Separator />
+					<MenuItem Header="Exit" />
+				</MenuItem>
+			</Menu>
+		</StackPanel>
+		<StackPanel>
+			<TabControl Items="{Binding ImageTabs}"
+						SelectedItem="{Binding CurrentTab}">
+				<TabControl.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Header}" />
+					</DataTemplate>
+				</TabControl.ItemTemplate>
+				<TabControl.ContentTemplate>
+					<DataTemplate>
+						<SplitView IsPaneOpen="True"
+                                   DisplayMode="Inline"
+                                   OpenPaneLength="500">
+							<SplitView.Pane>
+								<Image Source="{Binding Image}"
+								   Stretch="None"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center" />
+							</SplitView.Pane>
+							<StackPanel>
+								<Image Source="{Binding RGBGraph}"
+								   Stretch="None"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center" />
+								<Image Source="{Binding BrightnessGraph}"
+								   Stretch="None"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center" />
+							</StackPanel>
+						</SplitView>
+					</DataTemplate>
+				</TabControl.ContentTemplate>
+			</TabControl>
+		</StackPanel>
+	</StackPanel>
+</Window>
