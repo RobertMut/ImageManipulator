@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
@@ -42,6 +43,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }
 
     public ReactiveCommand<Unit, Unit> GetImageToTab { get; }
+    public ReactiveCommand<Unit, Unit> Exit { get; }
 
     #endregion Commands
 
@@ -57,6 +59,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
         GetImageToTab = ReactiveCommand.Create(OpenNewImageToTab);
+        Exit = ReactiveCommand.Create(CloseApp);
     }
 
     private void NewEmptyTab()
@@ -69,6 +72,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         string[] filePath = _commonDialogService.ShowFileDialogInNewWindow().Result;
         if (filePath != null)
         {
+            var tab = _tabs.Where(x => x.Path == filePath[0]).FirstOrDefault();
+            
+            if (tab != null) {
+                _tabs.Remove(tab);
+            }
+
             if (filePath.Length > 1)
             {
                 throw new NotImplementedException();
@@ -97,5 +106,9 @@ public class MainWindowViewModel : ViewModelBase, IScreen
             ImageTabs[tabIndex] = tabToReplace;
             CurrentTab = tabToReplace;
         }
+    }
+    private void CloseApp()
+    {
+
     }
 }

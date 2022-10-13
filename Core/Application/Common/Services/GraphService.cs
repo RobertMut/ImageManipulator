@@ -33,7 +33,7 @@ namespace ImageManipulator.Application.Common.Services
                     }
                 }
 
-                DrawLabels(graphics, xLabel, yLabel, 5, horizontalMargins, verticalMargins, brushSize, graph.Width, graph.Height);
+                DrawLabels(graphics, xLabel, yLabel, 5, horizontalMargins, verticalMargins, brushSize*1.5f, graph.Width, graph.Height);
 
                 var values = inputData.OrderBy(x => x.Value.Max()).ToArray();
 
@@ -87,7 +87,7 @@ namespace ImageManipulator.Application.Common.Services
             
             if (verticalMargin > 5)
             {
-                graphicsToEdit.DrawString(verticalLabel, font, Brushes.Black,  (height - verticalMargin) / 2, width - horizontalMargin + 10);
+                graphicsToEdit.DrawString(verticalLabel, font, Brushes.Black,  horizontalMargin/2, height/2, new StringFormat(StringFormatFlags.DirectionVertical));
             }
 
             graphicsToEdit.Save();
