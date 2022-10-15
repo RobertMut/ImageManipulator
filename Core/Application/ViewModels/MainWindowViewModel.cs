@@ -44,6 +44,9 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     public ReactiveCommand<Unit, Unit> GetImageToTab { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
+    public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
+    public ReactiveCommand<Unit, Unit> SaveImageAsCommand { get; }
+    public ReactiveCommand<Unit, Unit> DuplicateCommand { get; }
 
     #endregion Commands
 
@@ -60,6 +63,9 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
         GetImageToTab = ReactiveCommand.Create(OpenNewImageToTab);
         Exit = ReactiveCommand.Create(CloseApp);
+        SaveImageCommand = ReactiveCommand.Create(SaveImage);
+        SaveImageAsCommand = ReactiveCommand.Create(SaveImageAs);
+        DuplicateCommand = ReactiveCommand.Create(Duplicate);
     }
 
     private void NewEmptyTab()
@@ -107,8 +113,30 @@ public class MainWindowViewModel : ViewModelBase, IScreen
             CurrentTab = tabToReplace;
         }
     }
+    private void SaveImage()
+    {
+        _currentTab.Image.Save(_currentTab.Path);
+    }
+
+    private void SaveImageAs()
+    {
+        _commonDialogService.ShowSaveFileDialog(_currentTab.Image, _currentTab.Path);
+    }
+
+    private void Duplicate()
+    {
+        string currentImagePath = _currentTab.Path;
+        string name = Path.GetFileNameWithoutExtension(currentImagePath);
+        string ext = Path.GetExtension(_currentTab.Path);
+
+        var duplicatedTab = new TabItemModel($"{name}_duplicate{ext}", _currentTab.Path, _currentTab.Image, _currentTab.RGBGraph, _currentTab.BrightnessGraph);
+
+        ImageTabs.Add(duplicatedTab);
+        CurrentTab = duplicatedTab;
+    }
+
     private void CloseApp()
     {
-
+        Environment.Exit(1);
     }
 }

@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using Avalonia.Media.Imaging;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface ICommonDialogService
     {
         Task<string[]> ShowFileDialogInNewWindow();
+        void ShowSaveFileDialog(Bitmap bitmap, string filePath);
     }
 }

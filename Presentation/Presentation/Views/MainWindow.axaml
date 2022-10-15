@@ -20,8 +20,13 @@
 				<MenuItem Header="_File">
 					<MenuItem Header="New" Command="{Binding AddNewTab}" />
 					<MenuItem Header="Open..." Command="{Binding GetImageToTab}" />
+					<MenuItem Header="Save" Command="{Binding SaveImageCommand}"/>
+					<MenuItem Header="Save as.." Command="{Binding SaveImageAsCommand}"/>
 					<Separator />
 					<MenuItem Header="Exit" Command="{Binding Exit}"/>
+				</MenuItem>
+				<MenuItem Header="_Edit">
+					<MenuItem Header="Duplicate" Command="{Binding DuplicateCommand}" />
 				</MenuItem>
 			</Menu>
 		</StackPanel>
