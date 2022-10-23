@@ -15,8 +15,6 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 {
     private readonly IFileService _fileService;
     private readonly ICommonDialogService _commonDialogService;
-    private readonly IGraphService graphService;
-    private readonly IImageDataService imageDataService;
     private readonly IServiceProvider serviceProvider;
 
     private ObservableCollection<TabItem> _tabs = new ObservableCollection<TabItem>();
@@ -48,12 +46,10 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     #endregion Commands
 
-    public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IGraphService graphService, IImageDataService imageDataService, IServiceProvider serviceProvider)
+    public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IServiceProvider serviceProvider)
     {
         _fileService = fileService;
         _commonDialogService = commonDialogService;
-        this.graphService = graphService;
-        this.imageDataService = imageDataService;
         this.serviceProvider = serviceProvider;
         var emptyTab = new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>());
         CurrentTab = emptyTab;
