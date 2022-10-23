@@ -1,10 +1,9 @@
 ﻿using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Domain.Models;
+using ImageManipulator.Application.Common.Models;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -16,23 +15,20 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 {
     private readonly IFileService _fileService;
     private readonly ICommonDialogService _commonDialogService;
-    private readonly IGraphService graphService;
-    private readonly IImageDataService imageDataService;
+    private readonly IServiceProvider serviceProvider;
 
-    private ObservableCollection<TabItemModel> _tabs;
-
-    private int _tabIndex = 1;
-    private TabItemModel _currentTab;
+    private ObservableCollection<TabItem> _tabs = new ObservableCollection<TabItem>();
+    private TabItem _currentTab;
 
     public RoutingState Router { get; } = new RoutingState();
 
-    public ObservableCollection<TabItemModel> ImageTabs
+    public ObservableCollection<TabItem> ImageTabs
     {
         get => _tabs;
         set => this.RaiseAndSetIfChanged(ref _tabs, value);
     }
 
-    public TabItemModel CurrentTab
+    public TabItem CurrentTab
     {
         get => _currentTab;
         set => this.RaiseAndSetIfChanged(ref _currentTab, value);
@@ -50,18 +46,18 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     #endregion Commands
 
-    public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IGraphService graphService, IImageDataService imageDataService)
+    public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IServiceProvider serviceProvider)
     {
         _fileService = fileService;
         _commonDialogService = commonDialogService;
-        _tabs = new ObservableCollection<TabItemModel>();
-        this.graphService = graphService;
-        this.imageDataService = imageDataService;
-
-        _tabs.Add(new TabItemModel(header: $"New {_tabIndex++}"));
+        this.serviceProvider = serviceProvider;
+        var emptyTab = new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>());
+        CurrentTab = emptyTab;
+        ImageTabs.Add(emptyTab);
 
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
-        GetImageToTab = ReactiveCommand.Create(OpenNewImageToTab);
+        GetImageToTab = ReactiveCommand.Create(PrepareNewTab);
+
         Exit = ReactiveCommand.Create(CloseApp);
         SaveImageCommand = ReactiveCommand.Create(SaveImage);
         SaveImageAsCommand = ReactiveCommand.Create(SaveImageAs);
@@ -70,17 +66,18 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private void NewEmptyTab()
     {
-        ImageTabs.Add(new TabItemModel(header: $"New {_tabIndex++}"));
+        _tabs.Add(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
     }
 
-    private void OpenNewImageToTab()
+    private void PrepareNewTab()
     {
         string[] filePath = _commonDialogService.ShowFileDialogInNewWindow().Result;
         if (filePath != null)
         {
-            var tab = _tabs.Where(x => x.Path == filePath[0]).FirstOrDefault();
-            
-            if (tab != null) {
+            var tab = _tabs.Where(x => x.Name == filePath[0]).FirstOrDefault();
+
+            if (tab != null)
+            {
                 _tabs.Remove(tab);
             }
 
@@ -92,47 +89,28 @@ public class MainWindowViewModel : ViewModelBase, IScreen
             int tabIndex = _tabs.IndexOf(_currentTab);
             var openedImageBitmap = new Bitmap(filePath[0]);
 
-            var rgbValuesDictionary = imageDataService.CalculateHistogramForImage(openedImageBitmap);
-            double[] luminance = imageDataService.CalculateLuminanceFromRGB(rgbValuesDictionary);
-
-            var graph = graphService.DrawGraphFromInput(inputData:
-                new Dictionary<Color, double[]>
-                {
-                    {Color.Red,  rgbValuesDictionary["red"]},
-                    {Color.Green,  rgbValuesDictionary["green"]},
-                    {Color.Blue,  rgbValuesDictionary["blue"]}
-                }, 300, 250, 20, 20, 1, 250/2, true, "RGB Histogram", "Values");
-            var brightnessGraph = graphService.DrawGraphFromInput(inputData: new Dictionary<Color, double[]>
-            {
-                {Color.Black, luminance }
-            }, 300, 200, 20, 20, 1, 100, true, "Luminance Histogram", "Values");
-
-            var tabToReplace = new TabItemModel(Path.GetFileName(filePath[0]), filePath[0], openedImageBitmap, graph, brightnessGraph);
+            var tabToReplace = new TabItem(Path.GetFileName(filePath[0]), serviceProvider.GetRequiredService<TabControlViewModel>());
+            tabToReplace.ViewModel.LoadImage(openedImageBitmap, filePath[0]);
 
             ImageTabs[tabIndex] = tabToReplace;
             CurrentTab = tabToReplace;
         }
     }
+
     private void SaveImage()
     {
-        _currentTab.Image.Save(_currentTab.Path);
+        _currentTab.ViewModel.Image.Save(_currentTab.ViewModel.Path);
     }
 
     private void SaveImageAs()
     {
-        _commonDialogService.ShowSaveFileDialog(_currentTab.Image, _currentTab.Path);
+        _commonDialogService.ShowSaveFileDialog(_currentTab.ViewModel.Image, _currentTab.ViewModel.Path);
     }
 
     private void Duplicate()
     {
-        string currentImagePath = _currentTab.Path;
-        string name = Path.GetFileNameWithoutExtension(currentImagePath);
-        string ext = Path.GetExtension(_currentTab.Path);
-
-        var duplicatedTab = new TabItemModel($"{name}_duplicate{ext}", _currentTab.Path, _currentTab.Image, _currentTab.RGBGraph, _currentTab.BrightnessGraph);
-
-        ImageTabs.Add(duplicatedTab);
-        CurrentTab = duplicatedTab;
+        ImageTabs.Add(_currentTab);
+        CurrentTab = _currentTab;
     }
 
     private void CloseApp()

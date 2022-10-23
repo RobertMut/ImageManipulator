@@ -1,11 +1,13 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ImageManipulator.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using ImageManipulator.Presentation.Views;
-using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Application;
+using ImageManipulator.Application.ViewModels;
+using ImageManipulator.Infrastructure;
+using ImageManipulator.Presentation.Views;
+using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
+using Splat;
 
 namespace ImageManipulator.Presentation;
 
@@ -20,6 +22,7 @@ public partial class App : Avalonia.Application
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
+        Locator.CurrentMutable.RegisterLazySingleton(() => new AppViewLocator(), typeof(IViewLocator));
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -39,10 +42,9 @@ public partial class App : Avalonia.Application
 
     private void Configure(IServiceCollection serviceDescriptors)
     {
-
         serviceDescriptors.AddInfrastructure();
         serviceDescriptors.AddApplication();
         serviceDescriptors.AddSingleton<MainWindowViewModel>();
-
+        serviceDescriptors.AddScoped<TabControlViewModel>();
     }
 }
