@@ -18,6 +18,5 @@ public class Program
         => AppBuilder.Configure<App>()
             .UseReactiveUI()
             .UsePlatformDetect()
-            .LogToTrace()
-            .UseReactiveUI();
+            .LogToTrace();
 }

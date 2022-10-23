@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="ImageManipulator.Presentation.Views.TabControlView"
+		     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+			 xmlns:ext="using:ImageManipulator.Application.Common.Converters">
+	<UserControl.Resources>
+		<ext:BitmapConverter x:Key="variableImage"/>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition MinWidth="300" Width="0.7*" />
+			<ColumnDefinition MinWidth="150" Width="0.3*" />
+		</Grid.ColumnDefinitions>
+		<Image Source="{Binding Image}"
+			Stretch="Uniform"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Grid.Column="0" />
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<Image Source="{Binding RGBGraph, Converter={StaticResource variableImage}}"
+				Stretch="Uniform"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Grid.Row="0" Opacity="0.75" />
+			<Image Source="{Binding LuminanceGraph, Converter={StaticResource variableImage}}"
+				Stretch="Uniform"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Grid.Row="1" Opacity="0.75" />
+		</Grid>
+	</Grid>
+</UserControl>

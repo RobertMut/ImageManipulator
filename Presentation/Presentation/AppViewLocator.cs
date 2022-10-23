@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using ImageManipulator.Application.ViewModels;
+using ImageManipulator.Presentation.Views;
 using ReactiveUI;
 using System;
 
@@ -26,10 +27,9 @@ public class AppViewLocator : IDataTemplate, IViewLocator
         return data is ViewModelBase;
     }
 
-    [Obsolete]
-    public IViewFor? ResolveView<T>(T viewModel, string? contract = null) => viewModel switch
+    IViewFor? IViewLocator.ResolveView<T>(T viewModel, string? contract) => viewModel switch
     {
-        //ImageControlViewModel context => new ImageControlView { DataContext = context },
-        //_ => throw new ArgumentOutOfRangeException(nameof(viewModel))
+        TabControlViewModel context => new TabControlView(),
+        _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

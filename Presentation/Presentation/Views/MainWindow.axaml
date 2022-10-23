@@ -31,36 +31,16 @@
 			</Menu>
 		</StackPanel>
 		<StackPanel>
-			<TabControl Items="{Binding ImageTabs}"
-						SelectedItem="{Binding CurrentTab}">
+
+			<TabControl Name="TabNav" Items="{Binding ImageTabs}" SelectedItem="{Binding CurrentTab}">
 				<TabControl.ItemTemplate>
 					<DataTemplate>
-						<TextBlock Text="{Binding Header}" />
+						<TextBlock Text="{Binding Name}" />
 					</DataTemplate>
 				</TabControl.ItemTemplate>
 				<TabControl.ContentTemplate>
 					<DataTemplate>
-						<SplitView IsPaneOpen="True"
-                                   DisplayMode="Inline"
-                                    CompactPaneLength="300"
-									OpenPaneLength="800">
-							<SplitView.Pane>
-								<Image Source="{Binding Image}"
-								   Stretch="Uniform" 
-								   HorizontalAlignment="Center"
-								   VerticalAlignment="Center" />
-							</SplitView.Pane>
-							<StackPanel>
-								<Image Source="{Binding RGBGraph}"
-								   Stretch="None"
-								   HorizontalAlignment="Center"
-								   VerticalAlignment="Center" />
-								<Image Source="{Binding BrightnessGraph}"
-								   Stretch="None" 
-								   HorizontalAlignment="Center"
-								   VerticalAlignment="Center" />
-							</StackPanel>
-						</SplitView>
+						<rxui:ViewModelViewHost ViewModel="{Binding ViewModel}" />
 					</DataTemplate>
 				</TabControl.ContentTemplate>
 			</TabControl>
