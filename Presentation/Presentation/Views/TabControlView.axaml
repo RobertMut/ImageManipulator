@@ -1,7 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:iac="using:Avalonia.Xaml.Interactions.Core"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:paz="using:Avalonia.Controls.PanAndZoom"
              mc:Ignorable="d"
              x:Class="ImageManipulator.Presentation.Views.TabControlView"
 		     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
@@ -9,16 +12,41 @@
 	<UserControl.Resources>
 		<ext:BitmapConverter x:Key="variableImage"/>
 	</UserControl.Resources>
+
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition MinWidth="300" Width="0.7*" />
 			<ColumnDefinition MinWidth="150" Width="0.3*" />
 		</Grid.ColumnDefinitions>
-		<Image Source="{Binding Image}"
-			Stretch="Uniform"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Grid.Column="0" />
+		<Grid.RowDefinitions>
+			<RowDefinition MinHeight="50" Height="0.1*"/>
+			<RowDefinition MinHeight="150" Height="0.9*"/>
+		</Grid.RowDefinitions>
+		<!--<StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
+			<ComboBox Name="ZoomSelect" SelectedIndex="0">
+				<i:Interaction.Behaviors>
+					<iac:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding #ZoomSelect}">
+					</iac:EventTriggerBehavior>
+				</i:Interaction.Behaviors>
+				<ComboBoxItem>100%</ComboBoxItem>
+				<ComboBoxItem>75%</ComboBoxItem>
+				<ComboBoxItem>50%</ComboBoxItem>
+				<ComboBoxItem>25%</ComboBoxItem>
+			</ComboBox>
+			<Button>Reset!</Button>
+		</StackPanel>-->
+		<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Auto" AllowAutoHide="True" HorizontalContentAlignment="Left" VerticalAlignment="Top">
+			<paz:ZoomBorder Name="ZoomBorder" Stretch="None" ZoomSpeed="1.2"
+                            ClipToBounds="True" Focusable="True"
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PanButton="Left">
+				<!--<i:Interaction.Behaviors>
+					<iac:KeyDown TargetControl="ZoomBorder"/>
+				</i:Interaction.Behaviors>-->
+				<Image Source="{Binding Image}"/>
+			</paz:ZoomBorder>
+		</ScrollViewer>
+
 		<Grid Grid.Column="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />

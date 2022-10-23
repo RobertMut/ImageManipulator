@@ -1,7 +1,14 @@
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Remote.Protocol.Input;
 using ImageManipulator.Application.Common.Interfaces;
 using ReactiveUI;
 using Splat;
+using System;
 using System.Collections.Generic;
+using System.Reactive;
+using System.Text.RegularExpressions;
 using Color = Avalonia.Media.Color;
 
 namespace ImageManipulator.Application.ViewModels
@@ -18,17 +25,36 @@ namespace ImageManipulator.Application.ViewModels
 
         public string Path { get; private set; }
 
+        public TransformGroup TransformGroup { get; set; }
         /// <inheritdoc/>
         public IScreen HostScreen { get; }
 
         /// <inheritdoc/>
         public string UrlPathSegment { get; }
 
+        #region Commands
+        //public EventHandler<PointerPressedEventArgs> MouseButtonDownCommand = ;
+        //public ReactiveCommand<object, Unit> MouseWheelCommand { get; }
+        //public ReactiveCommand<object, Unit> MouseButtonDownCommand { get; }
+        //public ReactiveCommand<object, Unit> MouseButtonUpCommand { get; }
+        //public ReactiveCommand<object, Unit> MouseMoveCommand { get; }
+
+        #endregion
         public TabControlViewModel(IGraphService graphService, IImageDataService imageDataService)
         {
             HostScreen = Locator.Current.GetService<IScreen>();
             this.graphService = graphService;
             this.imageDataService = imageDataService;
+            //MouseWheelCommand = ReactiveCommand.Create<object, Unit>(OnMouseWheel);
+            //MouseButtonDownCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonDown);
+            //MouseButtonUpCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonUp);
+            //MouseMoveCommand = ReactiveCommand.Create<object, Unit>(OnMove);
+
+            TransformGroup = new TransformGroup();
+            ScaleTransform scaleTransform = new ScaleTransform();
+            TranslateTransform translateTransform = new TranslateTransform();
+            TransformGroup.Children.Add(scaleTransform);
+            TransformGroup.Children.Add(translateTransform);
         }
 
         public void LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
@@ -55,5 +81,7 @@ namespace ImageManipulator.Application.ViewModels
                 {Color.FromRgb(100, 100, 100), luminance }
             }, 300, 240, 5, 5, 1, 100);
         }
+
+
     }
 }
