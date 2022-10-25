@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
+        x:Class="ImageManipulator.Presentation.Views.ContrastStretchingWindow"
+        Title="ContrastStretchingWindow">
+	<Grid>
+		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+			<CheckBox>Linear</CheckBox>
+			<CheckBox>Non-Linear</CheckBox>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
+			<Label>Suggested minimum</Label>
+			<Label>Suggested maximum</Label>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal">
+			<TextBox Watermark="Min value"/>
+			<TextBox Watermark="Max value"/>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal">
+			<Button>Stretch!</Button>
+			<Button>Equalize Histogram</Button>
+		</StackPanel>
+	</Grid>
+</Window>
