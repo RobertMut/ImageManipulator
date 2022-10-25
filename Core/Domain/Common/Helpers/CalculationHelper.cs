@@ -22,5 +22,8 @@ namespace ImageManipulator.Common.Common.Helpers
         {
             return luminance.Select(x => x <= (216 / 24389) ? (x * (24389 / 27)) : (Math.Pow(x, (1 / 3)) * 116 - 16)).ToArray();
         }
+
+        public static double LuminanceFromRGBValue(double red, double green, double blue) => 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
     }
 }
