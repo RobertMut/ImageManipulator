@@ -2,31 +2,40 @@
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Common.Helpers;
+using ImageManipulator.Domain.Common.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace ImageManipulator.Application.Common.Services
 {
     public class ImageDataService : IImageDataService
     {
-        public Dictionary<string, double[]> CalculateHistogramForImage(Bitmap bitmap)
+        public unsafe Dictionary<string, double[]> CalculateHistogramForImage(Bitmap bitmap)
         {
             double[] red = new double[256];
             double[] green = new double[256];
             double[] blue = new double[256];
 
             System.Drawing.Bitmap newBitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
+            var bitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat);
+            int scanLine = bitmapData.Stride;
+            IntPtr bitmapScan0 = bitmapData.Scan0;
+            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newBitmap.PixelFormat);
 
-            for (int i = 0; i < newBitmap.Width; i++)
+            byte* pixel = (byte*)bitmapScan0.ToPointer();
+            for (int i = 0; i < newBitmap.Height; i++)
             {
-                for (int j = 0; j < newBitmap.Height; j++)
+                for (int j = 0; j < newBitmap.Width; j++)
                 {
-                    var pixel = newBitmap.GetPixel(i, j);
+                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
 
-                    red[pixel.R]++;
-                    green[pixel.G]++;
-                    blue[pixel.B]++;
+                    red[data[2]]++;
+                    green[data[1]]++;
+                    blue[data[0]]++;
                 }
             }
+
+            newBitmap.UnlockBits(bitmapData);
 
             return StretchHistogram(new Dictionary<string, double[]>
             {
@@ -50,7 +59,6 @@ namespace ImageManipulator.Application.Common.Services
 
             return result;
         }
-
         public double[] CalculateLuminanceFromRGB(Dictionary<string, double[]> rgbDictionary)
         {
             double[] eightBitRed = CalculationHelper.CalculateRGBLinear(rgbDictionary["red"]);
