@@ -1,13 +1,16 @@
-﻿using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.Common.Models;
+﻿using Avalonia;
+using ImageManipulator.Application.Common.Helpers;
+using ImageManipulator.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
+using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
 namespace ImageManipulator.Application.ViewModels;
 
@@ -16,7 +19,6 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private readonly IFileService _fileService;
     private readonly ICommonDialogService _commonDialogService;
     private readonly IServiceProvider serviceProvider;
-
     private ObservableCollection<TabItem> _tabs = new ObservableCollection<TabItem>();
     private TabItem _currentTab;
 
@@ -43,7 +45,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageAsCommand { get; }
     public ReactiveCommand<Unit, Unit> DuplicateCommand { get; }
-
+    public ReactiveCommand<Unit, Unit> ContrastStretchingCommand { get; }
     #endregion Commands
 
     public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IServiceProvider serviceProvider)
@@ -62,6 +64,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         SaveImageCommand = ReactiveCommand.Create(SaveImage);
         SaveImageAsCommand = ReactiveCommand.Create(SaveImageAs);
         DuplicateCommand = ReactiveCommand.Create(Duplicate);
+        ContrastStretchingCommand = ReactiveCommand.Create(OpenContrastStretchWindow);
     }
 
     private void NewEmptyTab()
@@ -95,6 +98,21 @@ public class MainWindowViewModel : ViewModelBase, IScreen
             ImageTabs[tabIndex] = tabToReplace;
             CurrentTab = tabToReplace;
         }
+    }
+
+    private void OpenContrastStretchWindow()
+    {
+        var contrastStretching = serviceProvider.GetRequiredService<ContrastStretchingViewModel>();
+        contrastStretching.histogramValues = _currentTab.ViewModel.Luminance;
+        contrastStretching.BeforeImage = _currentTab.ViewModel.Image;
+
+        _commonDialogService.ShowDialog(contrastStretching).ContinueWith(x =>
+        {
+            if (contrastStretching.AfterImage != null && contrastStretching.BeforeImage != contrastStretching.AfterImage)
+            {
+                _currentTab.ViewModel.LoadImage(contrastStretching.AfterImage, _currentTab.ViewModel.Path);
+            }
+        });
     }
 
     private void SaveImage()

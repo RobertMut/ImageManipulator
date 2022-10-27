@@ -39,4 +39,9 @@
     <ProjectReference Include="..\..\Core\Application\Application.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\ContrastStretchingView.axaml.cs">
+      <DependentUpon>ContrastStretchingView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

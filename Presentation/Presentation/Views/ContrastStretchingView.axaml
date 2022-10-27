@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
+        xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="300"
+        x:Class="ImageManipulator.Presentation.Views.ContrastStretchingView">
+	<Grid>
+		<Grid.Resources>
+			<ext:IntStringConverter x:Key="intStringConverter"/>
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition MaxHeight="200"/>
+			<RowDefinition MaxHeight="50"/>
+			<RowDefinition MaxHeight="50"/>
+			<RowDefinition MaxHeight="50"/>
+			<RowDefinition MaxHeight="50"/>
+		</Grid.RowDefinitions>
+		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+			<Image Source="{Binding BeforeImage}"/>
+			<Image Source="{Binding AfterImage}"/>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+			<TextBlock>Lower threshold </TextBlock>
+			<TextBlock Text="{Binding LowerThreshold, Converter={StaticResource intStringConverter}}"/>
+			<Separator/>
+			<TextBlock>Upper threshold </TextBlock>
+			<TextBlock Text="{Binding UpperThreshold, Converter={StaticResource intStringConverter}}"/>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+			<TextBox Watermark="Min value" Text="{Binding EnteredLowerThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBox Watermark="Max value" Text="{Binding EnteredUpperThreshold, Converter={StaticResource intStringConverter}}"/>
+		</StackPanel>
+		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+			<Button>Non-linearly stretch contrast</Button>
+			<Button>Equalize Histogram</Button>
+		</StackPanel>
+			<Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center">Accept changes</Button>
+	</Grid>
+</UserControl>

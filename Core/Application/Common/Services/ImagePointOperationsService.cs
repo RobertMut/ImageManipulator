@@ -1,69 +1,52 @@
-﻿using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using DynamicData;
-using ImageManipulator.Application.Common.Helpers;
+﻿using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
-    public class ImagePointOperationsService
+    public class ImagePointOperationsService : IImagePointOperationsService
     {
-        private List<double> histogramValues;
+        private List<double> _histogramValues;
 
-        public int CalculateLowerImageThresholdPoint(Dictionary<Color, double[]> histogram = null)
+        public int CalculateLowerImageThresholdPoint(double[] histogram = null)
         {
-            if (histogram == null && histogramValues == null)
+            if (histogram == null && _histogramValues == null)
             {
                 throw new NullReferenceException("Histogram is null");
             }
 
-            if (histogram.Keys.Count != 1)
-            {
-                throw new NotImplementedException();
-            }
+            _histogramValues = histogram.ToList();
 
-            histogramValues = histogram.Values.FirstOrDefault().ToList();
+            double max = _histogramValues.Max();
+            int indexOfMax = _histogramValues.IndexOf(max);
+            int index = _histogramValues.FindIndex(x => x != 0);
 
-            double max = histogramValues.Max();
-            int indexOfMax = histogramValues.IndexOf(max);
-            int index = histogramValues.FindIndex(x => x != 0);
-
-            return ((index + indexOfMax / 2) + index) / 2;
+            return (((index + indexOfMax) / 2) + index) / 2;
         }
 
-        public int CalculateUpperImageThresholdPoint(Dictionary<Color, double[]> histogram = null)
+        public int CalculateUpperImageThresholdPoint(double[] histogram = null)
         {
-            if (histogram == null && histogramValues == null)
+            if (histogram == null && _histogramValues == null)
             {
                 throw new NullReferenceException("Histogram is null");
             }
 
-            if (histogram.Keys.Count != 1)
-            {
-                throw new NotImplementedException();
-            }
+            _histogramValues = histogram.ToList();
 
-            histogramValues = histogram.Values.FirstOrDefault().ToList();
+            double max = _histogramValues.Max();
+            int indexOfMax = _histogramValues.IndexOf(max);
+            int index = _histogramValues.FindLastIndex(x => x != 0);
 
-            double max = histogramValues.Max();
-            int indexOfMax = histogramValues.IndexOf(max);
-            int index = histogramValues.FindLastIndex(x => x != 0); 
-
-            return ((index + indexOfMax / 2) + index) / 2;
+            return (((index + indexOfMax) / 2) + index) / 2;
         }
 
-        public unsafe System.Drawing.Bitmap StretchContrast(Bitmap bitmap, int lowest, int highest)
+        public unsafe System.Drawing.Bitmap StretchContrast(System.Drawing.Bitmap bitmap, int lowest, int highest)
         {
-            System.Drawing.Bitmap newSrc = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
-            
+            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
             int scanLine = bitmapData.Stride;
             IntPtr bitmapScan0 = bitmapData.Scan0;
@@ -76,9 +59,9 @@ namespace ImageManipulator.Application.Common.Services
                 {
                     byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
 
-                    double brightness = CalculationHelper.LuminanceFromRGBValue(data[2]/255d,
-                        data[1] / 225d,
-                        data[0] / 255d);
+                    double brightness = CalculationHelper.LuminanceFromRGBValue(data[2],
+                        data[1],
+                        data[0]);
 
                     if (brightness >= lowest && brightness <= highest)
                         data[0] = data[1] = data[2] = (byte)(int)(255 * ((brightness - lowest) / (highest - lowest)));

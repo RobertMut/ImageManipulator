@@ -28,7 +28,7 @@
 				<MenuItem Header="_Edit">
 					<MenuItem Header="Duplicate" Command="{Binding DuplicateCommand}" />
 					<Separator />
-					<MenuItem Header="Contrast stretching" />
+					<MenuItem Header="Contrast stretching" Command="{Binding ContrastStretchingCommand}"/>
 				</MenuItem>
 			</Menu>
 		</StackPanel>

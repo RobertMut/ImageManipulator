@@ -1,14 +1,8 @@
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.Remote.Protocol.Input;
 using ImageManipulator.Application.Common.Interfaces;
 using ReactiveUI;
 using Splat;
-using System;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Text.RegularExpressions;
 using Color = Avalonia.Media.Color;
 
 namespace ImageManipulator.Application.ViewModels
@@ -17,9 +11,10 @@ namespace ImageManipulator.Application.ViewModels
     {
         private readonly IGraphService graphService;
         private readonly IImageDataService imageDataService;
+        private double[] _luminance;
 
         public Avalonia.Media.Imaging.Bitmap Image { get; private set; }
-
+        public double[] Luminance { get => _luminance; } 
         public System.Drawing.Bitmap RGBGraph { get; private set; }
         public System.Drawing.Bitmap LuminanceGraph { get; private set; }
 
@@ -32,23 +27,11 @@ namespace ImageManipulator.Application.ViewModels
         /// <inheritdoc/>
         public string UrlPathSegment { get; }
 
-        #region Commands
-        //public EventHandler<PointerPressedEventArgs> MouseButtonDownCommand = ;
-        //public ReactiveCommand<object, Unit> MouseWheelCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseButtonDownCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseButtonUpCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseMoveCommand { get; }
-
-        #endregion
         public TabControlViewModel(IGraphService graphService, IImageDataService imageDataService)
         {
             HostScreen = Locator.Current.GetService<IScreen>();
             this.graphService = graphService;
             this.imageDataService = imageDataService;
-            //MouseWheelCommand = ReactiveCommand.Create<object, Unit>(OnMouseWheel);
-            //MouseButtonDownCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonDown);
-            //MouseButtonUpCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonUp);
-            //MouseMoveCommand = ReactiveCommand.Create<object, Unit>(OnMove);
 
             TransformGroup = new TransformGroup();
             ScaleTransform scaleTransform = new ScaleTransform();
@@ -67,7 +50,7 @@ namespace ImageManipulator.Application.ViewModels
         private void PrepareGraph()
         {
             var rgbValuesDictionary = imageDataService.CalculateHistogramForImage(this.Image);
-            double[] luminance = imageDataService.CalculateLuminanceFromRGB(rgbValuesDictionary);
+            _luminance = imageDataService.CalculateLuminanceFromRGB(rgbValuesDictionary);
 
             RGBGraph = graphService.DrawGraphFromInput(inputData:
                 new Dictionary<Color, double[]>
@@ -78,7 +61,7 @@ namespace ImageManipulator.Application.ViewModels
                 }, 300, 240, 5, 5, 1, 100);
             LuminanceGraph = graphService.DrawGraphFromInput(inputData: new Dictionary<Color, double[]>
             {
-                {Color.FromRgb(100, 100, 100), luminance }
+                {Color.FromRgb(100, 100, 100), _luminance }
             }, 300, 240, 5, 5, 1, 100);
         }
 

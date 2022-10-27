@@ -1,6 +1,4 @@
-﻿using ImageManipulator.Domain.Models;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace ImageManipulator.Application.Common.Interfaces
