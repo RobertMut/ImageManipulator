@@ -37,6 +37,9 @@ public class AppViewLocator : IDataTemplate, IViewLocator
     {
         TabControlViewModel context => new TabControlView(),
         ContrastStretchingViewModel context => new ContrastStretchingView(),
+        NonLinearContrastStretchingViewModel context => new NonLinearContrastStretchingView(),
+        HistogramEqualizationViewModel context => new HistogramEqualizationView(),
+        TresholdingViewModel context => new TresholdingView(),
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

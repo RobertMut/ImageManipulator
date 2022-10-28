@@ -1,8 +1,10 @@
 using Avalonia.Media;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
 using Splat;
 using System.Collections.Generic;
+using System.Globalization;
 using Color = Avalonia.Media.Color;
 
 namespace ImageManipulator.Application.ViewModels
@@ -12,15 +14,18 @@ namespace ImageManipulator.Application.ViewModels
         private readonly IGraphService graphService;
         private readonly IImageDataService imageDataService;
         private double[] _luminance;
+        private Avalonia.Media.Imaging.Bitmap _image;
+        private System.Drawing.Bitmap _rgbGraph;
+        private System.Drawing.Bitmap _luminanceGraph;
 
-        public Avalonia.Media.Imaging.Bitmap Image { get; private set; }
+
+        public int Height { get; private set; }
+        public Avalonia.Media.Imaging.Bitmap Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
         public double[] Luminance { get => _luminance; } 
-        public System.Drawing.Bitmap RGBGraph { get; private set; }
-        public System.Drawing.Bitmap LuminanceGraph { get; private set; }
+        public System.Drawing.Bitmap RGBGraph { get => _rgbGraph; private set => this.RaiseAndSetIfChanged(ref _rgbGraph, value); }
+        public System.Drawing.Bitmap LuminanceGraph { get => _luminanceGraph; private set => this.RaiseAndSetIfChanged(ref _luminanceGraph, value); }
 
         public string Path { get; private set; }
-
-        public TransformGroup TransformGroup { get; set; }
         /// <inheritdoc/>
         public IScreen HostScreen { get; }
 
@@ -32,19 +37,21 @@ namespace ImageManipulator.Application.ViewModels
             HostScreen = Locator.Current.GetService<IScreen>();
             this.graphService = graphService;
             this.imageDataService = imageDataService;
-
-            TransformGroup = new TransformGroup();
-            ScaleTransform scaleTransform = new ScaleTransform();
-            TranslateTransform translateTransform = new TranslateTransform();
-            TransformGroup.Children.Add(scaleTransform);
-            TransformGroup.Children.Add(translateTransform);
         }
 
         public void LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
         {
+            this.Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height-100;
             Path = path;
             Image = image;
             PrepareGraph();
+        }
+
+        public void ResetTab()
+        {
+            Image = null;
+            RGBGraph = null;
+            LuminanceGraph = null;
         }
 
         private void PrepareGraph()

@@ -51,5 +51,8 @@ public partial class App : Avalonia.Application
         serviceDescriptors.AddSingleton<MainWindowViewModel>();
         serviceDescriptors.AddScoped<TabControlViewModel>();
         serviceDescriptors.AddScoped<ContrastStretchingViewModel>();
+        serviceDescriptors.AddScoped<NonLinearContrastStretchingViewModel>();
+        serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();
+        serviceDescriptors.AddScoped<TresholdingViewModel>();
     }
 }

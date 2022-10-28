@@ -25,5 +25,6 @@ namespace ImageManipulator.Common.Common.Helpers
 
         public static double LuminanceFromRGBValue(double red, double green, double blue) => 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 
+        public static double CalculateCorrectedGamma(double value, double gammaCorrection) => 255 * Math.Pow(value / 255, gammaCorrection);
     }
 }

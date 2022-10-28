@@ -5,7 +5,7 @@
 		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
         xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
-        x:Class="ImageManipulator.Presentation.Views.ContrastStretchingView">
+        x:Class="ImageManipulator.Presentation.Views.TresholdingView">
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
@@ -22,22 +22,16 @@
 			<Image Source="{Binding AfterImage}"/>
 		</StackPanel>
 		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
-			<TextBlock>Suggested lower threshold=</TextBlock>
-			<TextBlock Text="{Binding LowerThreshold, Converter={StaticResource intStringConverter}}"/>
-			<TextBlock>Suggested upper threshold= </TextBlock>
-			<TextBlock Text="{Binding UpperThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBlock>Treshold=</TextBlock>
+			<TextBox Text="{Binding EnteredThreshold, Converter={StaticResource intStringConverter}}"/>
 		</StackPanel>
-		
 		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
-			<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredLowerThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=lowerThreshold, Path=Value}"/>
-			<Slider x:Name="upperThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredUpperThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=upperThreshold, Path=Value}"/>
+			<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
+			<TextBlock Text="{Binding ElementName=EnteredThreshold, Path=Value}"/>
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+			<Button Command="{Binding TresholdingCommand}">Execute</Button>
 		</StackPanel>
-			<Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center">Accept changes</Button>
 	</Grid>
 </UserControl>

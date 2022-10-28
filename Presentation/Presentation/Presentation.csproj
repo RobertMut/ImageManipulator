@@ -40,6 +40,15 @@
     <ProjectReference Include="..\..\Infrastructure\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\TresholdingView.axaml.cs">
+      <DependentUpon>TresholdingView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\HistogramEqualizationView.axaml.cs">
+      <DependentUpon>HistogramEqualizationView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NonLinearContrastStretchingView.axaml.cs">
+      <DependentUpon>NonLinearContrastStretchingView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\ContrastStretchingView.axaml.cs">
       <DependentUpon>ContrastStretchingView.axaml</DependentUpon>
     </Compile>

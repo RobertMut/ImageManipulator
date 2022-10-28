@@ -13,14 +13,13 @@
 		<ext:BitmapConverter x:Key="variableImage"/>
 	</UserControl.Resources>
 
-	<Grid>
+	<Grid Height="{Binding Height}">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition MinWidth="300" Width="0.7*" />
-			<ColumnDefinition MinWidth="150" Width="0.3*" />
+			<ColumnDefinition MinWidth="300" Width="0.7*"/>
+			<ColumnDefinition MinWidth="150" Width="0.3*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition MinHeight="50" Height="0.1*"/>
-			<RowDefinition MinHeight="150" Height="0.9*"/>
+			<RowDefinition Height="{Binding Height}"/>
 		</Grid.RowDefinitions>
 		<!--<StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
 			<ComboBox Name="ZoomSelect" SelectedIndex="0">
@@ -35,7 +34,7 @@
 			</ComboBox>
 			<Button>Reset!</Button>
 		</StackPanel>-->
-		<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto"
+		<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto" AllowAutoHide="True" HorizontalContentAlignment="Left" VerticalAlignment="Top">
 			<paz:ZoomBorder Name="ZoomBorder" Stretch="None" ZoomSpeed="1.2"
                             ClipToBounds="True" Focusable="True"

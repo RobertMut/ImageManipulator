@@ -5,12 +5,13 @@ using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace ImageManipulator.Application.Common.Services
 {
     public class ImageDataService : IImageDataService
     {
-        public unsafe Dictionary<string, double[]> CalculateHistogramForImage(Bitmap bitmap)
+        public unsafe Dictionary<string, double[]> CalculateHistogramForImage(Avalonia.Media.Imaging.Bitmap bitmap)
         {
             double[] red = new double[256];
             double[] green = new double[256];
@@ -70,7 +71,7 @@ namespace ImageManipulator.Application.Common.Services
 
         public double[] CalculateBrightnessFromLuminance(double[] luminanceArray) => CalculationHelper.CalculatePerceivedLightness(luminanceArray);
 
-        private Dictionary<string, double[]> StretchHistogram(Dictionary<string, double[]> existingHistogram, System.Drawing.Bitmap existingImage)
+        private unsafe Dictionary<string, double[]> StretchHistogram(Dictionary<string, double[]> existingHistogram, System.Drawing.Bitmap existingImage)
         {
             double[] red = new double[256];
             double[] blue = new double[256];
@@ -81,20 +82,33 @@ namespace ImageManipulator.Application.Common.Services
             existingHistogram["blue"] = CalculateLUT(existingHistogram["blue"]);
 
             System.Drawing.Bitmap newImage = new System.Drawing.Bitmap(existingImage.Width, existingImage.Height, existingImage.PixelFormat);
-            for (int i = 0; i < existingImage.Width; i++)
+            var bitmapData = newImage.LockBitmap(newImage.PixelFormat);
+            int scanLine = bitmapData.Stride;
+            IntPtr bitmapScan0 = bitmapData.Scan0;
+            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newImage.PixelFormat);
+
+            byte* pixel = (byte*)bitmapScan0.ToPointer();
+            for (int i = 0; i < newImage.Height; i++)
             {
-                for (int j = 0; j < existingImage.Height; j++)
+                for (int j = 0; j < newImage.Width; j++)
                 {
-                    var pixel = existingImage.GetPixel(i, j);
-                    var newPixel = System.Drawing.Color.FromArgb((int)existingHistogram["red"][pixel.R],
-                        (int)existingHistogram["green"][pixel.G],
-                        (int)existingHistogram["blue"][pixel.B]);
-                    newImage.SetPixel(i, j, newPixel);
+                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                    var pixelFromExistingImage = existingImage.GetPixel(j, i);
+
+                    var newPixel = System.Drawing.Color.FromArgb((int)existingHistogram["red"][pixelFromExistingImage.R],
+                        (int)existingHistogram["green"][pixelFromExistingImage.G],
+                        (int)existingHistogram["blue"][pixelFromExistingImage.B]);
+
+                    data[2] = newPixel.R;
+                    data[1] = newPixel.G;
+                    data[0] = newPixel.B;
+
                     red[newPixel.R]++;
                     green[newPixel.G]++;
                     blue[newPixel.B]++;
                 }
             }
+
             existingHistogram["red"] = red;
             existingHistogram["green"] = green;
             existingHistogram["blue"] = blue;
