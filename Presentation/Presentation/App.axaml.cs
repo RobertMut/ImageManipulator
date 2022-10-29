@@ -53,6 +53,7 @@ public partial class App : Avalonia.Application
         serviceDescriptors.AddScoped<ContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<NonLinearContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();
-        serviceDescriptors.AddScoped<TresholdingViewModel>();
+        serviceDescriptors.AddScoped<ThresholdingViewModel>();
+        serviceDescriptors.AddScoped<MultiThresholdingViewModel>();
     }
 }

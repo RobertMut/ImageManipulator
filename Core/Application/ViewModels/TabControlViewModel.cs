@@ -24,7 +24,6 @@ namespace ImageManipulator.Application.ViewModels
         public double[] Luminance { get => _luminance; } 
         public System.Drawing.Bitmap RGBGraph { get => _rgbGraph; private set => this.RaiseAndSetIfChanged(ref _rgbGraph, value); }
         public System.Drawing.Bitmap LuminanceGraph { get => _luminanceGraph; private set => this.RaiseAndSetIfChanged(ref _luminanceGraph, value); }
-
         public string Path { get; private set; }
         /// <inheritdoc/>
         public IScreen HostScreen { get; }

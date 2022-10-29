@@ -26,7 +26,7 @@ namespace ImageManipulator.Application.Common.Converters
 
             if(value.GetType() == typeof(string) && !string.IsNullOrEmpty((string)value))
             {
-                return int.Parse((string)value);
+                return int.TryParse((string)value, out int result) == true ? result : null;
             }
 
             return null;

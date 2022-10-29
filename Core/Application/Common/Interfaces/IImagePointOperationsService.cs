@@ -10,6 +10,7 @@ namespace ImageManipulator.Application.Common.Interfaces
         Bitmap NonLinearlyStretchContrast(Bitmap bitmap, double gamma);
         Bitmap HistogramEqualization(Bitmap bitmap);
         Bitmap Negation(Bitmap bitmap);
-        Bitmap Tresholding(Bitmap bitmap, int treshold);
+        Bitmap Thresholding(Bitmap bitmap, int threshold, bool replace = true);
+        Bitmap MultiThresholding(Bitmap bitmap, int lowerThreshold, int upperThreshold, bool replace = true);
     }
 }

@@ -30,6 +30,7 @@
 					<Separator />
 					<MenuItem Header="Negation" Command="{Binding NegationCommand}"/>
 					<MenuItem Header="Tresholding" Command="{Binding TresholdingCommand}"/>
+					<MenuItem Header="Multi-Thresholding" Command="{Binding MultiThresholdingCommand}"/>
 					<Separator />
 					<MenuItem Header="Contrast stretching" Command="{Binding ContrastStretchingCommand}"/>
 					<MenuItem Header="Gamma correction" Command="{Binding GammaCorrectionCommand}"/>

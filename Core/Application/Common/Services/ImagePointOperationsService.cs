@@ -173,7 +173,7 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe Bitmap Tresholding(Bitmap bitmap, int treshold)
+        public unsafe Bitmap Thresholding(Bitmap bitmap, int threshold, bool replace = true)
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
@@ -190,12 +190,50 @@ namespace ImageManipulator.Application.Common.Services
                     byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
                     int rgb = data[0] + data[1] + data[2];
                     
-                    if (rgb <= treshold)
+                    if (rgb <= threshold)
                     {
                         data[0] = 0;
                         data[1] = 0;
                         data[2] = 0;
-                    } else
+                    } else if(replace)
+                    {
+                        data[0] = 255;
+                        data[1] = 255;
+                        data[2] = 255;
+                    }
+
+                }
+            }
+
+            newSrc.UnlockBits(bitmapData);
+
+            return newSrc;
+        }
+
+        public unsafe Bitmap MultiThresholding(Bitmap bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
+        {
+            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
+            int scanLine = bitmapData.Stride;
+            IntPtr bitmapScan0 = bitmapData.Scan0;
+            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
+
+            byte* pixel = (byte*)bitmapScan0.ToPointer();
+
+            for (int i = 0; i < newSrc.Height; i++)
+            {
+                for (int j = 0; j < newSrc.Width; j++)
+                {
+                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                    int rgb = data[0] + data[1] + data[2];
+
+                    if (lowerThreshold <= rgb && rgb <= upperThreshold)
+                    {
+                        data[0] = 0;
+                        data[1] = 0;
+                        data[2] = 0;
+                    }
+                    else if (replace)
                     {
                         data[0] = 255;
                         data[1] = 255;

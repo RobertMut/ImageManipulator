@@ -49,6 +49,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> GammaCorrectionCommand { get; }
     public ReactiveCommand<Unit, Unit> HistogramEqualizationCommand { get; }
     public ReactiveCommand<Unit, Unit> TresholdingCommand { get; }
+    public ReactiveCommand<Unit, Unit> MultiThresholdingCommand { get; }
     public ReactiveCommand<Unit, Unit> NegationCommand { get; }
 
     #endregion Commands
@@ -74,6 +75,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         GammaCorrectionCommand = ReactiveCommand.Create(OpenGammaCorrectionWindow);
         HistogramEqualizationCommand = ReactiveCommand.Create(OpenHistogramEqualizationWindow);
         TresholdingCommand = ReactiveCommand.Create(OpenTresholdingWindow);
+        MultiThresholdingCommand = ReactiveCommand.Create(OpenMultiTresholdingWindow);
         NegationCommand = ReactiveCommand.Create(NegateImage);
     }
 
@@ -173,7 +175,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private void OpenTresholdingWindow()
     {
-        var tresholding = serviceProvider.GetRequiredService<TresholdingViewModel>();
+        var tresholding = serviceProvider.GetRequiredService<ThresholdingViewModel>();
         tresholding.BeforeImage = _currentTab.ViewModel.Image;
 
         _commonDialogService.ShowDialog(tresholding).ContinueWith(x =>
@@ -183,6 +185,23 @@ public class MainWindowViewModel : ViewModelBase, IScreen
                 var tabIndex = ImageTabs.IndexOf(_currentTab);
                 CurrentTab.ViewModel.ResetTab();
                 CurrentTab.ViewModel.LoadImage(tresholding.AfterImage, CurrentTab.ViewModel.Path);
+                ImageTabs[tabIndex] = CurrentTab;
+            }
+        });
+    }
+
+    private void OpenMultiTresholdingWindow()
+    {
+        var multiThresholding = serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
+        multiThresholding.BeforeImage = _currentTab.ViewModel.Image;
+
+        _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
+        {
+            if (multiThresholding.AfterImage != null && multiThresholding.BeforeImage != multiThresholding.AfterImage)
+            {
+                var tabIndex = ImageTabs.IndexOf(_currentTab);
+                CurrentTab.ViewModel.ResetTab();
+                CurrentTab.ViewModel.LoadImage(multiThresholding.AfterImage, CurrentTab.ViewModel.Path);
                 ImageTabs[tabIndex] = CurrentTab;
             }
         });

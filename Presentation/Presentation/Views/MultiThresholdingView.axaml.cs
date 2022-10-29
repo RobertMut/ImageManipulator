@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class TresholdingView : ReactiveUserControl<TresholdingViewModel>
+    public partial class MultiThresholdingView : ReactiveUserControl<MultiThresholdingViewModel>
     {
-        public TresholdingView()
+        public MultiThresholdingView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });

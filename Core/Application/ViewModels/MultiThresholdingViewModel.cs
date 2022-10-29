@@ -5,12 +5,13 @@ using System.Reactive;
 
 namespace ImageManipulator.Application.ViewModels
 {
-    public class ThresholdingViewModel : ViewModelBase
+    public class MultiThresholdingViewModel : ViewModelBase
     {
         private readonly IImagePointOperationsService imagePointOperationsService;
         private Avalonia.Media.Imaging.Bitmap _beforeImage;
         private Avalonia.Media.Imaging.Bitmap _afterImage;
-        private int _enteredThreshold;
+        private int _enteredLowerThreshold;
+        private int _enteredUpperThreshold;
 
         public Avalonia.Media.Imaging.Bitmap BeforeImage
         {
@@ -28,7 +29,9 @@ namespace ImageManipulator.Application.ViewModels
             }
         }
 
-        public int EnteredThreshold { get => _enteredThreshold; set => this.RaiseAndSetIfChanged(ref _enteredThreshold, value); }
+        public int EnteredUpperThreshold { get => _enteredUpperThreshold; set => this.RaiseAndSetIfChanged(ref _enteredUpperThreshold, value); }
+        public int EnteredLowerThreshold { get => _enteredLowerThreshold; set => this.RaiseAndSetIfChanged(ref _enteredLowerThreshold, value); }
+
         public bool ReplaceColours { get; set; }
 
         #region Commands
@@ -37,7 +40,7 @@ namespace ImageManipulator.Application.ViewModels
 
         #endregion Commands
 
-        public ThresholdingViewModel(IImagePointOperationsService imagePointOperationsService)
+        public MultiThresholdingViewModel(IImagePointOperationsService imagePointOperationsService)
         {
             this.imagePointOperationsService = imagePointOperationsService;
             TresholdingCommand = ReactiveCommand.Create(ExecuteTresholding);
@@ -45,7 +48,7 @@ namespace ImageManipulator.Application.ViewModels
 
         private void ExecuteTresholding()
         {
-            var stretchedImage = imagePointOperationsService.Thresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredThreshold, ReplaceColours);
+            var stretchedImage = imagePointOperationsService.MultiThresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold, _enteredUpperThreshold, ReplaceColours);
             AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
         }
     }

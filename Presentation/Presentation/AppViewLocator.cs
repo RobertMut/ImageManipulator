@@ -39,7 +39,8 @@ public class AppViewLocator : IDataTemplate, IViewLocator
         ContrastStretchingViewModel context => new ContrastStretchingView(),
         NonLinearContrastStretchingViewModel context => new NonLinearContrastStretchingView(),
         HistogramEqualizationViewModel context => new HistogramEqualizationView(),
-        TresholdingViewModel context => new TresholdingView(),
+        ThresholdingViewModel context => new ThresholdingView(),
+        MultiThresholdingViewModel context => new MultiThresholdingView(),
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }
