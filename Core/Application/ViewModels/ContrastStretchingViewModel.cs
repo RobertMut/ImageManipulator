@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels
 {
-	public class ContrastStretchingViewModel : ViewModelBase
+	public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
     {
 		private readonly IImagePointOperationsService imagePointOperationsService;
 		private readonly IImageDataService imageDataService;
@@ -15,14 +15,14 @@ namespace ImageManipulator.Application.ViewModels
 		private int _enteredLowerThreshold;
 		private int _enteredUpperThreshold;
 
-        public Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
+        public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
 			{
 				CalculateSuggestedThresholds();
 				_ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
 			}
 		}
 
-        public Avalonia.Media.Imaging.Bitmap AfterImage
+        public override Avalonia.Media.Imaging.Bitmap AfterImage
         {
             get => _afterImage; set
             {

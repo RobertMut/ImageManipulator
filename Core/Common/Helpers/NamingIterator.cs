@@ -1,4 +1,4 @@
-﻿namespace ImageManipulator.Domain.Common.Helpers
+﻿namespace Common.Helpers
 {
     public class NamingIterator
     {

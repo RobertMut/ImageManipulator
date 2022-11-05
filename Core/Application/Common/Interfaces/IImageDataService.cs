@@ -4,9 +4,10 @@ namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface IImageDataService
     {
-        Dictionary<string, double[]> CalculateHistogramForImage(Avalonia.Media.Imaging.Bitmap bitmap);
+        double[][] CalculateLevels(Avalonia.Media.Imaging.Bitmap bitmap);
         double[] CalculateLUT(double[] values);
-        double[] CalculateLuminanceFromRGB(Dictionary<string, double[]> rgbDictionary);
+        double[] CalculateLuminanceFromRGB(double[][] rgbDictionary);
         double[] CalculateBrightnessFromLuminance(double[] luminanceArray);
+        Dictionary<string, double[]> StretchHistogram(Dictionary<string, double[]> existingHistogram, System.Drawing.Bitmap existingImage);
     }
 }

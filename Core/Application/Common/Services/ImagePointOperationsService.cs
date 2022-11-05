@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+﻿using DynamicData;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
@@ -149,85 +149,67 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe Bitmap Negation(Bitmap bitmap)
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
-
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-
-            for (int i = 0; i < newSrc.Height; i++)
-            {
-                for (int j = 0; j < newSrc.Width; j++)
+            var bitmapData = newSrc
+                .LockBitmap(newSrc.PixelFormat)
+                .ExecuteOnPixel((x, scan0, stride) =>
                 {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                    byte* data = (byte*)x.ToPointer();
 
                     data[0] = (byte)(255 - data[0]);
                     data[1] = (byte)(255 - data[1]);
                     data[2] = (byte)(255 - data[2]);
-                }
-            }
+
+                    return new IntPtr(data);
+                });
 
             newSrc.UnlockBits(bitmapData);
 
             return newSrc;
         }
 
-        public unsafe Bitmap Thresholding(Bitmap bitmap, int threshold, bool replace = true)
+        public unsafe Bitmap Thresholding(Bitmap bitmap, double[][] lut, int threshold, bool replace = true)
         {
+            double value = lut[0][threshold]*(bitmap.Width*bitmap.Height);
+            var test = lut[0].Select(x => x * (bitmap.Width * bitmap.Height));
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
-
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-
-            for (int i = 0; i < newSrc.Height; i++)
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixel((x, scan0, stride) =>
             {
-                for (int j = 0; j < newSrc.Width; j++)
+                byte* data = (byte*)x.ToPointer();
+                
+                if (value < data[0])
                 {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
-                    int rgb = data[0] + data[1] + data[2];
-                    
-                    if (rgb <= threshold)
-                    {
-                        data[0] = 0;
-                        data[1] = 0;
-                        data[2] = 0;
-                    } else if(replace)
-                    {
-                        data[0] = 255;
-                        data[1] = 255;
-                        data[2] = 255;
-                    }
-
+                    data[0] = 255;
+                    data[1] = 255;
+                    data[2] = 255;
                 }
-            }
+                else if (replace)
+                {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                };
+
+                return new IntPtr(data);
+            });
 
             newSrc.UnlockBits(bitmapData);
 
             return newSrc;
         }
 
-        public unsafe Bitmap MultiThresholding(Bitmap bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
+        public unsafe Bitmap MultiThresholding(Bitmap bitmap, double[][] lut, int lowerThreshold, int upperThreshold, bool replace = true)
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
-
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-
-            for (int i = 0; i < newSrc.Height; i++)
-            {
-                for (int j = 0; j < newSrc.Width; j++)
+            int pixels = bitmap.Width * bitmap.Height;
+            double lowerValue = lut[0][lowerThreshold]*pixels;
+            double upperValue = lut[0][upperThreshold]*pixels;
+            newSrc.UnlockBits(newSrc
+                .LockBitmap(newSrc.PixelFormat)
+                .ExecuteOnPixel((x, scan0, stride) =>
                 {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
-                    int rgb = data[0] + data[1] + data[2];
+                    byte* data = (byte*)x.ToPointer();
 
-                    if (lowerThreshold <= rgb && rgb <= upperThreshold)
+                    if (lowerValue < data[0] && data[0] >= upperValue)
                     {
                         data[0] = 0;
                         data[1] = 0;
@@ -240,10 +222,8 @@ namespace ImageManipulator.Application.Common.Services
                         data[2] = 255;
                     }
 
-                }
-            }
-
-            newSrc.UnlockBits(bitmapData);
+                    return new IntPtr(data);
+                }));
 
             return newSrc;
         }
@@ -252,10 +232,12 @@ namespace ImageManipulator.Application.Common.Services
         private double[] CalculateLevels(byte[] buffer, int width, int height, byte bits)
         {
             double[] levels = new double[256];
+
             for (int p = 0; p < buffer.Length; p += bits)
             {
                 levels[buffer[p]]++;
             }
+
             for (int prob = 0; prob < levels.Length; prob++)
             {
                 levels[prob] /= (width * height);

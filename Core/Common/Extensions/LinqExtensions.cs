@@ -14,5 +14,13 @@ namespace ImageManipulator.Common.Common.Extensions
                 yield return item;
             }
         }
+
+        public static T ReplaceAndReturn<T>(this IList<T> list, int index, T item)
+        {
+            list.RemoveAt(index);
+            list.Insert(index, item);
+
+            return item;
+        }
     }
 }

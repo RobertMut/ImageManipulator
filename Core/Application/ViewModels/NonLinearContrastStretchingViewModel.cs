@@ -6,20 +6,20 @@ using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels
 {
-	public class NonLinearContrastStretchingViewModel : ViewModelBase
+	public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewModelBase
     {
 		private readonly IImagePointOperationsService imagePointOperationsService;
 		private Avalonia.Media.Imaging.Bitmap _beforeImage;
         private Avalonia.Media.Imaging.Bitmap _afterImage;
 		private double _gamma;
 
-        public Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
+        public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
 			{
 				_ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
 			}
 		}
 
-        public Avalonia.Media.Imaging.Bitmap AfterImage
+        public override Avalonia.Media.Imaging.Bitmap AfterImage
         {
             get => _afterImage; set
             {

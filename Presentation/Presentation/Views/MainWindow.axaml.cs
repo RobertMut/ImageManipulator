@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
@@ -12,6 +13,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         InitializeComponent();
         this.WhenActivated(disposables => {
         });
+#if DEBUG
+        this.AttachDevTools();
+#endif
         AvaloniaXamlLoader.Load(this);
     }
 }

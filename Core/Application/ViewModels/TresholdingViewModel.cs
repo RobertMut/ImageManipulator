@@ -5,14 +5,14 @@ using System.Reactive;
 
 namespace ImageManipulator.Application.ViewModels
 {
-    public class ThresholdingViewModel : ViewModelBase
+    public class ThresholdingViewModel : ImageOperationDialogViewModelBase
     {
         private readonly IImagePointOperationsService imagePointOperationsService;
         private Avalonia.Media.Imaging.Bitmap _beforeImage;
         private Avalonia.Media.Imaging.Bitmap _afterImage;
         private int _enteredThreshold;
-
-        public Avalonia.Media.Imaging.Bitmap BeforeImage
+        public double[][] values;
+        public override Avalonia.Media.Imaging.Bitmap BeforeImage
         {
             get => _beforeImage; set
             {
@@ -20,7 +20,7 @@ namespace ImageManipulator.Application.ViewModels
             }
         }
 
-        public Avalonia.Media.Imaging.Bitmap AfterImage
+        public override Avalonia.Media.Imaging.Bitmap AfterImage
         {
             get => _afterImage; set
             {
@@ -45,7 +45,7 @@ namespace ImageManipulator.Application.ViewModels
 
         private void ExecuteTresholding()
         {
-            var stretchedImage = imagePointOperationsService.Thresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredThreshold, ReplaceColours);
+            var stretchedImage = imagePointOperationsService.Thresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), values, _enteredThreshold, ReplaceColours);
             AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
         }
     }

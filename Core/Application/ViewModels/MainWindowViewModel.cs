@@ -1,11 +1,11 @@
 ﻿using Avalonia;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Common.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -22,6 +22,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private readonly IImagePointOperationsService imagePointOperationsService;
     private ObservableCollection<TabItem> _tabs = new ObservableCollection<TabItem>();
     private TabItem _currentTab;
+    private int _currentTabIndex = 0;
 
     public RoutingState Router { get; } = new RoutingState();
 
@@ -34,7 +35,11 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public TabItem CurrentTab
     {
         get => _currentTab;
-        set => this.RaiseAndSetIfChanged(ref _currentTab, value);
+        set
+        {
+            _currentTabIndex = ImageTabs.IndexOf(value);
+            this.RaiseAndSetIfChanged(ref _currentTab, value);
+        }
     }
 
     #region Commands
@@ -61,8 +66,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         this.serviceProvider = serviceProvider;
         this.imagePointOperationsService = imagePointOperationsService;
         var emptyTab = new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>());
-        CurrentTab = emptyTab;
         ImageTabs.Add(emptyTab);
+        CurrentTab = emptyTab;
 
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
         GetImageToTab = ReactiveCommand.Create(PrepareNewTab);
@@ -86,13 +91,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         _commonDialogService.ShowDialog(gammaCorrection).ContinueWith(x =>
         {
-            if (gammaCorrection.AfterImage != null && gammaCorrection.BeforeImage != gammaCorrection.AfterImage)
-            {
-                var tabIndex = ImageTabs.IndexOf(_currentTab);
-                _currentTab.ViewModel.ResetTab();
-                _currentTab.ViewModel.LoadImage(gammaCorrection.AfterImage, _currentTab.ViewModel.Path);
-                ImageTabs[tabIndex] = _currentTab;
-            }
+            ResetTabAndReloadImage(gammaCorrection.BeforeImage, gammaCorrection.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
         });
     }
 
@@ -137,13 +137,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         _commonDialogService.ShowDialog(contrastStretching).ContinueWith(x =>
         {
-            if (contrastStretching.AfterImage != null && contrastStretching.BeforeImage != contrastStretching.AfterImage)
-            {
-                var tabIndex = ImageTabs.IndexOf(CurrentTab);
-                CurrentTab.ViewModel.ResetTab();
-                CurrentTab.ViewModel.LoadImage(contrastStretching.AfterImage, CurrentTab.ViewModel.Path);
-                ImageTabs[tabIndex] = CurrentTab;
-            }
+            ResetTabAndReloadImage(contrastStretching.BeforeImage, contrastStretching.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
         });
     }
 
@@ -154,39 +149,28 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         _commonDialogService.ShowDialog(histogramEqualization).ContinueWith(x =>
         {
-            if (histogramEqualization.AfterImage != null && histogramEqualization.BeforeImage != histogramEqualization.AfterImage)
-            {
-                var tabIndex = ImageTabs.IndexOf(_currentTab);
-                CurrentTab.ViewModel.ResetTab();
-                CurrentTab.ViewModel.LoadImage(histogramEqualization.AfterImage, CurrentTab.ViewModel.Path);
-                ImageTabs[tabIndex] = CurrentTab;
-            }
+            ResetTabAndReloadImage(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
         });
     }
 
     private void NegateImage()
     {
         var bitmap = imagePointOperationsService.Negation(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
-        int index = ImageTabs.IndexOf(CurrentTab);
-        CurrentTab.ViewModel.ResetTab();
-        CurrentTab.ViewModel.LoadImage(ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab.ViewModel.Path);
-        ImageTabs[index] = CurrentTab;
+        ResetTabAndReloadImage(CurrentTab.ViewModel.Image, ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab.ViewModel);
+        ReplaceTab(CurrentTab, _currentTabIndex);
     }
 
     private void OpenTresholdingWindow()
     {
-        var tresholding = serviceProvider.GetRequiredService<ThresholdingViewModel>();
-        tresholding.BeforeImage = _currentTab.ViewModel.Image;
+        var thresholding = serviceProvider.GetRequiredService<ThresholdingViewModel>();
+        thresholding.BeforeImage = _currentTab.ViewModel.Image;
+        thresholding.values = _currentTab.ViewModel.imageValues;
 
-        _commonDialogService.ShowDialog(tresholding).ContinueWith(x =>
+        _commonDialogService.ShowDialog(thresholding).ContinueWith(x =>
         {
-            if (tresholding.AfterImage != null && tresholding.BeforeImage != tresholding.AfterImage)
-            {
-                var tabIndex = ImageTabs.IndexOf(_currentTab);
-                CurrentTab.ViewModel.ResetTab();
-                CurrentTab.ViewModel.LoadImage(tresholding.AfterImage, CurrentTab.ViewModel.Path);
-                ImageTabs[tabIndex] = CurrentTab;
-            }
+            ResetTabAndReloadImage(thresholding.BeforeImage, thresholding.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
         });
     }
 
@@ -194,16 +178,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var multiThresholding = serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
         multiThresholding.BeforeImage = _currentTab.ViewModel.Image;
+        multiThresholding.values = _currentTab.ViewModel.imageValues;
 
         _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
         {
-            if (multiThresholding.AfterImage != null && multiThresholding.BeforeImage != multiThresholding.AfterImage)
-            {
-                var tabIndex = ImageTabs.IndexOf(_currentTab);
-                CurrentTab.ViewModel.ResetTab();
-                CurrentTab.ViewModel.LoadImage(multiThresholding.AfterImage, CurrentTab.ViewModel.Path);
-                ImageTabs[tabIndex] = CurrentTab;
-            }
+            ReplaceTab(CurrentTab, _currentTabIndex);
+            ResetTabAndReloadImage(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab.ViewModel);
         });
     }
 
@@ -223,8 +203,14 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         CurrentTab = _currentTab;
     }
 
-    private void CloseApp()
-    {
-        Environment.Exit(1);
-    }
+    private void CloseApp() => Environment.Exit(1);
+
+    private Func<TabItem, int, TabItem> ReplaceTab => (tabItem, currentTabIndex) =>
+        ImageTabs.ReplaceAndReturn(currentTabIndex,
+                                          tabItem);
+
+    private Func<Bitmap, Bitmap, TabControlViewModel, TabControlViewModel> ResetTabAndReloadImage => (beforeImage, afterImage, currentTab) =>
+    afterImage != null && beforeImage != afterImage ?
+        currentTab.ResetTab().LoadImage(afterImage, currentTab.Path) :
+        currentTab;
 }
