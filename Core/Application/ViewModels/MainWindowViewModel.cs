@@ -146,6 +146,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var histogramEqualization = serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
         histogramEqualization.BeforeImage = _currentTab.ViewModel.Image;
+        histogramEqualization.lut = _currentTab.ViewModel.imageValues;
 
         _commonDialogService.ShowDialog(histogramEqualization).ContinueWith(x =>
         {
@@ -182,8 +183,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
         {
-            ReplaceTab(CurrentTab, _currentTabIndex);
             ResetTabAndReloadImage(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
         });
     }
 

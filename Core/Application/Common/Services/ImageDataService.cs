@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -78,6 +79,7 @@ namespace ImageManipulator.Application.Common.Services
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
 
             byte* pixel = (byte*)bitmapScan0.ToPointer();
+
             for (int i = 0; i < newImage.Height; i++)
             {
                 for (int j = 0; j < newImage.Width; j++)
@@ -135,14 +137,6 @@ namespace ImageManipulator.Application.Common.Services
                 _imageLevels[0][buffer[p]]++;
                 _imageLevels[1][buffer[p + 1]]++;
                 _imageLevels[2][buffer[p + 2]]++;
-            }
-
-            int pixels = width * height;
-            for (int prob = 0; prob < 256; prob++)
-            {
-                _imageLevels[0][prob] /= pixels;
-                _imageLevels[1][prob] /= pixels;
-                _imageLevels[2][prob] /= pixels;
             }
         }
     }

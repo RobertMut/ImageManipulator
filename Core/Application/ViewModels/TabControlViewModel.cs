@@ -6,6 +6,7 @@ using ReactiveUI;
 using Splat;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -52,8 +53,10 @@ namespace ImageManipulator.Application.ViewModels
 
         public TabControlViewModel ResetTab()
         {
-            CanvasLinesRGB.Clear();
-            CanvasLinesLuminance.Clear();
+            CanvasLinesRGB = null;
+            CanvasLinesLuminance = null;
+            CanvasLinesRGB = new ObservableCollection<CanvasLineModel>();
+            CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>();
             Image = null;
 
             return this;
@@ -61,12 +64,10 @@ namespace ImageManipulator.Application.ViewModels
 
         private void PrepareGraph()
         {
-            CanvasLinesRGB.Clear();
-            CanvasLinesLuminance.Clear();
             var currentImg = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(this.Image);
-            imageValues = imageDataService.CalculateLevels(this.Image);
-            _luminance = imageDataService.CalculateLuminanceFromRGB(imageValues);
-
+            var imageValues = imageDataService.CalculateLevels(this.Image);
+            var luminance = imageDataService.CalculateLuminanceFromRGB(imageValues);
+            var scale = new int[] { currentImg.Height, currentImg.Width }.OrderBy(x => x).ToArray();
             var rGBvaluesDictionary = new Dictionary<string, double[]>
                 {
                     {"red", imageValues[0]},
@@ -76,15 +77,17 @@ namespace ImageManipulator.Application.ViewModels
 
             var luminanceValuesDictionary = new Dictionary<string, double[]>
             {
-                {"gray", _luminance}
+                {"gray", luminance}
             };
 
             var histogramValues = imageDataService.StretchHistogram(rGBvaluesDictionary, currentImg);
 
+            this._luminance = luminance;
+            this.imageValues = imageValues;
             CanvasLinesRGB = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: histogramValues
-                , 300, 240, 5, 5, 1, 300/240));
+                , 300, 240, 5, 5, 1, (scale[1] / scale[0])*3));
             CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: luminanceValuesDictionary
-                , 300, 240, 5, 5, 1, 1E-7));
+                , 300, 240, 5, 5, 1, 0.03));
         }
     }
 }

@@ -5,8 +5,8 @@ namespace ImageManipulator.Common.Common.Helpers
 {
     public class CalculationHelper
     {
-        public static Func<double[], double[]> CalculateRGBLinear => (intArray) =>
-            intArray.Select(x => x / 255)
+        public static Func<double[], double[]> CalculateRGBLinear => (doubleArray) =>
+            doubleArray.Select(x => x / 255)
             .Select(sR =>
                 sR <= 0.04045 ? sR / 12.92 : Math.Pow(((sR + 0.055) / 1.055), 2.4)
             ).ToArray();

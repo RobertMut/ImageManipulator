@@ -36,10 +36,10 @@
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 			<Grid Grid.Row="0">
-				<ItemsControl Items="{Binding CanvasLinesRGB}">
+				<ItemsControl Items="{Binding CanvasLinesRGB, Mode=TwoWay}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
-							<Canvas x:Name="Canvas" />
+							<Canvas/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>
@@ -67,10 +67,10 @@
 				<Line StartPoint="0,0" EndPoint="300,0" />
 			</Grid>
 			<Grid Grid.Row="1">
-				<ItemsControl Items="{Binding CanvasLinesLuminance}">
+				<ItemsControl Items="{Binding CanvasLinesLuminance, Mode=TwoWay}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
-							<Canvas x:Name="Canvas" />
+							<Canvas/>
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 					<ItemsControl.ItemTemplate>

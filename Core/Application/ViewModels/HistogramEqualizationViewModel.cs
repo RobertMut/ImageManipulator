@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Reactive;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Application.Common.Services;
 using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels
@@ -12,6 +13,7 @@ namespace ImageManipulator.Application.ViewModels
 		private Avalonia.Media.Imaging.Bitmap _beforeImage;
         private Avalonia.Media.Imaging.Bitmap _afterImage;
 		private double _gamma;
+		public double[][] lut;
 
         public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
 			{
@@ -43,7 +45,7 @@ namespace ImageManipulator.Application.ViewModels
 
 		private void Equalization()
 		{
-			var stretchedImage = imagePointOperationsService.HistogramEqualization(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage));
+			var stretchedImage = imagePointOperationsService.HistogramEqualization(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage), lut);
             AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
 		}
     }

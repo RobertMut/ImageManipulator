@@ -5,6 +5,7 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -102,7 +103,7 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe System.Drawing.Bitmap HistogramEqualization(System.Drawing.Bitmap bitmap)
+        public unsafe System.Drawing.Bitmap HistogramEqualization(System.Drawing.Bitmap bitmap, double[][] lut)
         {
             var bitmapData = bitmap.LockBitmap(bitmap.PixelFormat);
             byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(bitmap.PixelFormat);
@@ -114,8 +115,6 @@ namespace ImageManipulator.Application.Common.Services
 
             bitmap.UnlockBits(bitmapData);
 
-            double[] levels = CalculateLevels(buffer, bitmap.Width, bitmap.Height, 4);
-
             for (int y = 0; y < bitmap.Height; y++)
             {
                 for (int x = 0; x < bitmap.Width; x++)
@@ -125,7 +124,7 @@ namespace ImageManipulator.Application.Common.Services
 
                     for (int i = 0; i < buffer[data]; i++)
                     {
-                        sum += levels[i];
+                        sum += lut[0][i];
                     }
 
                     for (int c = 0; c < 3; c++)
@@ -169,25 +168,25 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe Bitmap Thresholding(Bitmap bitmap, double[][] lut, int threshold, bool replace = true)
         {
-            double value = lut[0][threshold]*(bitmap.Width*bitmap.Height);
-            var test = lut[0].Select(x => x * (bitmap.Width * bitmap.Height));
+            double value = lut[0][threshold];
+            int rgb = 0;
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixel((x, scan0, stride) =>
             {
                 byte* data = (byte*)x.ToPointer();
-                
-                if (value < data[0])
+                rgb = data[0] + data[1] + data[2];
+
+                if (rgb < value)
+                {
+                    data[0] = 0;
+                    data[1] = 0;
+                    data[2] = 0;
+                } else if (replace)
                 {
                     data[0] = 255;
                     data[1] = 255;
                     data[2] = 255;
                 }
-                else if (replace)
-                {
-                    data[0] = 0;
-                    data[1] = 0;
-                    data[2] = 0;
-                };
 
                 return new IntPtr(data);
             });
@@ -200,16 +199,17 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe Bitmap MultiThresholding(Bitmap bitmap, double[][] lut, int lowerThreshold, int upperThreshold, bool replace = true)
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            int pixels = bitmap.Width * bitmap.Height;
-            double lowerValue = lut[0][lowerThreshold]*pixels;
-            double upperValue = lut[0][upperThreshold]*pixels;
+            double lowerValue = lut[0][lowerThreshold];
+            double upperValue = lut[0][upperThreshold];
+            int rgb = 0;
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat)
                 .ExecuteOnPixel((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
+                    rgb = data[0] + data[1] + data[2];
 
-                    if (lowerValue < data[0] && data[0] >= upperValue)
+                    if (lowerValue > rgb && rgb <= upperValue)
                     {
                         data[0] = 0;
                         data[1] = 0;
@@ -226,24 +226,6 @@ namespace ImageManipulator.Application.Common.Services
                 }));
 
             return newSrc;
-        }
-
-        //TODO: it'll be new lut calculation
-        private double[] CalculateLevels(byte[] buffer, int width, int height, byte bits)
-        {
-            double[] levels = new double[256];
-
-            for (int p = 0; p < buffer.Length; p += bits)
-            {
-                levels[buffer[p]]++;
-            }
-
-            for (int prob = 0; prob < levels.Length; prob++)
-            {
-                levels[prob] /= (width * height);
-            }
-
-            return levels;
         }
     }
 }
