@@ -1,9 +1,12 @@
-﻿using ImageManipulator.Application.Common.Interfaces;
+﻿using Avalonia.Controls.Shapes;
+using Avalonia.Media;
+using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.Dictionaries;
+using ImageManipulator.Domain.Common.Helpers;
+using ImageManipulator.Domain.Models;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using Pen = System.Drawing.Pen;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -20,10 +23,10 @@ namespace ImageManipulator.Application.Common.Services
         /// <param name="brushSize">Brush size used in drawline</param>
         /// <param name="divideScale">Division scale for values</param>
         /// <returns>New image with histogram</returns>
-        /// <remarks>XY axis in Microsoft implementation seems to be inverted when drawing, so for every value i have to subtract height
+        /// <remarks>XY axis in Microsoft implementation seems to be inverted when drawing (hopefuly in WPF is only Y axis inverted!), so for every value i have to subtract height
         /// i.e real 0,0 point is 0,-200. It effectively causes me to begin questioning my sanity at late hours.
         /// </remarks>
-        public Bitmap DrawGraphFromInput(Dictionary<Avalonia.Media.Color, double[]> inputData,
+        public List<CanvasLineModel> DrawGraphFromInput(Dictionary<string, double[]> inputData,
             int width = 500,
             int height = 200,
             int horizontalMargins = 5,
@@ -31,39 +34,37 @@ namespace ImageManipulator.Application.Common.Services
             double brushSize = 1,
             double divideScale = 2)
         {
-            var graph = new Bitmap(width, height);
+            var lines = new List<CanvasLineModel>(256);
+            var values = inputData.OrderBy(x => x.Value.Max()).ToArray();
 
-            using (Graphics graphics = Graphics.FromImage(graph))
+            int maxValue = (int)inputData.Max(x => x.Value.Max());
+            int xStartDrawPoint = horizontalMargins;
+            int yStartDrawPoint = verticalMargins;
+            int zIndex = 1;
+
+            foreach (KeyValuePair<string, double[]> graphData in values)
             {
-                graphics.FillRectangle(new SolidBrush(Color.White), 0, 0, width, height);
-                var values = inputData.OrderBy(x => x.Value.Max()).ToArray();
-
-                int maxValue = (int)inputData.Max(x => x.Value.Max());
-                int xStartDrawPoint = horizontalMargins;
-                int yStartDrawPoint = verticalMargins;
-
-                foreach (KeyValuePair<Avalonia.Media.Color, double[]> graphData in values)
+                var colour = AvaloniaColourDictionary.Colour[graphData.Key];
+                foreach (double value in graphData.Value)
                 {
-                    using (var pen = new Pen(Color.FromArgb(graphData.Key.R, graphData.Key.G, graphData.Key.B), (float)brushSize))
-                    {
-                        foreach (int value in graphData.Value)
-                        {
-                            int reversedHeight = (height - yStartDrawPoint) - (value / (int)divideScale);
-                            int reversedHorizontal = width - xStartDrawPoint;
+                    int reversedHeight = (int)-(value / (width / height*divideScale));
 
-                            graphics.DrawLine(pen, xStartDrawPoint, height - yStartDrawPoint, xStartDrawPoint, reversedHeight);
+                    lines.Add(new CanvasLineModel(
+                        new Avalonia.Point(xStartDrawPoint, yStartDrawPoint),
+                        new Avalonia.Point(xStartDrawPoint + brushSize, reversedHeight),
+                        colour,
+                        height,
+                        zIndex)
+                        );
 
-                            xStartDrawPoint += (int)Math.Ceiling(brushSize);
-                        }
-                    }
-                    xStartDrawPoint = horizontalMargins;
-                    yStartDrawPoint = verticalMargins;
+                    xStartDrawPoint += (int)Math.Ceiling(brushSize);
                 }
-
-                graphics.Save();
+                zIndex++;
+                xStartDrawPoint = horizontalMargins;
+                yStartDrawPoint = verticalMargins;
             }
 
-            return graph;
+            return lines;
         }
     }
 }

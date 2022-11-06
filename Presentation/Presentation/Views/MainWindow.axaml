@@ -27,6 +27,14 @@
 				</MenuItem>
 				<MenuItem Header="_Edit">
 					<MenuItem Header="Duplicate" Command="{Binding DuplicateCommand}" />
+					<Separator />
+					<MenuItem Header="Negation" Command="{Binding NegationCommand}"/>
+					<MenuItem Header="Tresholding" Command="{Binding TresholdingCommand}"/>
+					<MenuItem Header="Multi-Thresholding" Command="{Binding MultiThresholdingCommand}"/>
+					<Separator />
+					<MenuItem Header="Contrast stretching" Command="{Binding ContrastStretchingCommand}"/>
+					<MenuItem Header="Gamma correction" Command="{Binding GammaCorrectionCommand}"/>
+					<MenuItem Header="Histogram Equalization" Command="{Binding HistogramEqualizationCommand}"/>
 				</MenuItem>
 			</Menu>
 		</StackPanel>

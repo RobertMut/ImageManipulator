@@ -1,97 +1,109 @@
-﻿using Avalonia.Media.Imaging;
-using ImageManipulator.Application.Common.Helpers;
+﻿using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Common.Helpers;
+using ImageManipulator.Domain.Common.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace ImageManipulator.Application.Common.Services
 {
     public class ImageDataService : IImageDataService
     {
-        public Dictionary<string, double[]> CalculateHistogramForImage(Bitmap bitmap)
+        private double[][] _imageLevels;
+
+        public ImageDataService()
         {
-            double[] red = new double[256];
-            double[] green = new double[256];
-            double[] blue = new double[256];
+            _imageLevels = new double[3][];
+            _imageLevels[0] = new double[256];
+            _imageLevels[1] = new double[256];
+            _imageLevels[2] = new double[256];
+        }
 
+        public unsafe double[][] CalculateLevels(Avalonia.Media.Imaging.Bitmap bitmap)
+        {
             System.Drawing.Bitmap newBitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
+            var bitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat);
+            int bytes = Math.Abs(bitmapData.Stride) * newBitmap.Height;
 
-            for (int i = 0; i < newBitmap.Width; i++)
-            {
-                for (int j = 0; j < newBitmap.Height; j++)
-                {
-                    var pixel = newBitmap.GetPixel(i, j);
+            byte[] buffer = new byte[bytes];
+            Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
 
-                    red[pixel.R]++;
-                    green[pixel.G]++;
-                    blue[pixel.B]++;
-                }
-            }
+            GetLevels(ref buffer, newBitmap.Width, newBitmap.Height);
 
-            return StretchHistogram(new Dictionary<string, double[]>
-            {
-                { "red", red },
-                { "green", green },
-                { "blue", blue }
-            }, newBitmap);
+            newBitmap.UnlockBits(bitmapData);
+
+            return _imageLevels;
         }
 
         public double[] CalculateLUT(double[] values)
         {
             double[] result = new double[256];
-
             double minValue = GetLUTMinValue(values);
             double maxValue = GetLUTMaxValue(values);
-            double equation = 255.0 / (maxValue - minValue);
             for (int i = 0; i < 256; i++)
             {
-                result[i] = (equation * (i - minValue));
+                result[i] = ((255 / (maxValue - minValue)) * (i - minValue));
             }
 
             return result;
         }
 
-        public double[] CalculateLuminanceFromRGB(Dictionary<string, double[]> rgbDictionary)
+        public double[] CalculateLuminanceFromRGB(double[][] levels)
         {
-            double[] eightBitRed = CalculationHelper.CalculateRGBLinear(rgbDictionary["red"]);
-            double[] eightBitGreen = CalculationHelper.CalculateRGBLinear(rgbDictionary["green"]);
-            double[] eightBitBlue = CalculationHelper.CalculateRGBLinear(rgbDictionary["blue"]);
+            double[] eightBitRed = CalculationHelper.CalculateRGBLinear(levels[0]);
+            double[] eightBitGreen = CalculationHelper.CalculateRGBLinear(levels[1]);
+            double[] eightBitBlue = CalculationHelper.CalculateRGBLinear(levels[2]);
 
             return CalculationHelper.CalculateLuminanceFromRGBLinear(eightBitRed, eightBitGreen, eightBitBlue);
         }
 
         public double[] CalculateBrightnessFromLuminance(double[] luminanceArray) => CalculationHelper.CalculatePerceivedLightness(luminanceArray);
 
-        private Dictionary<string, double[]> StretchHistogram(Dictionary<string, double[]> existingHistogram, System.Drawing.Bitmap existingImage)
+        public unsafe Dictionary<string, double[]> StretchHistogram(Dictionary<string, double[]> stringImageValues, System.Drawing.Bitmap existingImage)
         {
             double[] red = new double[256];
             double[] blue = new double[256];
             double[] green = new double[256];
 
-            existingHistogram["red"] = CalculateLUT(existingHistogram["red"]);
-            existingHistogram["green"] = CalculateLUT(existingHistogram["green"]);
-            existingHistogram["blue"] = CalculateLUT(existingHistogram["blue"]);
+            stringImageValues["red"] = CalculateLUT(stringImageValues["red"]);
+            stringImageValues["green"] = CalculateLUT(stringImageValues["green"]);
+            stringImageValues["blue"] = CalculateLUT(stringImageValues["blue"]);
 
             System.Drawing.Bitmap newImage = new System.Drawing.Bitmap(existingImage.Width, existingImage.Height, existingImage.PixelFormat);
-            for (int i = 0; i < existingImage.Width; i++)
+            var bitmapData = newImage.LockBitmap(newImage.PixelFormat);
+            int scanLine = bitmapData.Stride;
+            IntPtr bitmapScan0 = bitmapData.Scan0;
+            byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
+
+            byte* pixel = (byte*)bitmapScan0.ToPointer();
+            for (int i = 0; i < newImage.Height; i++)
             {
-                for (int j = 0; j < existingImage.Height; j++)
+                for (int j = 0; j < newImage.Width; j++)
                 {
-                    var pixel = existingImage.GetPixel(i, j);
-                    var newPixel = System.Drawing.Color.FromArgb((int)existingHistogram["red"][pixel.R],
-                        (int)existingHistogram["green"][pixel.G],
-                        (int)existingHistogram["blue"][pixel.B]);
-                    newImage.SetPixel(i, j, newPixel);
+                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                    var pixelFromExistingImage = existingImage.GetPixel(j, i);
+
+                    var newPixel = System.Drawing.Color.FromArgb((byte)stringImageValues["red"][pixelFromExistingImage.R],
+                        (byte)stringImageValues["green"][pixelFromExistingImage.G],
+                        (byte)stringImageValues["blue"][pixelFromExistingImage.B]);
+
+                    data[2] = newPixel.R;
+                    data[1] = newPixel.G;
+                    data[0] = newPixel.B;
+
                     red[newPixel.R]++;
                     green[newPixel.G]++;
                     blue[newPixel.B]++;
                 }
             }
-            existingHistogram["red"] = red;
-            existingHistogram["green"] = green;
-            existingHistogram["blue"] = blue;
 
-            return existingHistogram;
+            stringImageValues["red"] = red;
+            stringImageValues["green"] = green;
+            stringImageValues["blue"] = blue;
+
+            return stringImageValues;
         }
 
         private double GetLUTMinValue(double[] values)
@@ -114,6 +126,24 @@ namespace ImageManipulator.Application.Common.Services
             }
 
             return 255;
+        }
+
+        private void GetLevels(ref byte[] buffer, int width, int height)
+        {
+            for (int p = 0; p < buffer.Length; p += 4)
+            {
+                _imageLevels[0][buffer[p]]++;
+                _imageLevels[1][buffer[p + 1]]++;
+                _imageLevels[2][buffer[p + 2]]++;
+            }
+
+            int pixels = width * height;
+            for (int prob = 0; prob < 256; prob++)
+            {
+                _imageLevels[0][prob] /= pixels;
+                _imageLevels[1][prob] /= pixels;
+                _imageLevels[2][prob] /= pixels;
+            }
         }
     }
 }

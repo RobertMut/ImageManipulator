@@ -1,8 +1,7 @@
-using System;
-
-namespace Common
+﻿namespace Common
 {
     public class Class1
     {
+
     }
 }

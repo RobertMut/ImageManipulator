@@ -1,29 +1,24 @@
-﻿using Avalonia.Media;
-using ReactiveUI;
+﻿using Avalonia;
+using Avalonia.Media;
+using System.Net;
 
 namespace ImageManipulator.Domain.Models
 {
-    public class CanvasLineModel : ReactiveObject
+    public class CanvasLineModel
     {
-        private Color _color;
-        private int _width;
-        private int _height;
-        private int _startX;
-        private int _startY;
-
-        public int Width { get => _width; private set => _width = value; }
-        public int Height { get => _height; private set => _height = value; }
-        public int StartX { get => _startX; private set => _startX = value; }
-        public int StartY { get => _startY; private set => _startY = value; }
-        public Color Color { get => _color; set => _color = value; }
-
-        public CanvasLineModel(Color color, int width, int height, int startX, int startY)
+        public CanvasLineModel(Point startPoint, Point endPoint, Color color, int canvasTop, int zIndex)
         {
+            StartPoint = startPoint;
+            EndPoint = endPoint;
             Color = color;
-            Width = width;
-            Height = height;
-            StartX = startX;
-            StartY = startY;
+            CanvasTop = canvasTop;
+            ZIndex = zIndex;
         }
+
+        public Point StartPoint { get; }
+        public Point EndPoint { get; }
+        public Color Color { get; }
+        public int CanvasTop { get; }
+        public int ZIndex { get; }
     }
 }

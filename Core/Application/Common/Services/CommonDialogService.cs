@@ -1,8 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Application.ViewModels;
+using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services;
@@ -31,5 +32,17 @@ public class CommonDialogService : ICommonDialogService
         string file = saveDialog.ShowAsync(new Window()).Result;
 
         bitmap.Save(file);
+    }
+
+    public Task ShowDialog<TViewModel>(TViewModel viewModel)
+    where TViewModel : class
+    {
+        var dialog = new Window().SetContent(viewModel);
+        dialog.DataContext = viewModel;
+        var task = new TaskCompletionSource<object>();
+        dialog.Closed += (s, a) => task.SetResult(null);
+        dialog.Show();
+        dialog.Focus();
+        return task.Task;
     }
 }

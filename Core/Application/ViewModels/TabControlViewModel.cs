@@ -1,15 +1,11 @@
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Media;
-using Avalonia.Remote.Protocol.Input;
+using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.Extensions;
+using ImageManipulator.Domain.Models;
 using ReactiveUI;
 using Splat;
-using System;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Text.RegularExpressions;
-using Color = Avalonia.Media.Color;
+using System.Collections.ObjectModel;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -17,71 +13,78 @@ namespace ImageManipulator.Application.ViewModels
     {
         private readonly IGraphService graphService;
         private readonly IImageDataService imageDataService;
-
-        public Avalonia.Media.Imaging.Bitmap Image { get; private set; }
-
-        public System.Drawing.Bitmap RGBGraph { get; private set; }
-        public System.Drawing.Bitmap LuminanceGraph { get; private set; }
-
+        private double[] _luminance;
+        public double[][] imageValues;
+        private Avalonia.Media.Imaging.Bitmap _image;
+        private ObservableCollection<CanvasLineModel> _canvasLinesRGB;
+        private ObservableCollection<CanvasLineModel> _canvasLinesLuminance;
+        public ObservableCollection<CanvasLineModel> CanvasLinesRGB { get => _canvasLinesRGB; private set => this.RaiseAndSetIfChanged(ref _canvasLinesRGB, value); }
+        public ObservableCollection<CanvasLineModel> CanvasLinesLuminance { get => _canvasLinesLuminance; private set => this.RaiseAndSetIfChanged(ref _canvasLinesLuminance, value); }
+        public int Height { get; private set; }
+        public Avalonia.Media.Imaging.Bitmap Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
+        public double[] Luminance { get => _luminance; }
         public string Path { get; private set; }
 
-        public TransformGroup TransformGroup { get; set; }
         /// <inheritdoc/>
         public IScreen HostScreen { get; }
 
         /// <inheritdoc/>
         public string UrlPathSegment { get; }
 
-        #region Commands
-        //public EventHandler<PointerPressedEventArgs> MouseButtonDownCommand = ;
-        //public ReactiveCommand<object, Unit> MouseWheelCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseButtonDownCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseButtonUpCommand { get; }
-        //public ReactiveCommand<object, Unit> MouseMoveCommand { get; }
-
-        #endregion
         public TabControlViewModel(IGraphService graphService, IImageDataService imageDataService)
         {
             HostScreen = Locator.Current.GetService<IScreen>();
             this.graphService = graphService;
             this.imageDataService = imageDataService;
-            //MouseWheelCommand = ReactiveCommand.Create<object, Unit>(OnMouseWheel);
-            //MouseButtonDownCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonDown);
-            //MouseButtonUpCommand = ReactiveCommand.Create<object, Unit>(OnMouseButtonUp);
-            //MouseMoveCommand = ReactiveCommand.Create<object, Unit>(OnMove);
-
-            TransformGroup = new TransformGroup();
-            ScaleTransform scaleTransform = new ScaleTransform();
-            TranslateTransform translateTransform = new TranslateTransform();
-            TransformGroup.Children.Add(scaleTransform);
-            TransformGroup.Children.Add(translateTransform);
+            CanvasLinesRGB = new ObservableCollection<CanvasLineModel>();
+            CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>();
         }
 
-        public void LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
+        public TabControlViewModel LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
         {
+            this.Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
             Path = path;
             Image = image;
             PrepareGraph();
+
+            return this;
+        }
+
+        public TabControlViewModel ResetTab()
+        {
+            CanvasLinesRGB.Clear();
+            CanvasLinesLuminance.Clear();
+            Image = null;
+
+            return this;
         }
 
         private void PrepareGraph()
         {
-            var rgbValuesDictionary = imageDataService.CalculateHistogramForImage(this.Image);
-            double[] luminance = imageDataService.CalculateLuminanceFromRGB(rgbValuesDictionary);
+            CanvasLinesRGB.Clear();
+            CanvasLinesLuminance.Clear();
+            var currentImg = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(this.Image);
+            imageValues = imageDataService.CalculateLevels(this.Image);
+            _luminance = imageDataService.CalculateLuminanceFromRGB(imageValues);
 
-            RGBGraph = graphService.DrawGraphFromInput(inputData:
-                new Dictionary<Color, double[]>
+            var rGBvaluesDictionary = new Dictionary<string, double[]>
                 {
-                    {Color.FromRgb(128, 0, 0),  rgbValuesDictionary["red"]},
-                    {Color.FromRgb(0, 255, 0),  rgbValuesDictionary["green"]},
-                    {Color.FromRgb(0, 0, 255),  rgbValuesDictionary["blue"]}
-                }, 300, 240, 5, 5, 1, 100);
-            LuminanceGraph = graphService.DrawGraphFromInput(inputData: new Dictionary<Color, double[]>
+                    {"red", imageValues[0]},
+                    {"green", imageValues[1]},
+                    {"blue", imageValues[2]}
+                };
+
+            var luminanceValuesDictionary = new Dictionary<string, double[]>
             {
-                {Color.FromRgb(100, 100, 100), luminance }
-            }, 300, 240, 5, 5, 1, 100);
+                {"gray", _luminance}
+            };
+
+            var histogramValues = imageDataService.StretchHistogram(rGBvaluesDictionary, currentImg);
+
+            CanvasLinesRGB = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: histogramValues
+                , 300, 240, 5, 5, 1, 300/240));
+            CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: luminanceValuesDictionary
+                , 300, 240, 5, 5, 1, 1E-7));
         }
-
-
     }
 }

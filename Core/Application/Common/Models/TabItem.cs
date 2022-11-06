@@ -1,10 +1,6 @@
-﻿using ImageManipulator.Application.ViewModels;
+﻿using Common.Helpers;
+using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Domain.Common.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Models
 {

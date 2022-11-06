@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ImageManipulator.Application;
@@ -14,6 +15,7 @@ namespace ImageManipulator.Presentation;
 public partial class App : Avalonia.Application
 {
     private ServiceProvider _serviceProvider;
+    public static Window CurrentWindow { get; private set; }
 
     public override void Initialize()
     {
@@ -22,7 +24,7 @@ public partial class App : Avalonia.Application
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
-        Locator.CurrentMutable.RegisterLazySingleton(() => new AppViewLocator(), typeof(IViewLocator));
+        Locator.CurrentMutable.RegisterLazySingleton(() => _serviceProvider.GetRequiredService<AppViewLocator>(), typeof(IViewLocator));
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -42,9 +44,16 @@ public partial class App : Avalonia.Application
 
     private void Configure(IServiceCollection serviceDescriptors)
     {
+        serviceDescriptors.AddTransient<IServiceCollection, ServiceCollection>();
+        serviceDescriptors.AddTransient<AppViewLocator>();
         serviceDescriptors.AddInfrastructure();
         serviceDescriptors.AddApplication();
         serviceDescriptors.AddSingleton<MainWindowViewModel>();
         serviceDescriptors.AddScoped<TabControlViewModel>();
+        serviceDescriptors.AddScoped<ContrastStretchingViewModel>();
+        serviceDescriptors.AddScoped<NonLinearContrastStretchingViewModel>();
+        serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();
+        serviceDescriptors.AddScoped<ThresholdingViewModel>();
+        serviceDescriptors.AddScoped<MultiThresholdingViewModel>();
     }
 }

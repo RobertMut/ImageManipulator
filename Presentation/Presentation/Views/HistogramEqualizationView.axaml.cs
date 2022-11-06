@@ -5,9 +5,9 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class TabControlView : ReactiveUserControl<TabControlViewModel>
+    public partial class HistogramEqualizationView : ReactiveUserControl<HistogramEqualizationViewModel>
     {
-        public TabControlView()
+        public HistogramEqualizationView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });

@@ -1,13 +1,12 @@
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class TabControlView : ReactiveUserControl<TabControlViewModel>
+    public partial class ThresholdingView : ReactiveUserControl<ThresholdingViewModel>
     {
-        public TabControlView()
+        public ThresholdingView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });

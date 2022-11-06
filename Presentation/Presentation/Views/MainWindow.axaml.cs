@@ -1,8 +1,8 @@
+using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 using ReactiveUI;
-using System.Reactive.Disposables;
 
 namespace ImageManipulator.Presentation.Views;
 
@@ -12,11 +12,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
         this.WhenActivated(disposables => {
-            //this.OneWayBind(ViewModel,
-            //    viewModel => viewModel.ImageTabs,
-            //    views => views.TabNav.Items)//.Items
-            //    .DisposeWith(disposables);
         });
+#if DEBUG
+        this.AttachDevTools();
+#endif
         AvaloniaXamlLoader.Load(this);
     }
 }

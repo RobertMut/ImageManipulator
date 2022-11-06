@@ -1,21 +1,20 @@
 ﻿using Avalonia.Data.Converters;
-using ImageManipulator.Application.Common.Helpers;
 using System;
 using System.Globalization;
 
 namespace ImageManipulator.Application.Common.Converters
 {
-    public class BitmapConverter : IValueConverter
+    public class DoubleStringConverter : IValueConverter
     {
-        public static BitmapConverter Instance = new BitmapConverter();
+        public static DoubleStringConverter Instance = new DoubleStringConverter();
 
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(System.Drawing.Bitmap))
+            if (value.GetType() == typeof(double))
             {
-                return ImageConverterHelper.ConvertFromSystemDrawingBitmap((System.Drawing.Bitmap)value);
+                return $"{(double)value}";
             }
 
             return null;
@@ -25,9 +24,9 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(Avalonia.Media.Imaging.Bitmap))
+            if(value.GetType() == typeof(string) && !string.IsNullOrEmpty((string)value))
             {
-                return ImageConverterHelper.ConvertFromAvaloniaUIBitmap((Avalonia.Media.Imaging.Bitmap)value);
+                    return double.TryParse((string)value, out double result) == true ? result : null;
             }
 
             return null;

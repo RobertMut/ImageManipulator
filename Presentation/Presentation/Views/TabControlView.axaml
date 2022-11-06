@@ -10,58 +10,92 @@
 		     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
 			 xmlns:ext="using:ImageManipulator.Application.Common.Converters">
 	<UserControl.Resources>
-		<ext:BitmapConverter x:Key="variableImage"/>
+		<ext:BitmapConverter x:Key="variableImage" />
 	</UserControl.Resources>
 
-	<Grid>
+	<Grid Height="{Binding Height}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition MinWidth="300" Width="0.7*" />
 			<ColumnDefinition MinWidth="150" Width="0.3*" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition MinHeight="50" Height="0.1*"/>
-			<RowDefinition MinHeight="150" Height="0.9*"/>
+			<RowDefinition Height="{Binding Height}" />
 		</Grid.RowDefinitions>
-		<!--<StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
-			<ComboBox Name="ZoomSelect" SelectedIndex="0">
-				<i:Interaction.Behaviors>
-					<iac:EventTriggerBehavior EventName="SelectionChanged" SourceObject="{Binding #ZoomSelect}">
-					</iac:EventTriggerBehavior>
-				</i:Interaction.Behaviors>
-				<ComboBoxItem>100%</ComboBoxItem>
-				<ComboBoxItem>75%</ComboBoxItem>
-				<ComboBoxItem>50%</ComboBoxItem>
-				<ComboBoxItem>25%</ComboBoxItem>
-			</ComboBox>
-			<Button>Reset!</Button>
-		</StackPanel>-->
-		<ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Auto"
+		<ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Auto" AllowAutoHide="True" HorizontalContentAlignment="Left" VerticalAlignment="Top">
 			<paz:ZoomBorder Name="ZoomBorder" Stretch="None" ZoomSpeed="1.2"
                             ClipToBounds="True" Focusable="True"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" PanButton="Left">
-				<!--<i:Interaction.Behaviors>
-					<iac:KeyDown TargetControl="ZoomBorder"/>
-				</i:Interaction.Behaviors>-->
-				<Image Source="{Binding Image}"/>
+				<Image Source="{Binding Image}" />
 			</paz:ZoomBorder>
 		</ScrollViewer>
 
-		<Grid Grid.Column="1">
+		<Grid x:Name="HistogramsGrid" Grid.Column="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-			<Image Source="{Binding RGBGraph, Converter={StaticResource variableImage}}"
-				Stretch="Uniform"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Grid.Row="0" Opacity="0.75" />
-			<Image Source="{Binding LuminanceGraph, Converter={StaticResource variableImage}}"
-				Stretch="Uniform"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Grid.Row="1" Opacity="0.75" />
+			<Grid Grid.Row="0">
+				<ItemsControl Items="{Binding CanvasLinesRGB}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas x:Name="Canvas" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Path StrokeThickness="1"
+							  ZIndex="{Binding ZIndex}">
+								<Path.Stroke>
+									<SolidColorBrush Color="{Binding Color}"/>
+								</Path.Stroke>
+								<Path.Data>
+									<LineGeometry StartPoint="{Binding StartPoint}"
+									  EndPoint="{Binding EndPoint}"/>
+								</Path.Data>
+							</Path>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+					<ItemsControl.Styles>
+						<Style Selector="ContentPresenter">
+							<Setter Property="Canvas.Top" Value="{Binding CanvasTop}" />
+							<Setter Property="ZIndex" Value="{Binding ZIndex}" />
+							<Setter Property="Background" Value="{Binding Color}"/>
+						</Style>
+					</ItemsControl.Styles>
+				</ItemsControl>
+				<Line StartPoint="0,0" EndPoint="300,0" />
+			</Grid>
+			<Grid Grid.Row="1">
+				<ItemsControl Items="{Binding CanvasLinesLuminance}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas x:Name="Canvas" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Path StrokeThickness="1"
+							  ZIndex="{Binding ZIndex}">
+								<Path.Stroke>
+									<SolidColorBrush Color="{Binding Color}"/>
+								</Path.Stroke>
+								<Path.Data>
+									<LineGeometry StartPoint="{Binding StartPoint}"
+									  EndPoint="{Binding EndPoint}"/>
+								</Path.Data>
+							</Path>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+					<ItemsControl.Styles>
+						<Style Selector="ContentPresenter">
+							<Setter Property="Canvas.Top" Value="{Binding CanvasTop}" />
+							<Setter Property="ZIndex" Value="{Binding ZIndex}" />
+						</Style>
+					</ItemsControl.Styles>
+				</ItemsControl>
+				<Line StartPoint="0,0" EndPoint="300,0" />
+			</Grid>
 		</Grid>
 	</Grid>
 </UserControl>

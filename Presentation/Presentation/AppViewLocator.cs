@@ -4,16 +4,22 @@ using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Presentation.Views;
 using ReactiveUI;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace ImageManipulator.Presentation;
 
 public class AppViewLocator : IDataTemplate, IViewLocator
 {
+    private const string PresentationAssembly = "ImageManipulator.Presentation.Views";
+    private const string ApplicationAssembly = "ImageManipulator.Application";
+
     public IControl Build(object data)
     {
-        var name = data.GetType().FullName!.Replace("ViewModel", "View");
-        var type = Type.GetType(name);
+        var name = $"{PresentationAssembly}{data.GetType().FullName!.Replace("ViewModel", "View").Replace(ApplicationAssembly+".Views", null)}";
+        var types = Assembly.GetEntryAssembly().GetTypes();
 
+        var type = types.FirstOrDefault(x => x.FullName == name);
         if (type != null)
         {
             return (Control)Activator.CreateInstance(type)!;
@@ -30,6 +36,11 @@ public class AppViewLocator : IDataTemplate, IViewLocator
     IViewFor? IViewLocator.ResolveView<T>(T viewModel, string? contract) => viewModel switch
     {
         TabControlViewModel context => new TabControlView(),
+        ContrastStretchingViewModel context => new ContrastStretchingView(),
+        NonLinearContrastStretchingViewModel context => new NonLinearContrastStretchingView(),
+        HistogramEqualizationViewModel context => new HistogramEqualizationView(),
+        ThresholdingViewModel context => new ThresholdingView(),
+        MultiThresholdingViewModel context => new MultiThresholdingView(),
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

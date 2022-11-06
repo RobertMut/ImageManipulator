@@ -5,9 +5,9 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class TabControlView : ReactiveUserControl<TabControlViewModel>
+    public partial class NonLinearContrastStretchingView : ReactiveUserControl<NonLinearContrastStretchingViewModel>
     {
-        public TabControlView()
+        public NonLinearContrastStretchingView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });
