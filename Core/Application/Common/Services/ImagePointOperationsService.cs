@@ -1,11 +1,9 @@
-﻿using DynamicData;
-using ImageManipulator.Application.Common.Interfaces;
+﻿using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -106,7 +104,6 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe System.Drawing.Bitmap HistogramEqualization(System.Drawing.Bitmap bitmap, double[][] lut)
         {
             var bitmapData = bitmap.LockBitmap(bitmap.PixelFormat);
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(bitmap.PixelFormat);
             int bytes = Math.Abs(bitmapData.Stride) * bitmap.Height;
             byte[] buffer = new byte[bytes];
             byte[] result = new byte[bytes];
@@ -171,27 +168,27 @@ namespace ImageManipulator.Application.Common.Services
             double value = lut[0][threshold];
             int rgb = 0;
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixel((x, scan0, stride) =>
-            {
-                byte* data = (byte*)x.ToPointer();
-                rgb = data[0] + data[1] + data[2];
-
-                if (rgb < value)
+            newSrc.UnlockBits(newSrc
+                .LockBitmap(newSrc.PixelFormat)
+                .ExecuteOnPixel((x, scan0, stride) =>
                 {
-                    data[0] = 0;
-                    data[1] = 0;
-                    data[2] = 0;
-                } else if (replace)
-                {
-                    data[0] = 255;
-                    data[1] = 255;
-                    data[2] = 255;
-                }
+                    byte* data = (byte*)x.ToPointer();
+                    rgb = data[0] + data[1] + data[2];
 
-                return new IntPtr(data);
-            });
+                    if (rgb < value)
+                    {
+                        data[0] = 0;
+                        data[1] = 0;
+                        data[2] = 0;
+                    } else if (replace)
+                    {
+                        data[0] = 255;
+                        data[1] = 255;
+                        data[2] = 255;
+                    }
 
-            newSrc.UnlockBits(bitmapData);
+                    return new IntPtr(data);
+            }));
 
             return newSrc;
         }

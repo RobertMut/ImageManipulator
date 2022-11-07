@@ -64,30 +64,27 @@ namespace ImageManipulator.Application.ViewModels
 
         private void PrepareGraph()
         {
-            var currentImg = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(this.Image);
-            var imageValues = imageDataService.CalculateLevels(this.Image);
-            var luminance = imageDataService.CalculateLuminanceFromRGB(imageValues);
-            var scale = new int[] { currentImg.Height, currentImg.Width }.OrderBy(x => x).ToArray();
+            this.imageValues = imageDataService.CalculateLevels(this.Image);
+            this._luminance = imageDataService.CalculateAverageForGrayGraph(imageValues);
+            var scale = new int[] { this.Image.PixelSize.Height, this.Image.PixelSize.Width }.OrderBy(x => x).ToArray();
+            var histogramValues = imageDataService.StretchHistogram(this.imageValues, ImageConverterHelper.ConvertFromAvaloniaUIBitmap(this.Image));
+            var grayScaleValues = imageDataService.StretchHistogram(new[] { this._luminance }, ImageConverterHelper.ConvertFromAvaloniaUIBitmap(this.Image));
+
             var rGBvaluesDictionary = new Dictionary<string, double[]>
                 {
-                    {"red", imageValues[0]},
-                    {"green", imageValues[1]},
-                    {"blue", imageValues[2]}
+                    {"red", histogramValues[0]},
+                    {"green", histogramValues[1]},
+                    {"blue", histogramValues[2]}
                 };
-
-            var luminanceValuesDictionary = new Dictionary<string, double[]>
+            var grayScaleValuesDictionary = new Dictionary<string, double[]>
             {
-                {"gray", luminance}
+                {"gray", grayScaleValues[0]}
             };
 
-            var histogramValues = imageDataService.StretchHistogram(rGBvaluesDictionary, currentImg);
-
-            this._luminance = luminance;
-            this.imageValues = imageValues;
-            CanvasLinesRGB = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: histogramValues
+            CanvasLinesRGB = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: rGBvaluesDictionary
                 , 300, 240, 5, 5, 1, (scale[1] / scale[0])*3));
-            CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: luminanceValuesDictionary
-                , 300, 240, 5, 5, 1, 0.03));
+            CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: grayScaleValuesDictionary
+                , 300, 240, 5, 5, 1, (scale[1] / scale[0])*3));
         }
     }
 }
