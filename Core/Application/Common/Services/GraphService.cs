@@ -7,6 +7,7 @@ using ImageManipulator.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -45,9 +46,10 @@ namespace ImageManipulator.Application.Common.Services
             foreach (KeyValuePair<string, double[]> graphData in values)
             {
                 var colour = AvaloniaColourDictionary.Colour[graphData.Key];
-                foreach (double value in graphData.Value)
+
+                Parallel.ForEach(graphData.Value, value =>
                 {
-                    int reversedHeight = (int)-(value / (width / height*divideScale));
+                    int reversedHeight = (int)-(value / (width / height * divideScale));
 
                     lines.Add(new CanvasLineModel(
                         new Avalonia.Point(xStartDrawPoint, yStartDrawPoint),
@@ -58,7 +60,8 @@ namespace ImageManipulator.Application.Common.Services
                         );
 
                     xStartDrawPoint += (int)Math.Ceiling(brushSize);
-                }
+                });
+
                 zIndex++;
                 xStartDrawPoint = horizontalMargins;
                 yStartDrawPoint = verticalMargins;

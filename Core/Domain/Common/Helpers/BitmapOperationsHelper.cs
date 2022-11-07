@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Domain.Common.Helpers
 {
@@ -16,7 +17,7 @@ namespace ImageManipulator.Domain.Common.Helpers
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(data.PixelFormat);
             byte* startPoint = (byte*)data.Scan0.ToPointer();
 
-            for (int i = 0; i < data.Height; i++)
+            Parallel.For(0, data.Height, i =>
             {
                 for (int j = 0; j < data.Width; j++)
                 {
@@ -24,7 +25,7 @@ namespace ImageManipulator.Domain.Common.Helpers
 
                     ((IntPtr)pixelData).ExecuteOnData(data.Scan0, data.Stride, func);
                 }
-            }
+            });
 
             return data;
         }
