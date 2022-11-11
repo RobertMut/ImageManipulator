@@ -1,11 +1,13 @@
-﻿using ImageManipulator.Application.Common.Interfaces;
+﻿using Avalonia.Rendering.SceneGraph;
+using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Common.Common.Extensions;
 using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -49,26 +51,19 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
-
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-            for (int i = 0; i < newSrc.Height; i++)
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixel((x, scan0, stride) =>
             {
-                for (int j = 0; j < newSrc.Width; j++)
-                {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                byte* data = (byte*)x.ToPointer();
 
-                    double brightness = CalculationHelper.LuminanceFromRGBValue(data[2],
+                double brightness = CalculationHelper.LuminanceFromRGBValue(data[2],
                         data[1],
                         data[0]);
 
                     if (brightness >= lowest && brightness <= highest)
                         data[0] = data[1] = data[2] = (byte)(int)(255 * ((brightness - lowest) / (highest - lowest)));
-                }
-            }
+
+                return new IntPtr(data);
+            });
 
             newSrc.UnlockBits(bitmapData);
 
@@ -79,22 +74,16 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
-            byte bitsPerPixel = (byte)System.Drawing.Bitmap.GetPixelFormatSize(newSrc.PixelFormat);
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-            for (int i = 0; i < newSrc.Height; i++)
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixel((x, scan0, stride) =>
             {
-                for (int j = 0; j < newSrc.Width; j++)
-                {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
+                byte* data = (byte*)x.ToPointer();
 
-                    data[0] = (byte)CalculationHelper.CalculateCorrectedGamma(data[0], gamma);
-                    data[1] = (byte)CalculationHelper.CalculateCorrectedGamma(data[1], gamma);
-                    data[2] = (byte)CalculationHelper.CalculateCorrectedGamma(data[2], gamma);
-                }
-            }
+                data[0] = (byte)CalculationHelper.CalculateCorrectedGamma(data[0], gamma);
+                data[1] = (byte)CalculationHelper.CalculateCorrectedGamma(data[1], gamma);
+                data[2] = (byte)CalculationHelper.CalculateCorrectedGamma(data[2], gamma);
+
+                return new IntPtr(data);
+            });
 
             newSrc.UnlockBits(bitmapData);
 
@@ -103,40 +92,45 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe System.Drawing.Bitmap HistogramEqualization(System.Drawing.Bitmap bitmap, double[][] lut)
         {
-            var bitmapData = bitmap.LockBitmap(bitmap.PixelFormat);
-            int bytes = Math.Abs(bitmapData.Stride) * bitmap.Height;
-            byte[] buffer = new byte[bytes];
-            byte[] result = new byte[bytes];
-
-            Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
-
-            bitmap.UnlockBits(bitmapData);
-
-            for (int y = 0; y < bitmap.Height; y++)
+            var probability = new double[3][];
+            
+            for(int i = 0; i < 3; i ++)
             {
-                for (int x = 0; x < bitmap.Width; x++)
+                probability[i] = new double[256];
+                for(int j = 0; j < 256; j++)
                 {
-                    int data = (y * bitmapData.Stride) + (x * 4);
-                    double sum = 0;
-
-                    for (int i = 0; i < buffer[data]; i++)
-                    {
-                        sum += lut[0][i];
-                    }
-
-                    for (int c = 0; c < 3; c++)
-                    {
-                        result[data + c] = (byte)Math.Floor(255 * sum);
-                    }
-
-                    result[data + 4] = 255;
+                    probability[i][j] = lut[i][j];
                 }
             }
 
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap.Width, bitmap.Height);
-            var newSrcBitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
+            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            double totalNum = bitmap.Height * bitmap.Width;
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
+            var sourceBitmapData = bitmap.LockBitmap(bitmap.PixelFormat);
 
-            Marshal.Copy(result, 0, newSrcBitmapData.Scan0, bytes);
+            for (int k = 0; k < 256; k++)
+            {
+                probability[0][k] /= totalNum;
+                probability[1][k] /= totalNum;
+                probability[2][k] /= totalNum;
+            }
+
+            int[] red = probability[0].CumulativeSum().Select(x => CalculationHelper.FloorValue(x)).ToArray();
+            int[] green = probability[1].CumulativeSum().Select(x => CalculationHelper.FloorValue(x)).ToArray();
+            int[] blue = probability[2].CumulativeSum().Select(x => CalculationHelper.FloorValue(x)).ToArray();
+
+            bitmapData.ExecuteOnPixel((x, scan0, stride, i, j) =>
+            {
+                byte* pixelData = (byte*)x.ToPointer();
+
+                pixelData[0] = (byte)red[sourceBitmapData.GetPixel(i, j, 0)];
+                pixelData[1] = (byte)green[sourceBitmapData.GetPixel(i, j, 1)];
+                pixelData[2] = (byte)blue[sourceBitmapData.GetPixel(i, j, 2)];
+
+                return new IntPtr(pixelData);
+            });
+
+            bitmap.UnlockBits(sourceBitmapData);
             newSrc.UnlockBits(bitmapData);
 
             return newSrc;
@@ -163,24 +157,23 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe Bitmap Thresholding(Bitmap bitmap, double[][] lut, int threshold, bool replace = true)
+        public unsafe Bitmap Thresholding(Bitmap bitmap, int threshold, bool replace = true)
         {
-            double value = lut[0][threshold];
-            int rgb = 0;
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat)
                 .ExecuteOnPixel((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
-                    rgb = data[0] + data[1] + data[2];
+                    double rgb = data[0];
 
-                    if (rgb < value)
+                    if (rgb < threshold)
                     {
                         data[0] = 0;
                         data[1] = 0;
                         data[2] = 0;
-                    } else if (replace)
+                    }
+                    else if (replace)
                     {
                         data[0] = 255;
                         data[1] = 255;
@@ -188,31 +181,31 @@ namespace ImageManipulator.Application.Common.Services
                     }
 
                     return new IntPtr(data);
-            }));
+                }));
 
             return newSrc;
         }
 
-        public unsafe Bitmap MultiThresholding(Bitmap bitmap, double[][] lut, int lowerThreshold, int upperThreshold, bool replace = true)
+        public unsafe Bitmap MultiThresholding(Bitmap bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
-            double lowerValue = lut[0][lowerThreshold];
-            double upperValue = lut[0][upperThreshold];
-            int rgb = 0;
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat)
                 .ExecuteOnPixel((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
-                    rgb = data[0] + data[1] + data[2];
-
-                    if (lowerValue > rgb && rgb <= upperValue)
+                    double rgb = data[0];
+                    if (rgb < lowerThreshold)
                     {
-                        data[0] = 0;
-                        data[1] = 0;
-                        data[2] = 0;
+                        data[0] = data[1] = data[2] = 0;
                     }
-                    else if (replace)
+
+                    if(rgb > upperThreshold)
+                    {
+                        data[0] = data[1] = data[2] = 0;
+                    }
+
+                    if (rgb < upperThreshold && rgb > lowerThreshold && replace)
                     {
                         data[0] = 255;
                         data[1] = 255;

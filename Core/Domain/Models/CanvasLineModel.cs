@@ -6,12 +6,13 @@ namespace ImageManipulator.Domain.Models
 {
     public class CanvasLineModel
     {
-        public CanvasLineModel(Point startPoint, Point endPoint, Color color, int canvasTop, int zIndex)
+        public CanvasLineModel(Point startPoint, Point endPoint, Color color, int canvasTop, int canvasLeft, int zIndex)
         {
             StartPoint = startPoint;
             EndPoint = endPoint;
             Color = color;
             CanvasTop = canvasTop;
+            CanvasLeft = canvasLeft;
             ZIndex = zIndex;
         }
 
@@ -19,6 +20,7 @@ namespace ImageManipulator.Domain.Models
         public Point EndPoint { get; }
         public Color Color { get; }
         public int CanvasTop { get; }
+        public int CanvasLeft { get; }
         public int ZIndex { get; }
     }
 }

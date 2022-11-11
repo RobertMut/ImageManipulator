@@ -11,7 +11,6 @@ namespace ImageManipulator.Application.Common.Interfaces
                     int height = 200,
                     int horizontalMargins = 5,
                     int verticalMargins = 5,
-                    double brushSize = 1,
-                    double divideScale = 2);
+                    double brushSize = 1);
     }
 }

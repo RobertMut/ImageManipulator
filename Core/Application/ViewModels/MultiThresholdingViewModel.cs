@@ -12,8 +12,6 @@ namespace ImageManipulator.Application.ViewModels
         private Avalonia.Media.Imaging.Bitmap _afterImage;
         private int _enteredLowerThreshold;
         private int _enteredUpperThreshold;
-        public double[][] values;
-
         public override Avalonia.Media.Imaging.Bitmap BeforeImage
         {
             get => _beforeImage; set
@@ -49,7 +47,7 @@ namespace ImageManipulator.Application.ViewModels
 
         private void ExecuteTresholding()
         {
-            var stretchedImage = imagePointOperationsService.MultiThresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), values, _enteredLowerThreshold, _enteredUpperThreshold, ReplaceColours);
+            var stretchedImage = imagePointOperationsService.MultiThresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold, _enteredUpperThreshold, ReplaceColours);
             AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Dictionaries;
 using ImageManipulator.Domain.Common.Helpers;
 using ImageManipulator.Domain.Models;
@@ -24,7 +25,7 @@ namespace ImageManipulator.Application.Common.Services
         /// <param name="brushSize">Brush size used in drawline</param>
         /// <param name="divideScale">Division scale for values</param>
         /// <returns>New image with histogram</returns>
-        /// <remarks>XY axis in Microsoft implementation seems to be inverted when drawing (hopefuly in WPF is only Y axis inverted!), so for every value i have to subtract height
+        /// <remarks>XY axis in library implementation seems to be inverted, so for every value i have to subtract height
         /// i.e real 0,0 point is 0,-200. It effectively causes me to begin questioning my sanity at late hours.
         /// </remarks>
         public List<CanvasLineModel> DrawGraphFromInput(Dictionary<string, double[]> inputData,
@@ -32,8 +33,7 @@ namespace ImageManipulator.Application.Common.Services
             int height = 200,
             int horizontalMargins = 5,
             int verticalMargins = 5,
-            double brushSize = 1,
-            double divideScale = 2)
+            double brushSize = 1)
         {
             var lines = new List<CanvasLineModel>(256);
             var values = inputData.OrderBy(x => x.Value.Max()).ToArray();
@@ -49,13 +49,15 @@ namespace ImageManipulator.Application.Common.Services
 
                 Parallel.ForEach(graphData.Value, value =>
                 {
-                    int reversedHeight = (int)-(value / (width / height * divideScale));
+                    
+                    int reversedHeight = -CalculationHelper.FloorValue(value / (width * height));
 
                     lines.Add(new CanvasLineModel(
                         new Avalonia.Point(xStartDrawPoint, yStartDrawPoint),
-                        new Avalonia.Point(xStartDrawPoint + brushSize, reversedHeight),
+                        new Avalonia.Point(xStartDrawPoint+brushSize, reversedHeight),
                         colour,
                         height,
+                        0,
                         zIndex)
                         );
 

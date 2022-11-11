@@ -82,9 +82,9 @@ namespace ImageManipulator.Application.ViewModels
             };
 
             CanvasLinesRGB = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: rGBvaluesDictionary
-                , 300, 240, 5, 5, 1, (scale[1] / scale[0])*3));
+                , 300, 240, 5, 5, 1));
             CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>(graphService.DrawGraphFromInput(inputData: grayScaleValuesDictionary
-                , 300, 240, 5, 5, 1, (scale[1] / scale[0])*3));
+                , 300, 240, 5, 5, 1));
         }
     }
 }

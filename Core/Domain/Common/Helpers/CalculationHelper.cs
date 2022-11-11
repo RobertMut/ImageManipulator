@@ -28,5 +28,7 @@ namespace ImageManipulator.Common.Common.Helpers
         public static Func<double, double, double, double> AverageFromRGB => (red, green, blue) => (red + green + blue) / 3;
 
         public static Func<double, double, double> CalculateCorrectedGamma => (value, gammaCorrection) => 255 * Math.Pow(value / 255, gammaCorrection);
+
+        public static Func<double, int> FloorValue => (value) => (int)Math.Floor(value * 255);
     }
 }
