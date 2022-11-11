@@ -91,43 +91,43 @@ namespace ImageManipulator.Application.Common.Services
                 values[0] = CalculateLUT(ref values[0]);
             }
 
-
             System.Drawing.Bitmap newImage = new System.Drawing.Bitmap(existingImage.Width, existingImage.Height, existingImage.PixelFormat);
-            var bitmapData = newImage.LockBitmap(newImage.PixelFormat);
-            int scanLine = bitmapData.Stride;
-            IntPtr bitmapScan0 = bitmapData.Scan0;
+            
+            var sourceBitmapData = existingImage.LockBitmap(existingImage.PixelFormat);
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
 
-            byte* pixel = (byte*)bitmapScan0.ToPointer();
-
-            for (int i = 0; i < newImage.Height; i++)
+            var bitmapData = newImage.LockBitmap(newImage.PixelFormat).ExecuteOnPixel((x, scan0, stride, i, j) =>
             {
-                for (int j = 0; j < newImage.Width; j++)
+                byte* pixelData = (byte*)x;
+
+                int redValue = sourceBitmapData.GetPixel(i, j, 0);
+                int greenValue = sourceBitmapData.GetPixel(i, j, 1);
+                int blueValue = sourceBitmapData.GetPixel(i, j, 2);
+
+                if (values.Length == 3)
                 {
-                    byte* data = pixel + i * bitmapData.Stride + j * bitsPerPixel / 8;
-                    var pixelFromExistingImage = existingImage.GetPixel(j, i);
-
-                    if (values.Length == 3)
-                    {
-                        newPixel = System.Drawing.Color.FromArgb((byte)values[0][pixelFromExistingImage.R],
-                            (byte)values[1][pixelFromExistingImage.G],
-                            (byte)values[2][pixelFromExistingImage.B]);
-                    } else
-                    {
-                        newPixel = System.Drawing.Color.FromArgb((byte)values[0][pixelFromExistingImage.R],
-                            (byte)values[0][pixelFromExistingImage.G],
-                            (byte)values[0][pixelFromExistingImage.B]);
-                    }
-
-                    data[2] = newPixel.R;
-                    data[1] = newPixel.G;
-                    data[0] = newPixel.B;
-
-                    red[newPixel.R]++;
-                    green[newPixel.G]++;
-                    blue[newPixel.B]++;
+                    newPixel = System.Drawing.Color.FromArgb((byte)values[0][redValue],
+                        (byte)values[1][greenValue],
+                        (byte)values[2][blueValue]);
                 }
-            }
+                else
+                {
+                    newPixel = System.Drawing.Color.FromArgb((byte)values[0][redValue],
+                        (byte)values[0][greenValue],
+                        (byte)values[0][blueValue]);
+                }
+
+
+                pixelData[2] = newPixel.R;
+                pixelData[1] = newPixel.G;
+                pixelData[0] = newPixel.B;
+
+                red[newPixel.R]++;
+                green[newPixel.G]++;
+                blue[newPixel.B]++;
+
+                return new IntPtr(pixelData);
+            });
 
             if (values.Length == 3)
             {
@@ -139,6 +139,10 @@ namespace ImageManipulator.Application.Common.Services
             {
                 values[0] = red;
             }
+
+            newImage.UnlockBits(bitmapData);
+            existingImage.UnlockBits(sourceBitmapData);
+
 
             return values;
         }

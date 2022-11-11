@@ -166,7 +166,6 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var thresholding = serviceProvider.GetRequiredService<ThresholdingViewModel>();
         thresholding.BeforeImage = _currentTab.ViewModel.Image;
-        thresholding.values = _currentTab.ViewModel.imageValues;
 
         _commonDialogService.ShowDialog(thresholding).ContinueWith(x =>
         {
@@ -179,7 +178,6 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var multiThresholding = serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
         multiThresholding.BeforeImage = _currentTab.ViewModel.Image;
-        multiThresholding.values = _currentTab.ViewModel.imageValues;
 
         _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
         {
