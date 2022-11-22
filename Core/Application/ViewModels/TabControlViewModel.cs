@@ -7,6 +7,8 @@ using Splat;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -41,12 +43,12 @@ namespace ImageManipulator.Application.ViewModels
             CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>();
         }
 
-        public TabControlViewModel LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
+        public async Task<TabControlViewModel> LoadImage(Avalonia.Media.Imaging.Bitmap image, string path)
         {
             this.Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
             Path = path;
             Image = image;
-            PrepareGraph();
+            await PrepareGraph();
 
             return this;
         }
@@ -62,7 +64,7 @@ namespace ImageManipulator.Application.ViewModels
             return this;
         }
 
-        private void PrepareGraph()
+        private async Task PrepareGraph()
         {
             this.imageValues = imageDataService.CalculateLevels(this.Image);
             this._luminance = imageDataService.CalculateAverageForGrayGraph(imageValues);

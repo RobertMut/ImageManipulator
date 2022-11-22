@@ -1,5 +1,5 @@
-﻿using Common.Helpers;
-using ImageManipulator.Application.ViewModels;
+﻿using ImageManipulator.Application.ViewModels;
+using ImageManipulator.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Models

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ImageManipulator.Common.Common.Extensions
+﻿namespace ImageManipulator.Common.Extensions
 {
     public static class LinqExtensions
     {
@@ -50,7 +47,7 @@ namespace ImageManipulator.Common.Common.Extensions
         /// <returns>Bool enumerable</returns>
         public static IEnumerable<bool> MaskedEqual(this IEnumerable<double> doubles, double value)
         {
-            foreach(var item in doubles)
+            foreach (var item in doubles)
             {
                 yield return item == value;
             }
@@ -66,7 +63,7 @@ namespace ImageManipulator.Common.Common.Extensions
         /// <exception cref="Exception">When enumerables counts are different</exception>
         public static IEnumerable<double> Filled(this IEnumerable<double> doubleEnumerable, IEnumerable<bool> boolEnumerable, double value)
         {
-            if(doubleEnumerable.Count() != boolEnumerable.Count())
+            if (doubleEnumerable.Count() != boolEnumerable.Count())
             {
                 throw new Exception($"Inconsinstent enumerables, given {doubleEnumerable.Count()} to booleans {boolEnumerable.Count()}");
             }
@@ -74,7 +71,7 @@ namespace ImageManipulator.Common.Common.Extensions
             double[] doubles = new double[doubleEnumerable.Count()];
             var doublesArray = doubleEnumerable.ToArray();
             var boolArray = boolEnumerable.ToArray();
-            for(int i = 0; i < doubles.Length; i++)
+            for (int i = 0; i < doubles.Length; i++)
             {
                 doubles[i] = boolArray[i] == false ? doublesArray[i] : value;
             }

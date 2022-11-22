@@ -1,0 +1,102 @@
+<UserControl
+    x:Class="ImageManipulator.Presentation.Views.ArithmeticBitwiseOperationsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:colorpicker="clr-namespace:AvaloniaColorPicker;assembly=AvaloniaColorPicker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ext="using:ImageManipulator.Application.Common.Converters"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.Resources>
+            <ext:HexColorConverter x:Key="hexColorConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.2*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.33*" />
+            <ColumnDefinition Width="0.33*" />
+            <ColumnDefinition Width="0.33*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Image Source="{Binding BeforeImage}" />
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Image IsVisible="{Binding ElementName=radioImage, Path=IsChecked}" Source="{Binding OperationImage}" />
+            <TextBox
+                IsVisible="{Binding ElementName=radioValue, Path=IsChecked}"
+                Text="{Binding Value}"
+                Watermark="Value" />
+            <Grid IsVisible="{Binding ElementName=radioColor, Path=IsChecked}">
+                <colorpicker:ColorButton Color="{Binding PickedColor, Mode=TwoWay}" />
+            </Grid>
+        </Grid>
+        <Grid
+            Grid.Row="0"
+            Grid.Column="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Image Source="{Binding AfterImage, Mode=TwoWay}" />
+        </Grid>
+        <StackPanel
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <RadioButton
+                    x:Name="radioArithmetic"
+                    Content="Arithmetic"
+                    IsChecked="{Binding IsArithmeticSelected}" />
+                <RadioButton x:Name="radioBitwise" Content="Bitwise" />
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <RadioButton x:Name="radioImage" Content="Image" />
+                <Button Command="{Binding SelectImage}" IsVisible="{Binding ElementName=radioImage, Path=IsChecked}">
+                    Select image
+                </Button>
+                <RadioButton x:Name="radioColor" Content="Color" />
+                <RadioButton x:Name="radioValue" Content="Value" />
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <ComboBox SelectedIndex="{Binding SelectedElementaryOperation}">
+                    <ComboBoxItem>Image</ComboBoxItem>
+                    <ComboBoxItem>Color</ComboBoxItem>
+                    <ComboBoxItem>Value</ComboBoxItem>
+                </ComboBox>
+                <ComboBox
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioArithmetic, Path=IsChecked}"
+                    SelectedIndex="{Binding SelectedArithmeticOperation}">
+                    <ComboBoxItem>Average</ComboBoxItem>
+                    <ComboBoxItem>Add</ComboBoxItem>
+                    <ComboBoxItem>Subtract Left</ComboBoxItem>
+                    <ComboBoxItem>Subtract Right</ComboBoxItem>
+                    <ComboBoxItem>Difference</ComboBoxItem>
+                    <ComboBoxItem>Multiply</ComboBoxItem>
+                    <ComboBoxItem>Min</ComboBoxItem>
+                    <ComboBoxItem>Max</ComboBoxItem>
+                    <ComboBoxItem>Amplitude</ComboBoxItem>
+                </ComboBox>
+                <ComboBox
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioBitwise, Path=IsChecked}"
+                    SelectedIndex="{Binding SelectedBitwiseOperation}">
+                    <ComboBoxItem>AND</ComboBoxItem>
+                    <ComboBoxItem>OR</ComboBoxItem>
+                    <ComboBoxItem>XOR</ComboBoxItem>
+                    <ComboBoxItem>NOT</ComboBoxItem>
+                    <ComboBoxItem>Left Shift</ComboBoxItem>
+                    <ComboBoxItem>Right Shift</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <Button Command="{Binding Execute}">Execute</Button>
+                <Button Command="{Binding Accept}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
