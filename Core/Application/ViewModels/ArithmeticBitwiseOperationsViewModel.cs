@@ -31,7 +31,7 @@ namespace ImageManipulator.Application.ViewModels
         public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
         public Bitmap OperationImage { get => _operationImage; set => this.RaiseAndSetIfChanged(ref _operationImage, value); }
         public Color PickedColor { get => _pickedColor; set => this.RaiseAndSetIfChanged(ref _pickedColor, value); }
-        public string? Value { get => _value.ToString(); set => this.RaiseAndSetIfChanged(ref _value, Convert.ToInt32(value)); }
+        public int? Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
         public bool IsArithmeticSelected { get => _isArithmeticSelected; set => this.RaiseAndSetIfChanged(ref _isArithmeticSelected, value); }
         public int SelectedElementaryOperation { get => (int)_elementaryOperation; set => this.RaiseAndSetIfChanged(ref _elementaryOperation, (ElementaryOperationParameterEnum)value); }
         public int SelectedArithmeticOperation { get => (int)_arithmeticOperation; set => this.RaiseAndSetIfChanged(ref _arithmeticOperation, (ArithmeticOperationType)value); }
