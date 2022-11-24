@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class ContrastStretchingView : ReactiveUserControl<ContrastStretchingViewModel>
+    public partial class ArithmeticBitwiseOperationsView : ReactiveUserControl<ArithmeticBitwiseOperationsViewModel>
     {
-        public ContrastStretchingView()
+        public ArithmeticBitwiseOperationsView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });

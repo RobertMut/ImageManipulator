@@ -41,6 +41,7 @@ public class AppViewLocator : IDataTemplate, IViewLocator
         HistogramEqualizationViewModel context => new HistogramEqualizationView(),
         ThresholdingViewModel context => new ThresholdingView(),
         MultiThresholdingViewModel context => new MultiThresholdingView(),
+        ArithmeticBitwiseOperationsViewModel context => new ArithmeticBitwiseOperationsView(),
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

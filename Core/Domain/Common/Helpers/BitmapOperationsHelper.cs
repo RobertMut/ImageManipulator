@@ -23,7 +23,7 @@ namespace ImageManipulator.Domain.Common.Helpers
             int y,
             Func<IntPtr, IntPtr, int, int, int, IntPtr> func) => (byte*)func(data, scan0, stride, x, y);
 
-        public unsafe static BitmapData ExecuteOnPixel(this BitmapData data, Func<IntPtr, IntPtr, int, IntPtr> func)
+        public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
             byte* startPoint = (byte*)data.Scan0;
@@ -41,7 +41,7 @@ namespace ImageManipulator.Domain.Common.Helpers
             return data;
         }
 
-        public unsafe static BitmapData ExecuteOnPixel(this BitmapData data, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
+        public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
             int bitsPerPixel = Image.GetPixelFormatSize(data.PixelFormat);
@@ -59,11 +59,18 @@ namespace ImageManipulator.Domain.Common.Helpers
             return data;
         }
 
-        public unsafe static int GetPixel(this BitmapData data, int x, int y, int colorIndex)
+        public unsafe static IntPtr ExecuteOnPixel(this IntPtr pixelData, IntPtr otherPixel, Func<byte, byte, byte> func)
         {
-            var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
+            var pixelBytePointer = (byte*)pixelData.ToPointer();
+            var otherPixelBytePointer = (byte*)otherPixel.ToPointer();
 
-            return ((byte*)pixelDataFunc(data.Scan0, data.Stride, x, y))[colorIndex];
+            pixelBytePointer[0] = func(pixelBytePointer[0], otherPixelBytePointer[0]);
+            pixelBytePointer[1] = func(pixelBytePointer[1], otherPixelBytePointer[1]);
+            pixelBytePointer[2] = func(pixelBytePointer[2], otherPixelBytePointer[2]);
+
+            return (IntPtr)pixelBytePointer;
         }
+
+        public unsafe static IntPtr GetPixel(this BitmapData data, int x, int y) => ImageXYCoordinatesDictionary.Formula[data.PixelFormat](data.Scan0, data.Stride, x, y);
     }
 }

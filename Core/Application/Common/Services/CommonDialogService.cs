@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
 using System.Threading.Tasks;

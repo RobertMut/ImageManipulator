@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Dictionaries;
 using ImageManipulator.Domain.Common.Helpers;
 using ImageManipulator.Domain.Models;

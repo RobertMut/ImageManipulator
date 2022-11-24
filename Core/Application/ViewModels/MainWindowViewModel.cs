@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Common.Common.Extensions;
+using ImageManipulator.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
@@ -9,6 +9,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
@@ -56,6 +59,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> TresholdingCommand { get; }
     public ReactiveCommand<Unit, Unit> MultiThresholdingCommand { get; }
     public ReactiveCommand<Unit, Unit> NegationCommand { get; }
+    public ReactiveCommand<Unit, Unit> ArithmeticBitwiseCommand { get; }
 
     #endregion Commands
 
@@ -82,6 +86,19 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         TresholdingCommand = ReactiveCommand.Create(OpenTresholdingWindow);
         MultiThresholdingCommand = ReactiveCommand.Create(OpenMultiTresholdingWindow);
         NegationCommand = ReactiveCommand.Create(NegateImage);
+        ArithmeticBitwiseCommand = ReactiveCommand.Create(OpenArithmeticBitwiseWindow);
+    }
+
+    private void OpenArithmeticBitwiseWindow()
+    {
+        var arithmeticBitwise = serviceProvider.GetRequiredService<ArithmeticBitwiseOperationsViewModel>();
+        arithmeticBitwise.BeforeImage = _currentTab.ViewModel.Image;
+
+        _commonDialogService.ShowDialog(arithmeticBitwise).ContinueWith(x =>
+        {
+            ResetTabAndReloadImage(arithmeticBitwise.BeforeImage, arithmeticBitwise.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
+        });
     }
 
     private void OpenGammaCorrectionWindow()
@@ -96,10 +113,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         });
     }
 
-    private void NewEmptyTab()
-    {
-        _tabs.Add(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
-    }
+    private void NewEmptyTab() => _tabs.Add(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
 
     private void PrepareNewTab()
     {
@@ -208,8 +222,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         ImageTabs.ReplaceAndReturn(currentTabIndex,
                                           tabItem);
 
-    private Func<Bitmap, Bitmap, TabControlViewModel, TabControlViewModel> ResetTabAndReloadImage => (beforeImage, afterImage, currentTab) =>
+    private Func<Bitmap, Bitmap, TabControlViewModel, Task<TabControlViewModel>> ResetTabAndReloadImage => async (beforeImage, afterImage, currentTab) =>
     afterImage != null && beforeImage != afterImage ?
-        currentTab.ResetTab().LoadImage(afterImage, currentTab.Path) :
+        await currentTab.ResetTab().LoadImage(afterImage, currentTab.Path) :
         currentTab;
 }

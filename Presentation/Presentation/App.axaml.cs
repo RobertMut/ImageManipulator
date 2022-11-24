@@ -55,5 +55,6 @@ public partial class App : Avalonia.Application
         serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();
         serviceDescriptors.AddScoped<ThresholdingViewModel>();
         serviceDescriptors.AddScoped<MultiThresholdingViewModel>();
+        serviceDescriptors.AddScoped<ArithmeticBitwiseOperationsViewModel>();
     }
 }

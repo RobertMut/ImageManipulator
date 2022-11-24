@@ -1,6 +1,5 @@
 ﻿using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Common.Common.Helpers;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
@@ -96,13 +95,14 @@ namespace ImageManipulator.Application.Common.Services
             var sourceBitmapData = existingImage.LockBitmap(existingImage.PixelFormat);
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
 
-            var bitmapData = newImage.LockBitmap(newImage.PixelFormat).ExecuteOnPixel((x, scan0, stride, i, j) =>
+            var bitmapData = newImage.LockBitmap(newImage.PixelFormat).ExecuteOnPixels((x, scan0, stride, i, j) =>
             {
                 byte* pixelData = (byte*)x;
+                byte* otherPixelData = ((byte*) sourceBitmapData.GetPixel(i, j));
 
-                int redValue = sourceBitmapData.GetPixel(i, j, 0);
-                int greenValue = sourceBitmapData.GetPixel(i, j, 1);
-                int blueValue = sourceBitmapData.GetPixel(i, j, 2);
+                int redValue = otherPixelData[0];
+                int greenValue = otherPixelData[1];
+                int blueValue = otherPixelData[2];
 
                 if (values.Length == 3)
                 {

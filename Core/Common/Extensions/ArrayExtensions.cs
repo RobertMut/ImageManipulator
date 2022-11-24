@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ImageManipulator.Domain.Common.Extensions
+namespace ImageManipulator.Common.Extensions
 {
     public static class ArrayExtensions
     {
@@ -14,8 +14,8 @@ namespace ImageManipulator.Domain.Common.Extensions
 
         public static IEnumerable<T[]> GetSlices<T>(this T[] values, int length)
         {
-            for (int i = 0; i < values.Length; i += length) 
-                yield return values.Slice (i, length);
+            for (int i = 0; i < values.Length; i += length)
+                yield return values.Slice(i, length);
         }
     }
 }
