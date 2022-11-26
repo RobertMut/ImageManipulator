@@ -59,6 +59,24 @@ namespace ImageManipulator.Domain.Common.Helpers
             return data;
         }
 
+        public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, int offsetX, int targetX, int offsetY, int targetY, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
+        {
+            var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
+            byte* startPoint = (byte*)data.Scan0;
+
+            Parallel.For(offsetY, targetY, i =>
+            {
+                for (int j = offsetX; j < targetX; j++)
+                {
+                    byte* pixelData = (byte*)pixelDataFunc(data.Scan0, data.Stride, j, i);
+
+                    ((IntPtr)pixelData).ExecuteOnData(data.Scan0, data.Stride, j, i, func);
+                }
+            });
+
+            return data;
+        }
+
         public unsafe static IntPtr ExecuteOnPixel(this IntPtr pixelData, IntPtr otherPixel, Func<byte, byte, byte> func)
         {
             var pixelBytePointer = (byte*)pixelData.ToPointer();
