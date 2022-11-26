@@ -76,6 +76,7 @@
                     <ComboBoxItem>Subtract Left</ComboBoxItem>
                     <ComboBoxItem>Subtract Right</ComboBoxItem>
                     <ComboBoxItem>Difference</ComboBoxItem>
+					<ComboBoxItem>Divide</ComboBoxItem>
                     <ComboBoxItem>Multiply</ComboBoxItem>
                     <ComboBoxItem>Min</ComboBoxItem>
                     <ComboBoxItem>Max</ComboBoxItem>

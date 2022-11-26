@@ -4,6 +4,7 @@ using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
+using System.Linq;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -13,11 +14,12 @@ namespace ImageManipulator.Application.Common.Services
 
         protected override IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType) => operationType switch
         {
-            ArithmeticOperationType.Add => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current + other)%255)),
+            ArithmeticOperationType.Add => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current + other) > 255 ? 255 : (current+other))),
             ArithmeticOperationType.Average => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(((current + other) / 2)%255)),
             ArithmeticOperationType.SubtractLeft => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current - other)%255)),
             ArithmeticOperationType.SubtractRight => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((other - current)%255)),
             ArithmeticOperationType.Difference => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)Math.Abs(current - other)),
+            ArithmeticOperationType.Divide => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current/(other == 0 ? 1 : other))%255)),
             ArithmeticOperationType.Multiply => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(((current / 255.0 * other / 255.0) * 255.0)%255)),
             ArithmeticOperationType.Min => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => current < other ? current : other),
             ArithmeticOperationType.Max => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => current > other ? current : other),
