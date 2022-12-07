@@ -2,14 +2,14 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ImageManipulator.Domain.Common.Helpers
 {
     public static class BitmapOperationsHelper
     {
-        public static BitmapData LockBitmap(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, pixelFormat);
+        public static BitmapData LockBitmapReadOnly(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, pixelFormat);
+        public static BitmapData LockBitmapWriteOnly(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pixelFormat);
 
         public unsafe static byte* ExecuteOnData(this IntPtr data,
             IntPtr scan0,
@@ -25,7 +25,7 @@ namespace ImageManipulator.Domain.Common.Helpers
 
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, IntPtr> func)
         {
-            var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
+            var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
             byte* startPoint = (byte*)data.Scan0;
 
             Parallel.For(0, data.Height, i =>
@@ -43,7 +43,7 @@ namespace ImageManipulator.Domain.Common.Helpers
 
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
-            var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
+            var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
             int bitsPerPixel = Image.GetPixelFormatSize(data.PixelFormat);
 
             Parallel.For(0, data.Height, i =>
@@ -61,7 +61,7 @@ namespace ImageManipulator.Domain.Common.Helpers
 
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, int offsetX, int targetX, int offsetY, int targetY, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
-            var pixelDataFunc = ImageXYCoordinatesDictionary.Formula[data.PixelFormat];
+            var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
             byte* startPoint = (byte*)data.Scan0;
 
             Parallel.For(offsetY, targetY, i =>
@@ -89,6 +89,6 @@ namespace ImageManipulator.Domain.Common.Helpers
             return (IntPtr)pixelBytePointer;
         }
 
-        public unsafe static IntPtr GetPixel(this BitmapData data, int x, int y) => ImageXYCoordinatesDictionary.Formula[data.PixelFormat](data.Scan0, data.Stride, x, y);
+        public unsafe static IntPtr GetPixel(this BitmapData data, int x, int y) => ImageXYCoordinatesDictionary.PixelData[data.PixelFormat](data.Scan0, data.Stride, x, y);
     }
 }

@@ -4,7 +4,6 @@ using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
-using System.Linq;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -16,8 +15,8 @@ namespace ImageManipulator.Application.Common.Services
         {
             ArithmeticOperationType.Add => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current + other) > 255 ? 255 : (current+other))),
             ArithmeticOperationType.Average => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(((current + other) / 2)%255)),
-            ArithmeticOperationType.SubtractLeft => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current - other)%255)),
-            ArithmeticOperationType.SubtractRight => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((other - current)%255)),
+            ArithmeticOperationType.SubtractLeft => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => HandleValueOutsideBounds(current - other)),
+            ArithmeticOperationType.SubtractRight => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => HandleValueOutsideBounds(other - current)),
             ArithmeticOperationType.Difference => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)Math.Abs(current - other)),
             ArithmeticOperationType.Divide => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current/(other == 0 ? 1 : other))%255)),
             ArithmeticOperationType.Multiply => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(((current / 255.0 * other / 255.0) * 255.0)%255)),
@@ -26,5 +25,7 @@ namespace ImageManipulator.Application.Common.Services
             ArithmeticOperationType.Amplitude => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(Math.Sqrt(current * current + other * other) / Math.Sqrt(2.0))),
             _ => throw new Exception("Operation not found!")
         };
+
+        private byte HandleValueOutsideBounds(int value) => (byte)(value < 0 ? 0 : (value > 255 ? 255 : value));
     }
 }

@@ -20,9 +20,9 @@ namespace ImageManipulator.Application.Common.Virtuals
         private unsafe Bitmap ExecuteWithImage(Bitmap bitmap, Bitmap anotherBitmap, Enum operationType)
         {
             var newBitmap = new Bitmap(bitmap);
-            var otherImageData = anotherBitmap.LockBitmap(anotherBitmap.PixelFormat);
+            var otherImageData = anotherBitmap.LockBitmapReadOnly(anotherBitmap.PixelFormat);
 
-            var newBitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat)
+            var newBitmapData = newBitmap.LockBitmapReadOnly(newBitmap.PixelFormat)
                 .ExecuteOnPixels((x, scan0, stride, i, j) =>
                 {
                     byte* pixelData = (byte*)x.ToPointer();
@@ -42,7 +42,7 @@ namespace ImageManipulator.Application.Common.Virtuals
             IntPtr unmanagedColorPointer = Marshal.AllocHGlobal(colorArr.Length);
             Marshal.Copy(colorArr, 0, unmanagedColorPointer, colorArr.Length);
 
-            var sourceData = bitmap.LockBitmap(bitmap.PixelFormat)
+            var sourceData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat)
                 .ExecuteOnPixels((x, scan0, stride, i, j) =>
                 {
                     byte* pixelData = (byte*)x.ToPointer();

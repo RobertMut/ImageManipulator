@@ -36,9 +36,11 @@
                     <MenuItem Command="{Binding ContrastStretchingCommand}" Header="Contrast stretching" />
                     <MenuItem Command="{Binding GammaCorrectionCommand}" Header="Gamma correction" />
                     <MenuItem Command="{Binding HistogramEqualizationCommand}" Header="Histogram Equalization" />
+                    <Separator />
+                    <MenuItem Command="{Binding ArithmeticBitwiseCommand}" Header="Arithmetic/Bitwise operations" />
                 </MenuItem>
-                <MenuItem Header="_Image/Bitwise operations">
-                    <MenuItem Command="{Binding ArithmeticBitwiseCommand}" Header="Arithmetic/Bitwise operation" />
+                <MenuItem Header="_Filters">
+                    <MenuItem Command="{Binding ImageConvolutionCommand}" Header="Image convolution" />
                 </MenuItem>
             </Menu>
         </StackPanel>

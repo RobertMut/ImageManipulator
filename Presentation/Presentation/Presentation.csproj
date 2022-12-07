@@ -42,6 +42,9 @@
     <ProjectReference Include="..\..\Infrastructure\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\ImageConvolutionView.axaml.cs">
+      <DependentUpon>ImageConvolutionView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\MultiThresholdingView.axaml.cs">
       <DependentUpon>MultiThresholdingView.axaml</DependentUpon>
     </Compile>

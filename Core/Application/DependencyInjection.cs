@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IImagePointOperationsService, ImagePointOperationsService>();
         services.AddScoped<IImageArithmeticService, ImageArithmeticService>();
         services.AddScoped<IImageBitwiseService, ImageBitwiseService>();
+        services.AddScoped<IImageConvolutionService, ImageConvolutionService>();
         
         return services;
     }

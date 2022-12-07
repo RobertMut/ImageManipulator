@@ -1,141 +1,104 @@
-﻿using ImageManipulator.Domain.Common.Helpers;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Avalonia.Media;
+using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Application.Common.Models;
+using ImageManipulator.Domain.Common.Dictionaries;
+using ImageManipulator.Domain.Common.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
-    public class ImageConvolutionService
+    public class ImageConvolutionService : IImageConvolutionService
     {
-        public unsafe Bitmap Execute(Bitmap bitmap, double[,] matrix, double factor)
+        public unsafe Bitmap Execute(Bitmap bitmap, double[,] matrix, double factor, int bias = 0)
         {
             var newBitmap = new Bitmap(bitmap);
-
-            //if (grayscale == true)
-            //{
-            //    float rgb = 0;
-
-
-            //    for (int k = 0; k < pixelBuffer.Length; k += 4)
-            //    {
-            //        rgb = pixelBuffer[k] * 0.11f;
-            //        rgb += pixelBuffer[k + 1] * 0.59f;
-            //        rgb += pixelBuffer[k + 2] * 0.3f;
-
-
-            //        pixelBuffer[k] = (byte)rgb;
-            //        pixelBuffer[k + 1] = pixelBuffer[k];
-            //        pixelBuffer[k + 2] = pixelBuffer[k];
-            //        pixelBuffer[k + 3] = 255;
-            //    }
-            //}
-
+            var byteOffsetFunc = ImageXYCoordinatesDictionary.ByteOffset[bitmap.PixelFormat];
+            var calcOffsetFunc = ImageXYCoordinatesDictionary.CalculationOffset[bitmap.PixelFormat];
 
             int filterWidth = matrix.GetLength(1);
             int filterHeight = matrix.GetLength(0);
 
-
             int filterOffset = (filterWidth - 1) / 2;
-            int calcOffset = 0;
 
-
-            int byteOffset = 0;
-
-
-            BitmapData sourceData = bitmap.LockBitmap(bitmap.PixelFormat);
+            BitmapData sourceData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat);
 
             byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
             byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
 
-
             Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
             bitmap.UnlockBits(sourceData);
+            for (int offsetY = filterOffset; offsetY <
+            sourceData.Height - filterOffset; offsetY++)
+            {
+                for (int offsetX = filterOffset; offsetX <
+                    sourceData.Width - filterOffset; offsetX++)
+                {
+                    var color = new ColorDouble(0, 0, 0);
 
-                newBitmap.LockBitmap(newBitmap.PixelFormat)
-                .ExecuteOnPixels(filterOffset,
-                    bitmap.Width - filterOffset,
-                    filterOffset,
-                    bitmap.Height - filterOffset, 
-                    (x, scan0, stride, i, j) =>
-                    {
-                        byte* pixelData = (byte*)x;
-                        double blue = 0;
-                        double green = 0;
-                        double red = 0;
+                    var byteOffset = byteOffsetFunc(sourceData.Stride, offsetX, offsetY);
 
-                        byteOffset = j *
-                                     sourceData.Stride +
-                                     i * 4;
+                    CalculateValuesForColours(ref pixelBuffer, ref matrix, ref color, filterOffset, byteOffset, sourceData.Stride, ValueByOffsetAndMatrix, calcOffsetFunc);
 
-                        for (int filterY = -filterOffset;
-                            filterY <= filterOffset; filterY++)
-                        {
-                            for (int filterX = -filterOffset;
-                                filterX <= filterOffset; filterX++)
-                            {
+                    color.Blue = factor * color.Blue + bias;
+                    color.Green = factor * color.Green + bias;
+                    color.Red = factor * color.Red + bias;
 
+                    resultBuffer[byteOffset] = (byte)CutValue(color.Blue);
+                    resultBuffer[byteOffset+1] = (byte)CutValue(color.Green);
+                    resultBuffer[byteOffset+2] = (byte)CutValue(color.Red);
+                    resultBuffer[byteOffset+3] = 255;
+                }
+            }
 
-                                calcOffset = byteOffset +
-                                             (filterX * 4) +
-                                             (filterY * sourceData.Stride);
-
-
-                                blue += (double)(pixelBuffer[calcOffset]) *
-                                        matrix[filterY + filterOffset,
-                                                     filterX + filterOffset];
-
-
-                                green += (double)(pixelBuffer[calcOffset + 1]) *
-                                         matrix[filterY + filterOffset,
-                                                      filterX + filterOffset];
-
-
-                                red += (double)(pixelBuffer[calcOffset + 2]) *
-                                       matrix[filterY + filterOffset,
-                                                    filterX + filterOffset];
-                            }
-                        }
-
-
-                        blue = factor * blue + 1;
-                        green = factor * green + 1;
-                        red = factor * red + 1;
-
-
-                        if (blue > 255)
-                        { blue = 255; }
-                        else if (blue < 0)
-                        { blue = 0; }
-
-
-                        if (green > 255)
-                        { green = 255; }
-                        else if (green < 0)
-                        { green = 0; }
-
-
-                        if (red > 255)
-                        { red = 255; }
-                        else if (red < 0)
-                        { red = 0; }
-
-
-                        pixelData[0] = (byte)(blue);
-                        pixelData[1] = (byte)(green);
-                        pixelData[2] = (byte)(red);
-
-                        return new IntPtr(pixelData);
-                    }
-                );
-
+            var resultData = newBitmap.LockBitmapWriteOnly(bitmap.PixelFormat);
+            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
+            newBitmap.UnlockBits(resultData);
 
             return newBitmap;
         }
+
+        private double CutValue(double color)
+        {
+            if (color > 255)
+                color = 255;
+            else if (color < 0)
+                color = 0;
+
+            return color;
+        }
+
+        private void CalculateValuesForColours(ref byte[] pixelBuffer,
+            ref double[,] matrix,
+            ref ColorDouble color,
+            int filterOffset,
+            int byteOffset,
+            int stride,
+            Func<byte[], double[,], int, int, int, int, int, double> func,
+            Func<int, int, int, int, int> calcOffsetFunc
+            )
+        {
+            for (int filterY = -filterOffset;
+                filterY <= filterOffset; filterY++)
+            {
+                for (int filterX = -filterOffset, calcOffset = 0;
+                    filterX <= filterOffset; filterX++)
+                {
+                    calcOffset = calcOffsetFunc(byteOffset, stride, filterX, filterY);
+
+                    color.Red += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 0);
+
+                    color.Blue += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 1);
+
+                    color.Green += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 2);
+
+                }
+            }
+        }
+
+        private Func<byte[], double[,], int, int, int, int, int, double> ValueByOffsetAndMatrix => (pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, color) =>
+            (pixelBuffer[calcOffset + color]) * matrix[filterY + filterOffset, filterX + filterOffset];
     }
 }

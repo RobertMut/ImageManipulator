@@ -1,0 +1,78 @@
+<UserControl
+    x:Class="ImageManipulator.Presentation.Views.ImageConvolutionView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:colorpicker="clr-namespace:AvaloniaColorPicker;assembly=AvaloniaColorPicker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ext="using:ImageManipulator.Application.Common.Converters"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+    mc:Ignorable="d">
+    <Grid>
+        <Grid.Resources>
+            <ext:DoubleStringConverter x:Key="doubleStringConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.2*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.5*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Image Source="{Binding BeforeImage}" />
+        </Grid>
+        <Grid
+            Grid.Row="0"
+            Grid.Column="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Image Source="{Binding AfterImage, Mode=TwoWay}" />
+        </Grid>
+        <StackPanel
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <RadioButton x:Name="radioSoftenSharpen" Content="Soften/Sharpen" />
+                <RadioButton
+                    x:Name="radioSobel"
+                    Content="Sobel"
+                    IsChecked="{Binding IsSobelSelected, Mode=TwoWay}" />
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <ComboBox
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                    SelectedIndex="{Binding SelectedSoftenSharpen}">
+                    <ComboBoxItem>SoftenAverage3x3</ComboBoxItem>
+                    <ComboBoxItem>SoftenGauss3x3</ComboBoxItem>
+                    <ComboBoxItem>SoftenAverage3x3WithWeight</ComboBoxItem>
+                    <ComboBoxItem>Sharpen3x3Laplace1</ComboBoxItem>
+                    <ComboBoxItem>Sharpen3x3Laplace2</ComboBoxItem>
+                    <ComboBoxItem>Sharpen3x3Laplace3</ComboBoxItem>
+                </ComboBox>
+                <ComboBox
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
+                    SelectedIndex="{Binding SelectedSobel}">
+                    <ComboBoxItem>Sobel1</ComboBoxItem>
+                    <ComboBoxItem>Sobel2</ComboBoxItem>
+                    <ComboBoxItem>Sobel3</ComboBoxItem>
+                    <ComboBoxItem>Sobel4</ComboBoxItem>
+                    <ComboBoxItem>Sobel5</ComboBoxItem>
+                    <ComboBoxItem>Sobel6</ComboBoxItem>
+                    <ComboBoxItem>Sobel7</ComboBoxItem>
+                    <ComboBoxItem>Sobel8</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <TextBox Text="{Binding Value, Converter={StaticResource doubleStringConverter}}" Watermark="Factor" />
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                <Button Command="{Binding Execute}">Execute</Button>
+                <Button Command="{Binding Accept}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

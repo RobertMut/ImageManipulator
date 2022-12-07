@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Reactive;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
@@ -6,7 +5,7 @@ using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels
 {
-	public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewModelBase
+    public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewModelBase
     {
 		private readonly IImagePointOperationsService imagePointOperationsService;
 		private Avalonia.Media.Imaging.Bitmap _beforeImage;

@@ -1,13 +1,11 @@
-using System.Drawing;
 using System.Reactive;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.Common.Services;
 using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels
 {
-	public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
+    public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
     {
 		private readonly IImagePointOperationsService imagePointOperationsService;
 		private Avalonia.Media.Imaging.Bitmap _beforeImage;
