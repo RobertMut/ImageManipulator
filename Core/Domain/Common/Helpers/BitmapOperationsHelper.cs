@@ -16,6 +16,16 @@ namespace ImageManipulator.Domain.Common.Helpers
             int stride,
             Func<IntPtr, IntPtr, int, IntPtr> func) => (byte*)func(data, scan0, stride);
 
+        /// <summary>
+        /// Iterates through image
+        /// </summary>
+        /// <param name="data">Pixel data</param>
+        /// <param name="scan0">First pixel data on image</param>
+        /// <param name="stride">Stride width</param>
+        /// <param name="x">X of pixel</param>
+        /// <param name="y">Y of pixel</param>
+        /// <param name="func">Func to edit</param>
+        /// <returns></returns>
         public unsafe static byte* ExecuteOnData(this IntPtr data,
             IntPtr scan0,
             int stride,
@@ -23,6 +33,12 @@ namespace ImageManipulator.Domain.Common.Helpers
             int y,
             Func<IntPtr, IntPtr, int, int, int, IntPtr> func) => (byte*)func(data, scan0, stride, x, y);
 
+        /// <summary>
+        /// Executes on bitmapData iterating through pixels
+        /// </summary>
+        /// <param name="data">Bitmap data</param>
+        /// <param name="func">Func to execute on pixel</param>
+        /// <returns>BitmapData</returns>
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
@@ -41,6 +57,12 @@ namespace ImageManipulator.Domain.Common.Helpers
             return data;
         }
 
+        /// <summary>
+        /// Executes on bitmapData iterating through pixels
+        /// </summary>
+        /// <param name="data">Bitmap data</param>
+        /// <param name="func">Func to execute on pixel</param>
+        /// <returns>BitmapData</returns>
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
@@ -59,6 +81,16 @@ namespace ImageManipulator.Domain.Common.Helpers
             return data;
         }
 
+        /// <summary>
+        /// Executes on bitmapData iterating through pixels
+        /// </summary>
+        /// <param name="data">Bitmap data</param>
+        /// <param name="offsetX">Offset x to begin iterating</param>
+        /// <param name="targetX">Target pixel to iterate to</param>
+        /// <param name="offsetY">Offset y to begin iterating</param>
+        /// <param name="targetY">Target y to iterate to</param>
+        /// <param name="func">Func to execute on pixel</param>
+        /// <returns>BitmapData</returns>
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, int offsetX, int targetX, int offsetY, int targetY, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];

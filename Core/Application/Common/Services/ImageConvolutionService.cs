@@ -6,99 +6,102 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace ImageManipulator.Application.Common.Services
 {
     public class ImageConvolutionService : IImageConvolutionService
     {
-        public unsafe Bitmap Execute(Bitmap bitmap, double[,] matrix, double factor, int bias = 0)
+        public unsafe Bitmap Execute(Bitmap bitmap, double[,] kernel, double factor, bool soften = false)
         {
             var newBitmap = new Bitmap(bitmap);
-            var byteOffsetFunc = ImageXYCoordinatesDictionary.ByteOffset[bitmap.PixelFormat];
-            var calcOffsetFunc = ImageXYCoordinatesDictionary.CalculationOffset[bitmap.PixelFormat];
 
-            int filterWidth = matrix.GetLength(1);
-            int filterHeight = matrix.GetLength(0);
+            int kernelWidth = kernel.GetLength(1);
+            int kernelHeight = kernel.GetLength(0);
+            int radiusY = kernelHeight >> 1;
+            int radiusX = kernelWidth >> 1;
 
-            int filterOffset = (filterWidth - 1) / 2;
-
-            BitmapData sourceData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat);
-
-            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
-            byte[] resultBuffer = new byte[sourceData.Stride * sourceData.Height];
-
-            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
-            bitmap.UnlockBits(sourceData);
-            for (int offsetY = filterOffset; offsetY <
-            sourceData.Height - filterOffset; offsetY++)
+            if (soften)
             {
-                for (int offsetX = filterOffset; offsetX <
-                    sourceData.Width - filterOffset; offsetX++)
+                kernel = PrepareKernel(kernel);
+            }
+            
+
+            int filterOffset = (kernelWidth - 1) / 2;
+
+            BitmapData sourceData = bitmap
+                .LockBitmapReadOnly(PixelFormat.Format32bppArgb);
+
+            BitmapData affectedData = newBitmap
+                .LockBitmapReadOnly(PixelFormat.Format32bppArgb);
+
+
+            for (int y = 0; y < newBitmap.Height; y++)
+            {
+                for (int x = 0; x < newBitmap.Width; x++)
                 {
                     var color = new ColorDouble(0, 0, 0);
 
-                    var byteOffset = byteOffsetFunc(sourceData.Stride, offsetX, offsetY);
+                    for (int kernelY = 0; kernelY < kernelHeight; kernelY++)
+                    {
+                        int kernelYRadius = kernelY - radiusY;
+                        int offsetY = Math.Clamp((y + kernelYRadius), 0, affectedData.Height - 1);
 
-                    CalculateValuesForColours(ref pixelBuffer, ref matrix, ref color, filterOffset, byteOffset, sourceData.Stride, ValueByOffsetAndMatrix, calcOffsetFunc);
+                        for (int kernelX = 0; kernelX < kernelWidth; kernelX++)
+                        {
+                            int kernelXRadius = kernelX - radiusX;
+                            int offsetX = Math.Clamp((x + kernelXRadius), 0, affectedData.Width - 1);
 
-                    color.Blue = factor * color.Blue + bias;
-                    color.Green = factor * color.Green + bias;
-                    color.Red = factor * color.Red + bias;
+                            byte* offsetedPixel = (byte*)sourceData.GetPixel(offsetX, offsetY).ToPointer();
 
-                    resultBuffer[byteOffset] = (byte)CutValue(color.Blue);
-                    resultBuffer[byteOffset+1] = (byte)CutValue(color.Green);
-                    resultBuffer[byteOffset+2] = (byte)CutValue(color.Red);
-                    resultBuffer[byteOffset+3] = 255;
+                            color.Red += kernel[kernelY, kernelX] * offsetedPixel[0];
+                            color.Green += kernel[kernelY, kernelX] * offsetedPixel[1];
+                            color.Blue += kernel[kernelY, kernelX] * offsetedPixel[2];
+                        }
+                    }
+
+                    byte* pixel = (byte*)affectedData.GetPixel(x, y).ToPointer();
+                    byte* sourcePixel = (byte*)sourceData.GetPixel(x, y).ToPointer();
+                    pixel[0] = (byte)((color.Red > 255) ? 255 : ((color.Red < 0) ? 0 : color.Red));
+                    pixel[1] = (byte)((color.Green > 255) ? 255 : ((color.Green < 0) ? 0 : color.Green));
+                    pixel[2] = (byte)((color.Blue > 255) ? 255 : ((color.Blue < 0) ? 0 : color.Blue));
                 }
             }
 
-            var resultData = newBitmap.LockBitmapWriteOnly(bitmap.PixelFormat);
-            Marshal.Copy(resultBuffer, 0, resultData.Scan0, resultBuffer.Length);
-            newBitmap.UnlockBits(resultData);
+            newBitmap.UnlockBits(affectedData);
+            bitmap.UnlockBits(sourceData);
 
             return newBitmap;
         }
 
-        private double CutValue(double color)
+        private double[,] PrepareKernel(double[,] kernel)
         {
-            if (color > 255)
-                color = 255;
-            else if (color < 0)
-                color = 0;
-
-            return color;
-        }
-
-        private void CalculateValuesForColours(ref byte[] pixelBuffer,
-            ref double[,] matrix,
-            ref ColorDouble color,
-            int filterOffset,
-            int byteOffset,
-            int stride,
-            Func<byte[], double[,], int, int, int, int, int, double> func,
-            Func<int, int, int, int, int> calcOffsetFunc
-            )
-        {
-            for (int filterY = -filterOffset;
-                filterY <= filterOffset; filterY++)
+            double sum = SumKernel(kernel);
+            for (int i = 0; i < kernel.GetLength(0); i++)
             {
-                for (int filterX = -filterOffset, calcOffset = 0;
-                    filterX <= filterOffset; filterX++)
+                for (int j = 0; j < kernel.GetLength(1); j++)
                 {
-                    calcOffset = calcOffsetFunc(byteOffset, stride, filterX, filterY);
-
-                    color.Red += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 0);
-
-                    color.Blue += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 1);
-
-                    color.Green += func(pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, 2);
-
+                    kernel[i,j] = kernel[i,j] / sum;
                 }
             }
+
+            return kernel;
         }
 
-        private Func<byte[], double[,], int, int, int, int, int, double> ValueByOffsetAndMatrix => (pixelBuffer, matrix, filterX, filterY, filterOffset, calcOffset, color) =>
-            (pixelBuffer[calcOffset + color]) * matrix[filterY + filterOffset, filterX + filterOffset];
+        private double SumKernel(double[,] kernel)
+        {
+            double sum = 0;
+
+            for (int i = 0; i < kernel.GetLength(0); i++)
+            {
+                for (int j = 0; j < kernel.GetLength(1); j++)
+                {
+                    sum += kernel[i, j];
+                }
+            }
+
+            return sum;
+        }
     }
 }

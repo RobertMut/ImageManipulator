@@ -4,7 +4,6 @@ using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Enums;
 using ImageManipulator.Domain.Common.Statics;
 using ReactiveUI;
-using System;
 using System.Reactive;
 
 namespace ImageManipulator.Application.ViewModels
@@ -12,7 +11,6 @@ namespace ImageManipulator.Application.ViewModels
     public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     {
         private readonly IImageConvolutionService imageConvolutionService;
-        private readonly IImageArithmeticService imageArithmeticService;
         private Bitmap _afterImage;
         private Bitmap _beforeImage;
         private double _value;
@@ -34,24 +32,25 @@ namespace ImageManipulator.Application.ViewModels
 
         #endregion Commands
 
-        public ImageConvolutionViewModel(IImageConvolutionService imageConvolutionService, IImageArithmeticService imageArithmeticService)
+        public ImageConvolutionViewModel(IImageConvolutionService imageConvolutionService)
         {
             this.imageConvolutionService = imageConvolutionService;
-            this.imageArithmeticService = imageArithmeticService;
             Execute = ReactiveCommand.Create(ExecuteOperationOnImage);
         }
 
         private void ExecuteOperationOnImage()
         {
+            var image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage);
+
+            if ((int)_selectedSoftenSharpen < 3)
+            {
+                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(imageConvolutionService.Execute(image, MatrixSelector(IsSobelSelected), Value, true));
+            }
+
             AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                imageArithmeticService.Execute(
-                    imageConvolutionService.Execute(
-                        ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage),
-                        MatrixSelector(IsSobelSelected), 
-                        Value), 
-                    ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage), 
-                    ImageManipulator.Common.Enums.ArithmeticOperationType.SubtractRight)
-                );
+                imageConvolutionService.Execute(image,
+                        MatrixSelector(IsSobelSelected),
+                        Value));
         }
 
         private double[,] MatrixSelector(bool sobelSelected) => sobelSelected switch

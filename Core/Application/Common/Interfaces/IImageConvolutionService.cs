@@ -4,6 +4,6 @@ namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface IImageConvolutionService
     {
-        Bitmap Execute(Bitmap bitmap, double[,] matrix, double factor, int bias = 0);
+        Bitmap Execute(Bitmap bitmap, double[,] kernel, double factor, bool soften = false);
     }
 }
