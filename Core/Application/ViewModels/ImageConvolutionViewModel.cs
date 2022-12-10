@@ -1,4 +1,5 @@
 using Avalonia.Media.Imaging;
+using DynamicData.Binding;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Enums;
@@ -17,11 +18,21 @@ namespace ImageManipulator.Application.ViewModels
         private bool _isSobelSelected = false;
         private SoftenSharpenEnum _selectedSoftenSharpen;
         private SobelEnum _selectedSobel;
+        private bool _isWeightedSelected;
 
         public override Bitmap AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
         public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
         public double Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
-        public int SelectedSoftenSharpen { get => (int)_selectedSoftenSharpen; set => this.RaiseAndSetIfChanged(ref _selectedSoftenSharpen, (SoftenSharpenEnum)value); }
+        public bool IsWeightedSelected { get => _isWeightedSelected; set => this.RaiseAndSetIfChanged(ref _isWeightedSelected, value); }
+        public int SelectedSoftenSharpen
+        {
+            get => (int)_selectedSoftenSharpen; set
+            {
+                if (value == 2) IsWeightedSelected = true;
+                else IsWeightedSelected = false;
+                this.RaiseAndSetIfChanged(ref _selectedSoftenSharpen, (SoftenSharpenEnum)value);
+            }
+        }
         public int SelectedSobel { get => (int)_selectedSobel; set => this.RaiseAndSetIfChanged(ref _selectedSobel, (SobelEnum)value); }
         public bool IsSobelSelected { get => _isSobelSelected; set => this.RaiseAndSetIfChanged(ref _isSobelSelected, value); }
 

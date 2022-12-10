@@ -41,9 +41,14 @@
                     x:Name="radioSobel"
                     Content="Sobel"
                     IsChecked="{Binding IsSobelSelected, Mode=TwoWay}" />
+                <RadioButton
+                    x:Name="own"
+                    Content="Own kernel"
+                    IsChecked="{Binding IsOwnKernelSelected, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                 <ComboBox
+                    x:Name="softSharpBox"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
                     SelectedIndex="{Binding SelectedSoftenSharpen}">
@@ -67,8 +72,12 @@
                     <ComboBoxItem>Sobel7</ComboBoxItem>
                     <ComboBoxItem>Sobel8</ComboBoxItem>
                 </ComboBox>
+                <TextBox Text="{Binding MatrixInput, Mode=TwoWay}" Watermark="Matrix" />
             </StackPanel>
-            <TextBox Text="{Binding Value, Converter={StaticResource doubleStringConverter}}" Watermark="Factor" />
+            <TextBox
+                IsVisible="{Binding IsWeightedSelected, Mode=TwoWay}"
+                Text="{Binding Value, Converter={StaticResource doubleStringConverter}}"
+                Watermark="Weight" />
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
                 <Button Command="{Binding Execute}">Execute</Button>
                 <Button Command="{Binding Accept}" />
