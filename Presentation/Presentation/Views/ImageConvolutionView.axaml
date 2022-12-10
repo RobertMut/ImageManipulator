@@ -28,7 +28,7 @@
             Grid.Column="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-            <Image Source="{Binding AfterImage, Mode=TwoWay}" />
+            <Image Source="{Binding AfterImage}" />
         </Grid>
         <StackPanel
             Grid.Row="1"
@@ -44,8 +44,7 @@
                     x:Name="radioSobel"
                     Content="Sobel"
                     GroupName="type"
-                    IsChecked="{Binding IsSobelSelected, Mode=TwoWay}"
-                    IsDefault="True" />
+                    IsChecked="{Binding IsSobelSelected}" />
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
                 <RadioButton
@@ -179,7 +178,7 @@
                 </Grid>
             </StackPanel>
             <TextBox
-                IsVisible="{Binding IsWeightedSelected, Mode=TwoWay}"
+                IsVisible="{Binding IsWeightedSelected}"
                 Text="{Binding Value, Converter={StaticResource doubleStringConverter}}"
                 Watermark="Weight" />
             <ComboBox SelectedIndex="{Binding ImageWrap, Mode=TwoWay}">
@@ -187,6 +186,7 @@
                 <ComboBoxItem>Constant</ComboBoxItem>
                 <ComboBoxItem>Reflect</ComboBoxItem>
                 <ComboBoxItem>Wrap</ComboBoxItem>
+				<ComboBoxItem>After</ComboBoxItem>
             </ComboBox>
             <TextBox Text="{Binding BorderConstVal, Converter={StaticResource doubleStringConverter}}" Watermark="Border const" />
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">

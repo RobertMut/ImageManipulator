@@ -69,62 +69,97 @@ namespace ImageManipulator.Application.ViewModels
             Execute = ReactiveCommand.Create(ExecuteOperationOnImage);
         }
 
+        //TODO: REFACTOR, unacceptable
         private void ExecuteOperationOnImage()
         {
-            var image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage);
+            var image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage);
 
-            if(_imageWrap > 0)
+            if (_imageWrap > 0 && (int)_imageWrap < 4)
             {
-                image = imageBorderService.Execute(image, _imageWrap, 5, 5, 5, 5, System.Drawing.Color.FromArgb((int)BorderConstVal, (int)BorderConstVal, (int)BorderConstVal));
+                image = imageBorderService.Execute(image, _imageWrap, 5, 5, 5, 5, System.Drawing.Color.FromArgb((int)_borderConstVal, (int)_borderConstVal, (int)_borderConstVal));
             }
 
-            if (Is3x3Selected)
+            if (_is3x3Selected)
             {
-                if ((int)_selectedSoftenSharpen3x3 < 3 && !IsSobelSelected)
+                if ((int)_selectedSoftenSharpen3x3 < 3 && !_isSobelSelected)
                 {
-                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(imageConvolutionService.Execute(image, MatrixSelector3x3(IsSobelSelected), Value, true));
+                    var selector = MatrixSelector3x3(_isSobelSelected);
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image, selector, _value, true)
+                            )
+                        );
+                } else
+                {
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image,
+                                    MatrixSelector3x3(_isSobelSelected),
+                                    _value)
+                            )
+                        );
                 }
-
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    imageConvolutionService.Execute(image,
-                            MatrixSelector3x3(IsSobelSelected),
-                            Value));
             }
-            else if (Is5x5Selected)
+            else if (_is5x5Selected)
             {
-                if ((int)_selectedSoftenSharpen5x5 < 3 && !IsSobelSelected)
+                if ((int)_selectedSoftenSharpen5x5 < 3 && !_isSobelSelected)
                 {
-                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(imageConvolutionService.Execute(image, MatrixSelector5x5(IsSobelSelected), Value, true));
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image, MatrixSelector5x5(_isSobelSelected), _value, true)
+                            )
+                        );
+                } else
+                {
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image,
+                                    MatrixSelector5x5(_isSobelSelected),
+                                    _value)
+                            )
+                        );
                 }
-
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    imageConvolutionService.Execute(image,
-                            MatrixSelector5x5(IsSobelSelected),
-                            Value));
             }
-            else if (Is7x7Selected)
+            else if (_is7x7Selected)
             {
-                if ((int)_selectedSoftenSharpen7x7 < 3 && !IsSobelSelected)
+                if ((int)_selectedSoftenSharpen7x7 < 3 && !_isSobelSelected)
                 {
-                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(imageConvolutionService.Execute(image, MatrixSelector7x7(IsSobelSelected), Value, true));
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image, MatrixSelector7x7(_isSobelSelected), _value, true)
+                            )
+                        );
                 }
-
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    imageConvolutionService.Execute(image,
-                            MatrixSelector7x7(IsSobelSelected),
-                            Value));
+                else
+                {
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image,
+                                    MatrixSelector7x7(_isSobelSelected),
+                                    _value)
+                            )
+                        );
+                }
             }
-            else if (Is9x9Selected)
+            else if (_is9x9Selected)
             {
-                if ((int)_selectedSoftenSharpen9x9 < 3 && !IsSobelSelected)
+                if ((int)_selectedSoftenSharpen9x9 < 3 && !_isSobelSelected)
                 {
-                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(imageConvolutionService.Execute(image, MatrixSelector9x9(IsSobelSelected), Value, true));
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                            imageConvolutionService.Execute(image, MatrixSelector9x9(_isSobelSelected), _value, true)
+                            )
+                        );
+                } else
+                {
+                    AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
+                        BorderAfter(
+                        imageConvolutionService.Execute(image,
+                                MatrixSelector9x9(_isSobelSelected),
+                                _value)
+                            )
+                        );
                 }
-
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    imageConvolutionService.Execute(image,
-                            MatrixSelector9x9(IsSobelSelected),
-                            Value));
             }
         }
 
@@ -154,7 +189,12 @@ namespace ImageManipulator.Application.ViewModels
         {
             if (Convert.ToInt32(value) == 2) IsWeightedSelected = true;
             else IsWeightedSelected = false;
-            return this.RaiseAndSetIfChanged<ImageConvolutionViewModel, T>(ref existing, value);
+            return this.RaiseAndSetIfChanged(ref existing, value);
+        }
+
+        private System.Drawing.Bitmap BorderAfter(System.Drawing.Bitmap bitmap)
+        {
+            return _imageWrap == ImageWrapEnum.BORDER_AFTER ? imageBorderService.Execute(bitmap, ImageWrapEnum.BORDER_CONSTANT, 5, 5, 5, 5, System.Drawing.Color.FromArgb((int)_borderConstVal, (int)_borderConstVal, (int)_borderConstVal)) : bitmap;
         }
     }
 }

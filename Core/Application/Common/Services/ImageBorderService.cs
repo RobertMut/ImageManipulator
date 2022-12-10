@@ -93,7 +93,7 @@ namespace ImageManipulator.Application.Common.Services
                 case ImageWrapEnum.BORDER_REFLECT:
                     return new Tuple<RotateFlipType, RotateFlipType>(RotateFlipType.Rotate180FlipY, RotateFlipType.Rotate180FlipX);
 
-                case (_):
+                default:
                     throw new Exception("Wrap method not recognized");
             }
         }
