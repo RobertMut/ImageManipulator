@@ -36,48 +36,159 @@
             VerticalAlignment="Center"
             Orientation="Horizontal">
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <RadioButton x:Name="radioSoftenSharpen" Content="Soften/Sharpen" />
+                <RadioButton
+                    x:Name="radioSoftenSharpen"
+                    Content="Soften/Sharpen"
+                    GroupName="type" />
                 <RadioButton
                     x:Name="radioSobel"
                     Content="Sobel"
-                    IsChecked="{Binding IsSobelSelected, Mode=TwoWay}" />
+                    GroupName="type"
+                    IsChecked="{Binding IsSobelSelected, Mode=TwoWay}"
+                    IsDefault="True" />
+            </StackPanel>
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
                 <RadioButton
-                    x:Name="own"
-                    Content="Own kernel"
-                    IsChecked="{Binding IsOwnKernelSelected, Mode=TwoWay}" />
+                    x:Name="select3x3"
+                    GroupName="size"
+                    IsChecked="{Binding Is3x3Selected, Mode=TwoWay}">
+                    3x3
+                </RadioButton>
+                <RadioButton
+                    x:Name="select5x5"
+                    GroupName="size"
+                    IsChecked="{Binding Is5x5Selected, Mode=TwoWay}">
+                    5x5
+                </RadioButton>
+                <RadioButton
+                    x:Name="select7x7"
+                    GroupName="size"
+                    IsChecked="{Binding Is7x7Selected, Mode=TwoWay}">
+                    7x7
+                </RadioButton>
+                <RadioButton
+                    x:Name="select9x9"
+                    GroupName="size"
+                    IsChecked="{Binding Is9x9Selected, Mode=TwoWay}">
+                    9x9
+                </RadioButton>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <ComboBox
-                    x:Name="softSharpBox"
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
-                    SelectedIndex="{Binding SelectedSoftenSharpen}">
-                    <ComboBoxItem>SoftenAverage3x3</ComboBoxItem>
-                    <ComboBoxItem>SoftenGauss3x3</ComboBoxItem>
-                    <ComboBoxItem>SoftenAverage3x3WithWeight</ComboBoxItem>
-                    <ComboBoxItem>Sharpen3x3Laplace1</ComboBoxItem>
-                    <ComboBoxItem>Sharpen3x3Laplace2</ComboBoxItem>
-                    <ComboBoxItem>Sharpen3x3Laplace3</ComboBoxItem>
-                </ComboBox>
-                <ComboBox
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
-                    SelectedIndex="{Binding SelectedSobel}">
-                    <ComboBoxItem>Sobel1</ComboBoxItem>
-                    <ComboBoxItem>Sobel2</ComboBoxItem>
-                    <ComboBoxItem>Sobel3</ComboBoxItem>
-                    <ComboBoxItem>Sobel4</ComboBoxItem>
-                    <ComboBoxItem>Sobel5</ComboBoxItem>
-                    <ComboBoxItem>Sobel6</ComboBoxItem>
-                    <ComboBoxItem>Sobel7</ComboBoxItem>
-                    <ComboBoxItem>Sobel8</ComboBoxItem>
-                </ComboBox>
-                <TextBox Text="{Binding MatrixInput, Mode=TwoWay}" Watermark="Matrix" />
+                <Grid IsVisible="{Binding ElementName=select3x3, Path=IsChecked}">
+                    <ComboBox
+                        x:Name="softSharpBox"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSoftenSharpen3x3}">
+                        <ComboBoxItem>SoftenAverage3x3</ComboBoxItem>
+                        <ComboBoxItem>SoftenGauss3x3</ComboBoxItem>
+                        <ComboBoxItem>SoftenAverage3x3WithWeight</ComboBoxItem>
+                        <ComboBoxItem>Sharpen3x3Laplace1</ComboBoxItem>
+                        <ComboBoxItem>Sharpen3x3Laplace2</ComboBoxItem>
+                        <ComboBoxItem>Sharpen3x3Laplace3</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSobel3x3}">
+                        <ComboBoxItem>Sobel1</ComboBoxItem>
+                        <ComboBoxItem>Sobel2</ComboBoxItem>
+                        <ComboBoxItem>Sobel3</ComboBoxItem>
+                        <ComboBoxItem>Sobel4</ComboBoxItem>
+                        <ComboBoxItem>Sobel5</ComboBoxItem>
+                        <ComboBoxItem>Sobel6</ComboBoxItem>
+                        <ComboBoxItem>Sobel7</ComboBoxItem>
+                        <ComboBoxItem>Sobel8</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+                <Grid IsVisible="{Binding ElementName=select5x5, Path=IsChecked}">
+                    <ComboBox
+                        x:Name="softSharpBox5x5"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSoftenSharpen5x5}">
+                        <ComboBoxItem>SoftenAverage5x5</ComboBoxItem>
+                        <ComboBoxItem>SoftenGauss5x5</ComboBoxItem>
+                        <ComboBoxItem>SoftenAverage5x5WithWeight</ComboBoxItem>
+                        <ComboBoxItem>Sharpen5x5Laplace1</ComboBoxItem>
+                        <ComboBoxItem>Sharpen5x5Laplace2</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSobel5x5}">
+                        <ComboBoxItem>Sobel1</ComboBoxItem>
+                        <ComboBoxItem>Sobel2</ComboBoxItem>
+                        <ComboBoxItem>Sobel3</ComboBoxItem>
+                        <ComboBoxItem>Sobel4</ComboBoxItem>
+                        <ComboBoxItem>Sobel5</ComboBoxItem>
+                        <ComboBoxItem>Sobel6</ComboBoxItem>
+                        <ComboBoxItem>Sobel7</ComboBoxItem>
+                        <ComboBoxItem>Sobel8</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+                <Grid IsVisible="{Binding ElementName=select7x7, Path=IsChecked}">
+                    <ComboBox
+                        x:Name="softSharpBox7x7"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSoftenSharpen7x7}">
+                        <ComboBoxItem>SoftenAverage7x7</ComboBoxItem>
+                        <ComboBoxItem>SoftenGauss7x7</ComboBoxItem>
+                        <ComboBoxItem>SoftenAverage7x7WithWeight</ComboBoxItem>
+                        <ComboBoxItem>Sharpen7x7Laplace1</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSobel7x7}">
+                        <ComboBoxItem>Sobel1</ComboBoxItem>
+                        <ComboBoxItem>Sobel2</ComboBoxItem>
+                        <ComboBoxItem>Sobel3</ComboBoxItem>
+                        <ComboBoxItem>Sobel4</ComboBoxItem>
+                        <ComboBoxItem>Sobel5</ComboBoxItem>
+                        <ComboBoxItem>Sobel6</ComboBoxItem>
+                        <ComboBoxItem>Sobel7</ComboBoxItem>
+                        <ComboBoxItem>Sobel8</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+                <Grid IsVisible="{Binding ElementName=select9x9, Path=IsChecked}">
+                    <ComboBox
+                        x:Name="softSharpBox9x9"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSoftenSharpen9x9}">
+                        <ComboBoxItem>SoftenAverage9x9</ComboBoxItem>
+                        <ComboBoxItem>SoftenGauss9x9</ComboBoxItem>
+                        <ComboBoxItem>SoftenAverage9x9WithWeight</ComboBoxItem>
+                        <ComboBoxItem>Sharpen9x9Laplace1</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedSobel9x9}">
+                        <ComboBoxItem>Sobel1</ComboBoxItem>
+                        <ComboBoxItem>Sobel2</ComboBoxItem>
+                        <ComboBoxItem>Sobel3</ComboBoxItem>
+                        <ComboBoxItem>Sobel4</ComboBoxItem>
+                        <ComboBoxItem>Sobel5</ComboBoxItem>
+                        <ComboBoxItem>Sobel6</ComboBoxItem>
+                        <ComboBoxItem>Sobel7</ComboBoxItem>
+                        <ComboBoxItem>Sobel8</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
             </StackPanel>
             <TextBox
                 IsVisible="{Binding IsWeightedSelected, Mode=TwoWay}"
                 Text="{Binding Value, Converter={StaticResource doubleStringConverter}}"
                 Watermark="Weight" />
+            <ComboBox SelectedIndex="{Binding ImageWrap, Mode=TwoWay}">
+                <ComboBoxItem>None</ComboBoxItem>
+                <ComboBoxItem>Constant</ComboBoxItem>
+                <ComboBoxItem>Reflect</ComboBoxItem>
+                <ComboBoxItem>Wrap</ComboBoxItem>
+            </ComboBox>
+            <TextBox Text="{Binding BorderConstVal, Converter={StaticResource doubleStringConverter}}" Watermark="Border const" />
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
                 <Button Command="{Binding Execute}">Execute</Button>
                 <Button Command="{Binding Accept}" />

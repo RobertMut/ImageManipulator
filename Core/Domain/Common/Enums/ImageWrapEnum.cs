@@ -2,8 +2,9 @@
 {
     public enum ImageWrapEnum
     {
-        BORDER_CONSTANT = 0,
-        BORDER_REFLECT = 1,
-        BORDER_WRAP = 2
+        BORDER_NONE = 0,
+        BORDER_CONSTANT = 1,
+        BORDER_REFLECT = 2,
+        BORDER_WRAP = 3
     }
 }

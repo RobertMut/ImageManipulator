@@ -3,40 +3,40 @@ using System.Collections.Generic;
 
 namespace ImageManipulator.Domain.Common.Statics
 {
-    public static class ConvolutionMatrices
+    public static class ConvolutionMatrices3x3
     {
 
-        public static Dictionary<SoftenSharpenEnum, double[,]> SoftenSharpenMatrices = new Dictionary<SoftenSharpenEnum, double[,]>()
+        public static Dictionary<SoftenSharpen3x3Enum, double[,]> SoftenSharpenMatrices = new Dictionary<SoftenSharpen3x3Enum, double[,]>()
         {
-            {SoftenSharpenEnum.SoftenAverage3x3,  new double[,]
+            {SoftenSharpen3x3Enum.SoftenAverage3x3,  new double[,]
                 {
                     { 1, 1, 1, },
                     { 1, 1, 1, },
                     { 1, 1, 1, }
                 }
             },
-            {SoftenSharpenEnum.SoftenGauss3x3,  new double[,]
+            {SoftenSharpen3x3Enum.SoftenGauss3x3,  new double[,]
                 {
                     { 1, 2, 1, },
                     { 2, 4, 2, },
                     { 1, 2, 1, },
                 }
             },
-            {SoftenSharpenEnum.Sharpen3x3Laplace1,  new double[,]
+            {SoftenSharpen3x3Enum.Sharpen3x3Laplace1,  new double[,]
                 {
                     { 0, -1, 0, },
                     { -1, 4, -1,},
                     { 0, -1, 0, },
                 }
             },
-            {SoftenSharpenEnum.Sharpen3x3Laplace2,  new double[,]
+            {SoftenSharpen3x3Enum.Sharpen3x3Laplace2,  new double[,]
                 {
                     { -1, -1, -1,},
                     { -1, 8, -1, },
                     { -1, -1, -1,},
                 }
             },
-            {SoftenSharpenEnum.Sharpen3x3Laplace3,  new double[,]
+            {SoftenSharpen3x3Enum.Sharpen3x3Laplace3,  new double[,]
                 {
                     { 1, -2, 1, },
                     { -2, 4, -2,},

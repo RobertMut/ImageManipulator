@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -36,8 +37,7 @@ namespace ImageManipulator.Application.Common.Services
             BitmapData affectedData = newBitmap
                 .LockBitmapReadOnly(PixelFormat.Format32bppArgb);
 
-
-            for (int y = 0; y < newBitmap.Height; y++)
+            for(int y = 0; y < newBitmap.Height; y++)
             {
                 for (int x = 0; x < newBitmap.Width; x++)
                 {
