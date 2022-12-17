@@ -1,42 +1,42 @@
-﻿using ImageManipulator.Domain.Common.Enums;
-using System.Collections.Generic;
+﻿using ImageManipulator.Common.Enums;
+using ImageManipulator.Common.Interfaces;
 
-namespace ImageManipulator.Domain.Common.Statics
+namespace ImageManipulator.Common.Matrices
 {
-    public static class ConvolutionMatrices3x3
+    public class ConvolutionMatrices3x3 : IConvolutionMatrix
     {
 
-        public static Dictionary<SoftenSharpen3x3Enum, double[,]> SoftenSharpenMatrices = new Dictionary<SoftenSharpen3x3Enum, double[,]>()
+        public Dictionary<SoftenSharpenEnum, double[,]> SoftenSharpenMatrices { get; } = new Dictionary<SoftenSharpenEnum, double[,]>()
         {
-            {SoftenSharpen3x3Enum.SoftenAverage3x3,  new double[,]
+            {SoftenSharpenEnum.SoftenAverage,  new double[,]
                 {
                     { 1, 1, 1, },
                     { 1, 1, 1, },
                     { 1, 1, 1, }
                 }
             },
-            {SoftenSharpen3x3Enum.SoftenGauss3x3,  new double[,]
+            {SoftenSharpenEnum.SoftenGauss,  new double[,]
                 {
                     { 1, 2, 1, },
                     { 2, 4, 2, },
                     { 1, 2, 1, },
                 }
             },
-            {SoftenSharpen3x3Enum.Sharpen3x3Laplace1,  new double[,]
+            {SoftenSharpenEnum.SharpenLaplace1,  new double[,]
                 {
                     { 0, -1, 0, },
                     { -1, 4, -1,},
                     { 0, -1, 0, },
                 }
             },
-            {SoftenSharpen3x3Enum.Sharpen3x3Laplace2,  new double[,]
+            {SoftenSharpenEnum.SharpenLaplace2,  new double[,]
                 {
                     { -1, -1, -1,},
                     { -1, 8, -1, },
                     { -1, -1, -1,},
                 }
             },
-            {SoftenSharpen3x3Enum.Sharpen3x3Laplace3,  new double[,]
+            {SoftenSharpenEnum.SharpenLaplace3,  new double[,]
                 {
                     { 1, -2, 1, },
                     { -2, 4, -2,},
@@ -45,7 +45,7 @@ namespace ImageManipulator.Domain.Common.Statics
             }
         };
 
-        public static Dictionary<SobelEnum, double[,]> SobelMatrices = new Dictionary<SobelEnum, double[,]>()
+        public Dictionary<SobelEnum, double[,]> SobelMatrices { get; } = new Dictionary<SobelEnum, double[,]>()
         {
             {SobelEnum.Sobel1,  new double[,]
                 {
@@ -105,7 +105,7 @@ namespace ImageManipulator.Domain.Common.Statics
             },
         };
 
-        public static double[,] SoftenAverage3x3WithWeight(double weight)
+        public double[,] SoftenAverageWithWeight(double weight)
         {
             return new double[,]
             {

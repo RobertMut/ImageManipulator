@@ -1,5 +1,5 @@
 ﻿using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Domain.Common.Enums;
+using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;

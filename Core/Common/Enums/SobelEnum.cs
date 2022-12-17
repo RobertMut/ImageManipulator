@@ -1,6 +1,6 @@
-﻿namespace ImageManipulator.Domain.Common.Enums
+﻿namespace ImageManipulator.Common.Enums
 {
-    public enum Sobel7x7Enum
+    public enum SobelEnum
     {
         Sobel1 = 0,
         Sobel2 = 1,

@@ -1,4 +1,4 @@
-﻿namespace ImageManipulator.Domain.Common.Enums
+﻿namespace ImageManipulator.Common.Enums
 {
     public enum ImageWrapEnum
     {

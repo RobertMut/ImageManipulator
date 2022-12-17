@@ -1,4 +1,4 @@
-﻿using ImageManipulator.Domain.Common.Enums;
+﻿using ImageManipulator.Common.Enums;
 using System.Drawing;
 
 namespace ImageManipulator.Application.Common.Interfaces
