@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ImageManipulator.Application.Common.Interfaces
+﻿namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface IImageDataService
     {

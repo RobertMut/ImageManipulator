@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -56,5 +55,6 @@ public partial class App : Avalonia.Application
         serviceDescriptors.AddScoped<ThresholdingViewModel>();
         serviceDescriptors.AddScoped<MultiThresholdingViewModel>();
         serviceDescriptors.AddScoped<ArithmeticBitwiseOperationsViewModel>();
+        serviceDescriptors.AddScoped<ImageConvolutionViewModel>();
     }
 }

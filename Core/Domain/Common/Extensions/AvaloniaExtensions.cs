@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using ReactiveUI;
 
 namespace ImageManipulator.Domain.Common.Extensions
 {

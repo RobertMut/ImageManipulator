@@ -7,9 +7,10 @@
         SubtractLeft = 2,
         SubtractRight = 3,
         Difference = 4,
-        Multiply = 5,
-        Min = 6,
-        Max = 7,
-        Amplitude = 8
+        Divide = 5,
+        Multiply = 6,
+        Min = 7,
+        Max = 8,
+        Amplitude = 9
     }
 }

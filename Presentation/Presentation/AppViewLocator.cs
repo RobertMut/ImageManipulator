@@ -42,6 +42,7 @@ public class AppViewLocator : IDataTemplate, IViewLocator
         ThresholdingViewModel context => new ThresholdingView(),
         MultiThresholdingViewModel context => new MultiThresholdingView(),
         ArithmeticBitwiseOperationsViewModel context => new ArithmeticBitwiseOperationsView(),
+        ImageConvolutionViewModel context => new ImageConvolutionView(),
         _ => throw new ArgumentOutOfRangeException(nameof(viewModel))
     };
 }

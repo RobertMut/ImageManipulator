@@ -1,5 +1,4 @@
 ﻿using ImageManipulator.Common.Enums;
-using System;
 using System.Drawing;
 
 namespace ImageManipulator.Application.Common.Interfaces

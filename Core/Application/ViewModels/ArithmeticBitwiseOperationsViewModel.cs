@@ -1,6 +1,5 @@
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using AvaloniaColorPicker;
 using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;

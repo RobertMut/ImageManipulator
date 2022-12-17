@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
@@ -60,6 +59,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> MultiThresholdingCommand { get; }
     public ReactiveCommand<Unit, Unit> NegationCommand { get; }
     public ReactiveCommand<Unit, Unit> ArithmeticBitwiseCommand { get; }
+    public ReactiveCommand<Unit, Unit> ImageConvolutionCommand { get; }
 
     #endregion Commands
 
@@ -87,6 +87,19 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         MultiThresholdingCommand = ReactiveCommand.Create(OpenMultiTresholdingWindow);
         NegationCommand = ReactiveCommand.Create(NegateImage);
         ArithmeticBitwiseCommand = ReactiveCommand.Create(OpenArithmeticBitwiseWindow);
+        ImageConvolutionCommand = ReactiveCommand.Create(OpenImageConvolutionWindow);
+    }
+
+    private void OpenImageConvolutionWindow()
+    {
+        var convolution = serviceProvider.GetRequiredService<ImageConvolutionViewModel>();
+        convolution.BeforeImage = _currentTab.ViewModel.Image;
+
+        _commonDialogService.ShowDialog(convolution).ContinueWith(x =>
+        {
+            ResetTabAndReloadImage(convolution.BeforeImage, convolution.AfterImage, CurrentTab.ViewModel);
+            ReplaceTab(CurrentTab, _currentTabIndex);
+        });
     }
 
     private void OpenArithmeticBitwiseWindow()

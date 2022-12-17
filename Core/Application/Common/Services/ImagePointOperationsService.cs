@@ -1,12 +1,10 @@
-﻿using Avalonia.Rendering.SceneGraph;
-using ImageManipulator.Application.Common.Interfaces;
+﻿using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Extensions;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -50,7 +48,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
@@ -73,7 +71,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
@@ -104,8 +102,8 @@ namespace ImageManipulator.Application.Common.Services
 
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             double totalNum = bitmap.Height * bitmap.Width;
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat);
-            var sourceBitmapData = bitmap.LockBitmap(bitmap.PixelFormat);
+            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat);
+            var sourceBitmapData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat);
 
             for (int k = 0; k < 256; k++)
             {
@@ -140,7 +138,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             var bitmapData = newSrc
-                .LockBitmap(newSrc.PixelFormat)
+                .LockBitmapReadOnly(newSrc.PixelFormat)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
@@ -161,7 +159,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
-                .LockBitmap(newSrc.PixelFormat)
+                .LockBitmapReadOnly(newSrc.PixelFormat)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
@@ -190,7 +188,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
-                .LockBitmap(newSrc.PixelFormat)
+                .LockBitmapReadOnly(newSrc.PixelFormat)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();

@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using System.Net;
 
 namespace ImageManipulator.Domain.Models
 {

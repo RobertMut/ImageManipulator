@@ -1,6 +1,4 @@
-﻿using ReactiveUI;
-
-namespace ImageManipulator.Application.ViewModels;
+﻿namespace ImageManipulator.Application.ViewModels;
 
 public abstract class ImageOperationDialogViewModelBase : ViewModelBase
 {

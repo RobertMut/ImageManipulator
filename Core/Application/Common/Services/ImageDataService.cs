@@ -2,11 +2,8 @@
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -25,7 +22,7 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe double[][] CalculateLevels(Avalonia.Media.Imaging.Bitmap bitmap)
         {
             System.Drawing.Bitmap newBitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
-            var bitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat);
+            var bitmapData = newBitmap.LockBitmapReadOnly(newBitmap.PixelFormat);
             int bytes = Math.Abs(bitmapData.Stride) * newBitmap.Height;
 
             byte[] buffer = new byte[bytes];
@@ -92,10 +89,10 @@ namespace ImageManipulator.Application.Common.Services
 
             System.Drawing.Bitmap newImage = new System.Drawing.Bitmap(existingImage.Width, existingImage.Height, existingImage.PixelFormat);
             
-            var sourceBitmapData = existingImage.LockBitmap(existingImage.PixelFormat);
+            var sourceBitmapData = existingImage.LockBitmapReadOnly(existingImage.PixelFormat);
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
 
-            var bitmapData = newImage.LockBitmap(newImage.PixelFormat).ExecuteOnPixels((x, scan0, stride, i, j) =>
+            var bitmapData = newImage.LockBitmapReadOnly(newImage.PixelFormat).ExecuteOnPixels((x, scan0, stride, i, j) =>
             {
                 byte* pixelData = (byte*)x;
                 byte* otherPixelData = ((byte*) sourceBitmapData.GetPixel(i, j));

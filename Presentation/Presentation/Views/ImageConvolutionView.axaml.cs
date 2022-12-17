@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class HistogramEqualizationView : ReactiveUserControl<HistogramEqualizationViewModel>
+    public partial class ImageConvolutionView : ReactiveUserControl<ImageConvolutionViewModel>
     {
-        public HistogramEqualizationView()
+        public ImageConvolutionView()
         {
             InitializeComponent();
             this.WhenActivated(disposables => { });

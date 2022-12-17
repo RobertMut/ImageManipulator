@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ImageManipulator.Common.Extensions
+﻿namespace ImageManipulator.Common.Extensions
 {
     public static class ArrayExtensions
     {
