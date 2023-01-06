@@ -8,6 +8,7 @@ using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using ImageManipulator.Domain.Common.Dictionaries;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -27,12 +28,15 @@ namespace ImageManipulator.Application.ViewModels
         private bool _is5x5Selected;
         private bool _is7x7Selected;
         private bool _is9x9Selected;
+        private bool _isEdgeDetectionSelected = false;
         private double _borderConstVal;
+        private EdgeDetectionEnum _selectedEdgeDetection;
 
         public override Bitmap AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
         public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
         public double Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
         public bool IsWeightedSelected { get => _isWeightedSelected; set => this.RaiseAndSetIfChanged(ref _isWeightedSelected, value); }
+        public int SelectedEdgeDetection { get => (int)_selectedEdgeDetection; set => ChangeAndSetWeightedBool(ref _selectedEdgeDetection, (EdgeDetectionEnum)value); }
         public int SelectedSoftenSharpen3x3 { get => (int)_selectedSoftenSharpen; set => ChangeAndSetWeightedBool(ref _selectedSoftenSharpen, (SoftenSharpenEnum)value); }
         public int ImageWrap { get => (int)_imageWrap; set => this.RaiseAndSetIfChanged(ref _imageWrap, (ImageWrapEnum)value); }
         public int SelectedSobel3x3 { get => (int)_selectedSobel; set => this.RaiseAndSetIfChanged(ref _selectedSobel, (SobelEnum)value); }
@@ -43,7 +47,7 @@ namespace ImageManipulator.Application.ViewModels
         public double BorderConstVal { get => _borderConstVal; set => this.RaiseAndSetIfChanged(ref _borderConstVal, value); }
 
         public bool IsSobelSelected { get => _isSobelSelected; set => this.RaiseAndSetIfChanged(ref _isSobelSelected, value); }
-
+        public bool IsEdgeDetectionSelected { get => _isEdgeDetectionSelected; set => this.RaiseAndSetIfChanged(ref _isEdgeDetectionSelected, value); } 
         #region Commands
 
         public ReactiveCommand<Unit, Unit> Execute { get; }
@@ -63,21 +67,46 @@ namespace ImageManipulator.Application.ViewModels
                 .Select(x => _imageWrap > 0 && (int)_imageWrap < 4 ? imageBorderService.Execute(x, _imageWrap, 5, 5, 5, 5, System.Drawing.Color.FromArgb((int)_borderConstVal, (int)_borderConstVal, (int)_borderConstVal)) : x)
                 .Select(bitmap =>
                 {
-                    IConvolutionMatrix matrices = _is3x3Selected ? new ConvolutionMatrices3x3() :
-                    (_is5x5Selected ? new ConvolutionMatrices5x5() :
-                        (_is7x7Selected ? new ConvolutionMatrices7x7() :
-                            (_is9x9Selected ? new ConvolutionMatrices9x9() : throw new Exception("Operation not found!"))
-                        ));
+                    IConvolutionMatrix matrices = null;
+                    double[,] matrix = null;
 
-                    var matrix = MatrixSelector(_isSobelSelected, matrices);
+                    if (!_isEdgeDetectionSelected)
+                    {
+                        matrices = _is3x3Selected ? new ConvolutionMatrices3x3() :
+                            (_is5x5Selected ? new ConvolutionMatrices5x5() :
+                                (_is7x7Selected ? new ConvolutionMatrices7x7() :
+                                    (_is9x9Selected ? new ConvolutionMatrices9x9() : throw new Exception("Operation not found!"))
+                                ));
 
-                    if ((int)_selectedSoftenSharpen < 3 && !_isSobelSelected)
+                        matrix = MatrixSelector(_isSobelSelected, matrices);
+                    }
+
+
+                    if ((int)_selectedSoftenSharpen < 3 && !_isSobelSelected && !_isEdgeDetectionSelected)
                     {
                         return imageConvolutionService.Execute(bitmap, matrix, _value, true);
                     }
-                    else
+                    else if (_isSobelSelected && !_isEdgeDetectionSelected)
                     {
                         return imageConvolutionService.Execute(bitmap, matrix, _value);
+                    } 
+                    else if (_isEdgeDetectionSelected && _selectedEdgeDetection != EdgeDetectionEnum.Canny)
+                    {
+                        return imageConvolutionService.Execute(bitmap,
+                            EdgeDetection.EdgeDetectionMatrices[_selectedEdgeDetection], _value);
+                    }
+                    else
+                    {
+                        var image = imageConvolutionService.Execute(bitmap,
+                            EdgeDetection.EdgeDetectionMatrices[_selectedEdgeDetection], _value, true);
+                        var gradientMagnitude = imageConvolutionService.ComputeGradient(image, (gx, gy) => Math.Sqrt(gx * gx + gy * gy));
+                        var gradientDirection =
+                            imageConvolutionService.ComputeGradient(image, (gx, gy) => Math.Atan2(gy, gx));
+
+                        var nonMax = imageConvolutionService.NonMaxSupression(gradientMagnitude, gradientDirection);
+                        var thresh = imageConvolutionService.HysteresisThresholding(nonMax, 100, 210);
+
+                        return thresh;
                     }
                 })
                 .Select(bitmap => BorderAfter(bitmap))

@@ -45,9 +45,13 @@
                     Content="Sobel"
                     GroupName="type"
                     IsChecked="{Binding IsSobelSelected}" />
+                <RadioButton x:Name="radioEdgeDetection"
+                             Content="Edge detection"
+                             GroupName="type"
+                             IsChecked="{Binding IsEdgeDetectionSelected}"/>
             </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <RadioButton
+            <StackPanel VerticalAlignment="Center" Orientation="Vertical" IsVisible="{Binding ElementName=radioEdgeDetection, Path=!IsChecked}">
+				<RadioButton
                     x:Name="select3x3"
                     GroupName="size"
                     IsChecked="{Binding Is3x3Selected, Mode=TwoWay}">
@@ -97,6 +101,15 @@
                     <ComboBoxItem>Sobel6</ComboBoxItem>
                     <ComboBoxItem>Sobel7</ComboBoxItem>
                     <ComboBoxItem>Sobel8</ComboBoxItem>
+                </ComboBox>
+                <ComboBox
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioEdgeDetection, Path=IsChecked}"
+					SelectedIndex="{Binding SelectedEdgeDetection}">
+					<ComboBoxItem>Laplace</ComboBoxItem>
+					<ComboBoxItem>Prewitt vertical</ComboBoxItem>
+					<ComboBoxItem>Prewitt horizontal</ComboBoxItem>
+                    <ComboBoxItem>Canny</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
             <TextBox
