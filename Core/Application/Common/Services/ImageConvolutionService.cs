@@ -4,6 +4,7 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -113,112 +114,141 @@ namespace ImageManipulator.Application.Common.Services
             return gradient;
         }
 
-        public unsafe Bitmap NonMaxSupression(double[,] gradientMagnitude, double[,] gradientDirection)
+        public unsafe double[,] NonMaxSupression(double[,] gradientMagnitude, double[,] gradientDirection)
         {
             int width = gradientMagnitude.GetLength(0);
             int height = gradientMagnitude.GetLength(1);
 
-            Bitmap nonMax = new Bitmap(width, height);
+            var preparedDirectionsInAngle = PrepareDirections(gradientDirection);
 
-            var data = nonMax.LockBitmapWriteOnly(nonMax.PixelFormat).ExecuteOnPixels(
-                1, nonMax.Width-1,
-                1, nonMax.Height-1,
-                (pixelPtr, scan0, stride, x, y) =>
+            for (int x = 1; x < width - 1; x++)
+            {
+                for (int y = 1; y < height - 1; y++)
                 {
-                    byte* pixel = (byte*)pixelPtr.ToPointer();
-                    double direction = gradientDirection[x, y];
                     double magnitude = gradientMagnitude[x, y];
-
-                    if (
-                        ((direction > -Math.PI / 8 && direction <= Math.PI / 8) || (direction > 7 * Math.PI / 8 && direction <= 2 * Math.PI)) &&
-                        (magnitude > gradientMagnitude[x + 1, y] || magnitude > gradientMagnitude[x - 1, y])
-                    )
+                    switch (preparedDirectionsInAngle[x, y])
                     {
-                        magnitude = 0;
+                        case 0:
+                            if (magnitude < gradientMagnitude[x, y - 1] && magnitude < gradientMagnitude[x, y + 1])
+                            {
+                                gradientMagnitude[x - 1, y - 1] = 0;
+                            }
+                            break;
+                        case 45:
+                            if (magnitude < gradientMagnitude[x - 1, y + 1] && magnitude < gradientMagnitude[x + 1, y - 1])
+                            {
+                                gradientMagnitude[x - 1, y - 1] = 0;
+                            }
+                            break;
+                        case 90:
+                            if (magnitude < gradientMagnitude[x - 1, y] && magnitude < gradientMagnitude[x + 1, y])
+                            {
+                                gradientMagnitude[x - 1, y - 1] = 0;
+                            }
+                            break;
+                        case 135:
+                            if (magnitude < gradientMagnitude[x - 1, y - 1] && magnitude < gradientMagnitude[x + 1, y + 1])
+                            {
+                                gradientMagnitude[x - 1, y - 1] = 0;
+                            }
+                            break;
                     }
-                    else if ((direction > Math.PI / 8 && direction <= 3 * Math.PI / 8) &&
-                             (magnitude > gradientMagnitude[x + 1, y - 1] ||
-                              magnitude > gradientMagnitude[x - 1, y + 1]))
+                }
+            }
 
-                    {
-                        magnitude = 0;
-                    }
-                    else if ((direction > 3 * Math.PI / 8 && direction <= 5 * Math.PI / 8) &&
-                             (magnitude > gradientMagnitude[x, y - 1] || magnitude > gradientMagnitude[x, y + 1]))
-                    {
-                        magnitude = 0;
-                    }
-                    else if ((direction > 5 * Math.PI / 8 && direction <= 7 * Math.PI / 8) &&
-                             (magnitude > gradientMagnitude[x + 1, y + 1] ||
-                              magnitude > gradientMagnitude[x - 1, y - 1]))
-                    {
-                        magnitude = 0;
-                    }
-
-                    pixel[0] = pixel[1] = pixel[2] = (byte)magnitude;
-
-                    return new IntPtr(pixel);
-                });
-
-            nonMax.UnlockBits(data);
-
-            return nonMax;
+            return gradientMagnitude;
         }
 
-        public unsafe Bitmap HysteresisThresholding(Bitmap image, int lowThreshold, int highThreshold)
+        public unsafe Bitmap HysteresisThresholding(int width, int height, int lowThreshold, int highThreshold, double[,] gradientMagnitude)
         {
-            int width = image.Width;
-            int height = image.Height;
-
             Bitmap edgeImage = new Bitmap(width, height);
 
-            var source = image.LockBitmapReadOnly(image.PixelFormat);
-            var data = edgeImage.LockBitmapWriteOnly(edgeImage.PixelFormat).ExecuteOnPixels(
-                (pixelPtr, scan0, stride, x, y) =>
-                {
-                    byte* pixel = (byte*)pixelPtr.ToPointer();
-                    byte* sourcePixel = (byte*)source.GetPixel(x, y);
-                    int intensity = sourcePixel[0];
+            using (Graphics graphics = Graphics.FromImage(edgeImage))
+            using (var brush = new SolidBrush(Color.Black))
+            {
+                graphics.FillRectangle(brush, 0, 0, width, height);
+                graphics.Save();
+            }
 
-                    if (intensity > highThreshold)
+            edgeImage.UnlockBits(edgeImage.LockBitmapWriteOnly(edgeImage.PixelFormat)
+                .ExecuteOnPixels(0, 0, width, height,
+                    (pixelPtr, scan0, stride, x, y) =>
                     {
-                        pixel[0] = pixel[1] = pixel[2] = 255;
-                    }
-                    else if (intensity < lowThreshold)
-                    {
-                        pixel[0] = pixel[1] = pixel[2] = 0;
-                    }
-                    else
-                    {
-                        bool isEdge = false;
+                        byte* pixel = (byte*)pixelPtr.ToPointer();
+                        double magnitude = gradientMagnitude[x, y];
 
-                        for (int i = -1; i <= 1 && !isEdge; i++)
+                        if (magnitude >= highThreshold)
                         {
-                            for (int j = -1; j <= 1 && !isEdge; j++)
-                            {
-                                if (x + j >= 0 && x + j < width && y + i >= 0 && y + i < height)
-                                {
-                                    byte* neighbor = (byte*)source.GetPixel(x + j, y + i).ToPointer();
+                            pixel[0] = 255;
+                            pixel[1] = 255;
+                            pixel[2] = 255;
+                        }
+                        else if (magnitude < lowThreshold)
+                        {
+                            pixel[0] = 0;
+                            pixel[1] = 0;
+                            pixel[2] = 0;
+                        }
+                        else
+                        {
+                            bool isEdge = false;
 
-                                    if (neighbor[0] > highThreshold)
+                            for (int i = -1; i <= 1; i++)
+                            {
+                                for (int j = -1; j <= 1; j++)
+                                {
+                                    if (x + j >= 0 && x + j < width && y + i >= 0 && y + i < height)
                                     {
-                                        isEdge = true;
+                                        if (gradientMagnitude[x + j, y + i] > highThreshold)
+                                        {
+                                            isEdge = true;
+                                        }
                                     }
                                 }
                             }
+
+                            pixel[0] = pixel[1] = pixel[2] = isEdge ? (byte)255 : (byte)0;
                         }
 
-                        pixel[0] = pixel[1] = pixel[2] = isEdge ? (byte)255 : (byte)0;
-
-                    }
-
-                    return new IntPtr(pixel);
-                });
-
-            image.UnlockBits(source);
-            edgeImage.UnlockBits(data);
+                        return new IntPtr(pixel);
+                    }));
 
             return edgeImage;
+        }
+
+        private double[,] PrepareDirections(double[,] gradientDirection)
+        {
+            Parallel.For(0, gradientDirection.GetLength(0), x =>
+            {
+                for (int y = 0; y < gradientDirection.GetLength(1); y++)
+                {
+                    double direction = gradientDirection[x, y];
+
+                    if (direction < 0)
+                    {
+                        direction += 360;
+                    }
+
+                    if (direction <= 22.5 || (direction >= 157.5 && direction <= 202.5) || direction >= 337.5)
+                    {
+                        gradientDirection[x, y] = 0;
+                    }
+                    else if ((direction >= 22.5 && direction <= 67.5) || (direction >= 202.5 && direction <= 247.5))
+                    {
+                        gradientDirection[x, y] = 45;
+                    }
+                    else if ((direction >= 67.5 && direction <= 112.5) || (direction >= 247.5 && direction <= 292.5))
+                    {
+                        gradientDirection[x, y] = 90;
+                    }
+                    else
+                    {
+                        gradientDirection[x, y] = 135;
+                    }
+                }
+            });
+
+            return gradientDirection;
         }
 
         private double[,] PrepareKernel(double[,] kernel)

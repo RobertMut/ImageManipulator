@@ -16,6 +16,7 @@ namespace ImageManipulator.Application.ViewModels
     {
         private readonly IImageConvolutionService imageConvolutionService;
         private readonly IImageBorderService imageBorderService;
+        private readonly IImagePointOperationsService _imagePointOperationsService;
         private Bitmap _afterImage;
         private Bitmap _beforeImage;
         private double _value;
@@ -54,10 +55,11 @@ namespace ImageManipulator.Application.ViewModels
         public ReactiveCommand<Unit, Unit> SelectImage { get; }
         #endregion Commands
 
-        public ImageConvolutionViewModel(IImageConvolutionService imageConvolutionService, IImageBorderService imageBorderService)
+        public ImageConvolutionViewModel(IImageConvolutionService imageConvolutionService, IImageBorderService imageBorderService, IImagePointOperationsService imagePointOperationsService)
         {
             this.imageConvolutionService = imageConvolutionService;
             this.imageBorderService = imageBorderService;
+            _imagePointOperationsService = imagePointOperationsService;
             Execute = ReactiveCommand.Create(ExecuteOperationOnImage);
         }
 
@@ -101,10 +103,10 @@ namespace ImageManipulator.Application.ViewModels
                             EdgeDetection.EdgeDetectionMatrices[_selectedEdgeDetection], _value, true);
                         var gradientMagnitude = imageConvolutionService.ComputeGradient(image, (gx, gy) => Math.Sqrt(gx * gx + gy * gy));
                         var gradientDirection =
-                            imageConvolutionService.ComputeGradient(image, (gx, gy) => Math.Atan2(gy, gx));
+                            imageConvolutionService.ComputeGradient(image, (gx, gy) => Math.Atan2(gy, gx)*180/Math.PI);
 
                         var nonMax = imageConvolutionService.NonMaxSupression(gradientMagnitude, gradientDirection);
-                        var thresh = imageConvolutionService.HysteresisThresholding(nonMax, 100, 210);
+                        var thresh = imageConvolutionService.HysteresisThresholding(image.Width, image.Height, 100, 210, gradientMagnitude);
 
                         return thresh;
                     }
