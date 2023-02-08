@@ -9,7 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Statics\" />
+    <Compile Remove="Statics\**" />
+    <EmbeddedResource Remove="Statics\**" />
+    <None Remove="Statics\**" />
   </ItemGroup>
 
 </Project>

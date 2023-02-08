@@ -9,7 +9,7 @@ namespace ImageManipulator.Domain.Common.Helpers
     public static class BitmapOperationsHelper
     {
         public static BitmapData LockBitmapReadOnly(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, pixelFormat);
-        public static BitmapData LockBitmapWriteOnly(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, pixelFormat);
+        public static BitmapData LockBitmapWriteOnly(this Bitmap bitmap, PixelFormat pixelFormat) => bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, pixelFormat);
 
         public unsafe static byte* ExecuteOnData(this IntPtr data,
             IntPtr scan0,
@@ -42,7 +42,6 @@ namespace ImageManipulator.Domain.Common.Helpers
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
-            byte* startPoint = (byte*)data.Scan0;
 
             Parallel.For(0, data.Height, i =>
             {
@@ -66,7 +65,6 @@ namespace ImageManipulator.Domain.Common.Helpers
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
-            int bitsPerPixel = Image.GetPixelFormatSize(data.PixelFormat);
 
             Parallel.For(0, data.Height, i =>
             {
@@ -94,7 +92,6 @@ namespace ImageManipulator.Domain.Common.Helpers
         public unsafe static BitmapData ExecuteOnPixels(this BitmapData data, int offsetX, int targetX, int offsetY, int targetY, Func<IntPtr, IntPtr, int, int, int, IntPtr> func)
         {
             var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
-            byte* startPoint = (byte*)data.Scan0;
 
             Parallel.For(offsetY, targetY, i =>
             {
