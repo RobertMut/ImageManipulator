@@ -170,8 +170,8 @@ namespace ImageManipulator.Application.Common.Services
                 graphics.Save();
             }
 
-            edgeImage.UnlockBits(edgeImage.LockBitmapWriteOnly(edgeImage.PixelFormat)
-                .ExecuteOnPixels(0, 0, width, height,
+            var data = edgeImage.LockBitmapReadOnly(edgeImage.PixelFormat)
+                .ExecuteOnPixels(0, width,0 , height,
                     (pixelPtr, scan0, stride, x, y) =>
                     {
                         byte* pixel = (byte*)pixelPtr.ToPointer();
@@ -211,7 +211,9 @@ namespace ImageManipulator.Application.Common.Services
                         }
 
                         return new IntPtr(pixel);
-                    }));
+                    });
+
+            edgeImage.UnlockBits(data);
 
             return edgeImage;
         }
