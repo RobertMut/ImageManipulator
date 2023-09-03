@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DynamicData.Binding;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
@@ -18,30 +19,25 @@ namespace ImageManipulator.Application.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IScreen
 {
-    private readonly IFileService _fileService;
     private readonly ICommonDialogService _commonDialogService;
     private readonly IServiceProvider serviceProvider;
     private readonly IImagePointOperationsService imagePointOperationsService;
-    private ObservableCollection<TabItem> _tabs = new ObservableCollection<TabItem>();
+    private readonly ITabService _tabService;
     private TabItem _currentTab;
-    private int _currentTabIndex = 0;
-
+    private ObservableCollection<TabItem> _imageTabs;
+    
     public RoutingState Router { get; } = new RoutingState();
 
     public ObservableCollection<TabItem> ImageTabs
     {
-        get => _tabs;
-        set => this.RaiseAndSetIfChanged(ref _tabs, value);
+        get => _imageTabs;
+        private set => this.RaiseAndSetIfChanged(ref _imageTabs, value);
     }
 
     public TabItem CurrentTab
     {
         get => _currentTab;
-        set
-        {
-            _currentTabIndex = ImageTabs.IndexOf(value);
-            this.RaiseAndSetIfChanged(ref _currentTab, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _currentTab, value);
     }
 
     #region Commands
@@ -63,16 +59,15 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     #endregion Commands
 
-    public MainWindowViewModel(IFileService fileService, ICommonDialogService commonDialogService, IServiceProvider serviceProvider, IImagePointOperationsService imagePointOperationsService)
+    public MainWindowViewModel(ICommonDialogService commonDialogService, IServiceProvider serviceProvider, IImagePointOperationsService imagePointOperationsService, ITabService tabService)
     {
-        _fileService = fileService;
         _commonDialogService = commonDialogService;
         this.serviceProvider = serviceProvider;
         this.imagePointOperationsService = imagePointOperationsService;
-        var emptyTab = new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>());
-        ImageTabs.Add(emptyTab);
-        CurrentTab = emptyTab;
-
+        _tabService = tabService;
+        _currentTab = _tabService.GetTab("Tab 1");
+        ImageTabs = _tabService.GetTabItems();
+        
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
         GetImageToTab = ReactiveCommand.Create(PrepareNewTab);
 
@@ -98,7 +93,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(convolution).ContinueWith(x =>
         {
             ResetTabAndReloadImage(convolution.BeforeImage, convolution.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -110,7 +106,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(arithmeticBitwise).ContinueWith(x =>
         {
             ResetTabAndReloadImage(arithmeticBitwise.BeforeImage, arithmeticBitwise.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -122,37 +119,29 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(gammaCorrection).ContinueWith(x =>
         {
             ResetTabAndReloadImage(gammaCorrection.BeforeImage, gammaCorrection.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
-    private void NewEmptyTab() => _tabs.Add(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
+    private void NewEmptyTab()
+    {
+        _tabService.AddEmpty(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
+        ImageTabs = _tabService.GetTabItems();
+    }
 
     private void PrepareNewTab()
     {
         string[] filePath = _commonDialogService.ShowFileDialogInNewWindow().Result;
-        if (filePath != null)
+        if (filePath != null && filePath.Length == 1)
         {
-            var tab = _tabs.Where(x => x.Name == filePath[0]).FirstOrDefault();
-
-            if (tab != null)
-            {
-                _tabs.Remove(tab);
-            }
-
-            if (filePath.Length > 1)
-            {
-                throw new NotImplementedException();
-            }
-
-            int tabIndex = _tabs.IndexOf(_currentTab);
             var openedImageBitmap = new Bitmap(filePath[0]);
 
-            var tabToReplace = new TabItem(Path.GetFileName(filePath[0]), serviceProvider.GetRequiredService<TabControlViewModel>());
-            tabToReplace.ViewModel.LoadImage(openedImageBitmap, filePath[0]);
+            var newTab = new TabItem(Path.GetFileName(filePath[0]), serviceProvider.GetRequiredService<TabControlViewModel>());
+            newTab.ViewModel.LoadImage(openedImageBitmap, filePath[0]);
 
-            ImageTabs[tabIndex] = tabToReplace;
-            CurrentTab = tabToReplace;
+            CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
+            ImageTabs = _tabService.GetTabItems();
         }
     }
 
@@ -165,7 +154,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(contrastStretching).ContinueWith(x =>
         {
             ResetTabAndReloadImage(contrastStretching.BeforeImage, contrastStretching.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -178,7 +168,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(histogramEqualization).ContinueWith(x =>
         {
             ResetTabAndReloadImage(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -186,7 +177,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var bitmap = imagePointOperationsService.Negation(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
         ResetTabAndReloadImage(CurrentTab.ViewModel.Image, ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab.ViewModel);
-        ReplaceTab(CurrentTab, _currentTabIndex);
+        ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+        ImageTabs = _tabService.GetTabItems();
     }
 
     private void OpenTresholdingWindow()
@@ -197,7 +189,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(thresholding).ContinueWith(x =>
         {
             ResetTabAndReloadImage(thresholding.BeforeImage, thresholding.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -209,7 +202,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
         {
             ResetTabAndReloadImage(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, _currentTabIndex);
+            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
+            ImageTabs = _tabService.GetTabItems();
         });
     }
 
@@ -225,15 +219,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private void Duplicate()
     {
-        ImageTabs.Add(_currentTab);
-        CurrentTab = _currentTab;
+        CurrentTab = _tabService.Duplicate(_currentTab.Name);
     }
 
     private void CloseApp() => Environment.Exit(1);
 
-    private Func<TabItem, int, TabItem> ReplaceTab => (tabItem, currentTabIndex) =>
-        ImageTabs.ReplaceAndReturn(currentTabIndex,
-                                          tabItem);
+    private Func<TabItem, string, TabItem> ReplaceTab => (tabItem, name) => _tabService.Replace(name, ref tabItem);
 
     private Func<Bitmap, Bitmap, TabControlViewModel, Task<TabControlViewModel>> ResetTabAndReloadImage => async (beforeImage, afterImage, currentTab) =>
     afterImage != null && beforeImage != afterImage ?

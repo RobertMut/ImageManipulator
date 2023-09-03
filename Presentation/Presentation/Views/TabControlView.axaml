@@ -38,7 +38,7 @@
                 PanButton="Left"
                 Stretch="None"
                 ZoomSpeed="1.2">
-                <Image Source="{Binding Image}" />
+                <Image Source="{Binding Image, Mode=TwoWay}" />
             </paz:ZoomBorder>
         </ScrollViewer>
 

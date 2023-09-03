@@ -53,7 +53,9 @@
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding TresholdingCommand}">Execute</Button>
+			<Button x:Name="thresholdCommand" Command="{Binding ThresholdingCommand}">Execute</Button>
+			<Button Command="{Binding Accept}">Accept changes</Button>
+			<Button Command="{Binding Cancel}">Cancel</Button>
 		</StackPanel>
 	</Grid>
 </UserControl>

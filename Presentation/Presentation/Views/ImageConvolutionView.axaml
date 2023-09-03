@@ -125,8 +125,9 @@
             </ComboBox>
             <TextBox Text="{Binding BorderConstVal, Converter={StaticResource doubleStringConverter}}" Watermark="Border const" />
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <Button Command="{Binding Execute}">Execute</Button>
-                <Button Command="{Binding Accept}" />
+                <Button x:Name="convolutionCommand" Command="{Binding Execute}">Execute</Button>
+                <Button Command="{Binding Accept}">Accept changes</Button>
+                <Button Command="{Binding Cancel}">Cancel</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

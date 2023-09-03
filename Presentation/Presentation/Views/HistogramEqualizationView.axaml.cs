@@ -9,6 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public HistogramEqualizationView()
         {
             InitializeComponent();
+            this.BindCommand(ViewModel, vm => vm.ExecuteEqualizeHistogram, v => v.equalizeCommand);
             this.WhenActivated(disposables => { });
         }
     }

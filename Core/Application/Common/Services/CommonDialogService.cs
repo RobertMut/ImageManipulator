@@ -18,7 +18,7 @@ public class CommonDialogService : ICommonDialogService
     {
         var saveDialog = new SaveFileDialog();
         saveDialog.InitialFileName = Path.GetFileName(filePath);
-        saveDialog.InitialDirectory = Path.GetFullPath(filePath);
+        saveDialog.Directory = Path.GetFullPath(filePath);
 
         var filter = new FileDialogFilter();
         filter.Extensions.Add(Path.GetExtension(saveDialog.DefaultExtension));

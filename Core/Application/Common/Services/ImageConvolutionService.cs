@@ -39,10 +39,10 @@ namespace ImageManipulator.Application.Common.Services
             }
 
             BitmapData sourceData = bitmap
-                .LockBitmapReadOnly(PixelFormat.Format32bppArgb);
+                .LockBitmap(PixelFormat.Format32bppArgb, ImageLockMode.ReadWrite);
 
             BitmapData affectedData = newBitmap
-                .LockBitmapReadOnly(PixelFormat.Format32bppArgb);
+                .LockBitmap(PixelFormat.Format32bppArgb, ImageLockMode.ReadWrite);
 
             for (int y = 0; y < newBitmap.Height; y++)
             {
@@ -84,7 +84,7 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe double[,] ComputeGradient(Bitmap bitmap, Func<double, double, double> func)
         {
             double[,] gradient = new double[bitmap.Width, bitmap.Height];
-            var bitmapData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat);
+            var bitmapData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadWrite);
 
             for (int y = 1; y < bitmap.Height - 1; y++)
             {
@@ -170,7 +170,7 @@ namespace ImageManipulator.Application.Common.Services
                 graphics.Save();
             }
 
-            var data = edgeImage.LockBitmapReadOnly(edgeImage.PixelFormat)
+            var data = edgeImage.LockBitmap(edgeImage.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels(0, width,0 , height,
                     (pixelPtr, scan0, stride, x, y) =>
                     {
@@ -209,8 +209,6 @@ namespace ImageManipulator.Application.Common.Services
 
                             pixel[0] = pixel[1] = pixel[2] = isEdge ? (byte)255 : (byte)0;
                         }
-
-                        return new IntPtr(pixel);
                     });
 
             edgeImage.UnlockBits(data);

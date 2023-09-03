@@ -1,7 +1,12 @@
+using System;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ReactiveUI;
 using System.Reactive;
+using System.Reactive.Linq;
+using Avalonia.Controls;
+using CommunityToolkit.Mvvm.Input;
+using Splat;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -35,20 +40,28 @@ namespace ImageManipulator.Application.ViewModels
 
         #region Commands
 
-        public ReactiveCommand<Unit, Unit> TresholdingCommand { get; }
+        public ReactiveCommand<Unit, Unit> ThresholdingCommand { get; }
 
         #endregion Commands
 
         public MultiThresholdingViewModel(IImagePointOperationsService imagePointOperationsService)
         {
             this.imagePointOperationsService = imagePointOperationsService;
-            TresholdingCommand = ReactiveCommand.Create(ExecuteTresholding);
+            ThresholdingCommand = ReactiveCommand.CreateFromObservable(ExecuteThresholding);
+            ThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
+            ThresholdingCommand.ThrownExceptions.Subscribe(ex =>
+                this.Log().ErrorException("Error during thresholding!", ex));
+            AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
+            CancelCommand = new RelayCommand<Window>(this.Cancel);
         }
 
-        private void ExecuteTresholding()
-        {
-            var stretchedImage = imagePointOperationsService.MultiThresholding(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold, _enteredUpperThreshold, ReplaceColours);
-            AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
-        }
+        private IObservable<Unit> ExecuteThresholding() =>
+            Observable.Start(() =>
+            {
+                var stretchedImage = imagePointOperationsService.MultiThresholding(
+                    ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold,
+                    _enteredUpperThreshold, ReplaceColours);
+                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
+            });
     }
 }

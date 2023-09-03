@@ -95,7 +95,7 @@
                 </ComboBox>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <Button Command="{Binding Execute}">Execute</Button>
+                <Button x:Name="operationCommand" Command="{Binding Execute}">Execute</Button>
                 <Button Command="{Binding Accept}" />
             </StackPanel>
         </StackPanel>

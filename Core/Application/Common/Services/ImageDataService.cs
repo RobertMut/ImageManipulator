@@ -3,6 +3,7 @@ using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 namespace ImageManipulator.Application.Common.Services
@@ -22,7 +23,7 @@ namespace ImageManipulator.Application.Common.Services
         public unsafe double[][] CalculateLevels(Avalonia.Media.Imaging.Bitmap bitmap)
         {
             System.Drawing.Bitmap newBitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
-            var bitmapData = newBitmap.LockBitmapReadOnly(newBitmap.PixelFormat);
+            var bitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat, ImageLockMode.ReadWrite);
             int bytes = Math.Abs(bitmapData.Stride) * newBitmap.Height;
 
             byte[] buffer = new byte[bytes];
@@ -89,10 +90,10 @@ namespace ImageManipulator.Application.Common.Services
 
             System.Drawing.Bitmap newImage = new System.Drawing.Bitmap(existingImage.Width, existingImage.Height, existingImage.PixelFormat);
             
-            var sourceBitmapData = existingImage.LockBitmapReadOnly(existingImage.PixelFormat);
+            var sourceBitmapData = existingImage.LockBitmap(existingImage.PixelFormat, ImageLockMode.ReadWrite);
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(newImage.PixelFormat);
 
-            var bitmapData = newImage.LockBitmapReadOnly(newImage.PixelFormat).ExecuteOnPixels((x, scan0, stride, i, j) =>
+            var bitmapData = newImage.LockBitmap(newImage.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride, i, j) =>
             {
                 byte* pixelData = (byte*)x;
                 byte* otherPixelData = ((byte*) sourceBitmapData.GetPixel(i, j));
@@ -114,7 +115,6 @@ namespace ImageManipulator.Application.Common.Services
                         (byte)values[0][blueValue]);
                 }
 
-
                 pixelData[2] = newPixel.R;
                 pixelData[1] = newPixel.G;
                 pixelData[0] = newPixel.B;
@@ -122,8 +122,6 @@ namespace ImageManipulator.Application.Common.Services
                 red[newPixel.R]++;
                 green[newPixel.G]++;
                 blue[newPixel.B]++;
-
-                return new IntPtr(pixelData);
             });
 
             if (values.Length == 3)

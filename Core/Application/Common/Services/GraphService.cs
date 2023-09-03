@@ -39,26 +39,27 @@ namespace ImageManipulator.Application.Common.Services
             int xStartDrawPoint = horizontalMargins;
             int yStartDrawPoint = verticalMargins;
             int zIndex = 1;
-
+            IEnumerable<int> indexes = Enumerable.Range(1, 256).Where(i => i % 8 == 0);
+            
             foreach (KeyValuePair<string, double[]> graphData in values)
             {
                 var colour = AvaloniaColourDictionary.Colour[graphData.Key];
-
-                Parallel.ForEach(graphData.Value, value =>
+                double[] graphDataValues = graphData.Value;
+                
+                Parallel.ForEach(indexes, i =>
                 {
-                    
-                    int reversedHeight = -CalculationHelper.FloorValue(value / (width * height));
+                    int reversedHeight = -CalculationHelper.FloorValue(graphDataValues[i-1] / (width * height));
 
                     lines.Add(new CanvasLineModel(
                         new Avalonia.Point(xStartDrawPoint, yStartDrawPoint),
-                        new Avalonia.Point(xStartDrawPoint+brushSize, reversedHeight),
+                        new Avalonia.Point(xStartDrawPoint+8, reversedHeight),
                         colour,
                         height,
                         0,
                         zIndex)
                         );
 
-                    xStartDrawPoint += (int)Math.Ceiling(brushSize);
+                    xStartDrawPoint += 8;
                 });
 
                 zIndex++;

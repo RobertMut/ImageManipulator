@@ -36,8 +36,9 @@
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+			<Button x:Name="stretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
 		</StackPanel>
-			<Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Accept}">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Cancel}">Cancel</Button>	
 	</Grid>
 </UserControl>

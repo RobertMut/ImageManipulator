@@ -22,9 +22,6 @@
 			<Image Source="{Binding AfterImage}"/>
 		</StackPanel>
 		<Grid Grid.Column="0" Grid.Row="1">
-			<Grid.RowDefinitions>
-				<RowDefinition/>
-			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="0.5*"/>
 				<ColumnDefinition Width="0.5*"/>
@@ -46,7 +43,9 @@
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding TresholdingCommand}">Execute</Button>
+			<Button x:Name="thresholdCommand" Command="{Binding TresholdingCommand}">Execute</Button>
+			<Button Command="{Binding AcceptCommand}">Accept changes</Button>
+			<Button Command="{Binding CancelCommand}">Cancel</Button>
 		</StackPanel>
 	</Grid>
 </UserControl>

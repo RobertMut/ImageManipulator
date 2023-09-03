@@ -7,13 +7,14 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="clr-namespace:Avalonia.ReactiveUI;assembly=Avalonia.ReactiveUI"
     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+    xmlns:viewModels="clr-namespace:ImageManipulator.Application.ViewModels;assembly=ImageManipulator.Application"
     Title="ImageManipulator"
     Icon="/Assets/avalonia-logo.ico"
     WindowState="Maximized"
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel />
+        <viewModels:MainWindowViewModel />
     </Design.DataContext>
     <StackPanel>
         <StackPanel Orientation="Horizontal">
@@ -48,16 +49,16 @@
 
             <TabControl
                 Name="TabNav"
-                Items="{Binding ImageTabs}"
-                SelectedItem="{Binding CurrentTab}">
+                Items="{Binding ImageTabs, Mode=TwoWay}"
+                SelectedItem="{Binding CurrentTab, Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Name, Mode=TwoWay}" />
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
                     <DataTemplate>
-                        <rxui:ViewModelViewHost ViewModel="{Binding ViewModel}" />
+                        <rxui:ViewModelViewHost ViewModel="{Binding ViewModel, Mode=TwoWay}" />
                     </DataTemplate>
                 </TabControl.ContentTemplate>
             </TabControl>

@@ -9,6 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public ArithmeticBitwiseOperationsView()
         {
             InitializeComponent();
+            this.BindCommand(ViewModel, vm => vm.Execute, v => v.operationCommand);
             this.WhenActivated(disposables => { });
         }
     }

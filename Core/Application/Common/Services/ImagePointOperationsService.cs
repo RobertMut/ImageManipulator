@@ -4,6 +4,7 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 
 namespace ImageManipulator.Application.Common.Services
@@ -48,7 +49,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
@@ -58,8 +59,6 @@ namespace ImageManipulator.Application.Common.Services
 
                     if (brightness >= lowest && brightness <= highest)
                         data[0] = data[1] = data[2] = (byte)(int)(255 * ((brightness - lowest) / (highest - lowest)));
-
-                return new IntPtr(data);
             });
 
             newSrc.UnlockBits(bitmapData);
@@ -71,15 +70,13 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
                 data[0] = (byte)CalculationHelper.CalculateCorrectedGamma(data[0], gamma);
                 data[1] = (byte)CalculationHelper.CalculateCorrectedGamma(data[1], gamma);
                 data[2] = (byte)CalculationHelper.CalculateCorrectedGamma(data[2], gamma);
-
-                return new IntPtr(data);
             });
 
             newSrc.UnlockBits(bitmapData);
@@ -102,8 +99,8 @@ namespace ImageManipulator.Application.Common.Services
 
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             double totalNum = bitmap.Height * bitmap.Width;
-            var bitmapData = newSrc.LockBitmapReadOnly(newSrc.PixelFormat);
-            var sourceBitmapData = bitmap.LockBitmapReadOnly(bitmap.PixelFormat);
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite);
+            var sourceBitmapData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadOnly);
 
             for (int k = 0; k < 256; k++)
             {
@@ -124,8 +121,6 @@ namespace ImageManipulator.Application.Common.Services
                 pixelData[0] = (byte)red[otherImagePixelData[0]];
                 pixelData[1] = (byte)green[otherImagePixelData[1]];
                 pixelData[2] = (byte)blue[otherImagePixelData[2]];
-
-                return new IntPtr(pixelData);
             });
 
             bitmap.UnlockBits(sourceBitmapData);
@@ -138,7 +133,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             var bitmapData = newSrc
-                .LockBitmapReadOnly(newSrc.PixelFormat)
+                .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
@@ -146,8 +141,6 @@ namespace ImageManipulator.Application.Common.Services
                     data[0] = (byte)(255 - data[0]);
                     data[1] = (byte)(255 - data[1]);
                     data[2] = (byte)(255 - data[2]);
-
-                    return new IntPtr(data);
                 });
 
             newSrc.UnlockBits(bitmapData);
@@ -159,7 +152,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
-                .LockBitmapReadOnly(newSrc.PixelFormat)
+                .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
@@ -177,8 +170,6 @@ namespace ImageManipulator.Application.Common.Services
                         data[1] = 255;
                         data[2] = 255;
                     }
-
-                    return new IntPtr(data);
                 }));
 
             return newSrc;
@@ -188,7 +179,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
-                .LockBitmapReadOnly(newSrc.PixelFormat)
+                .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
                 {
                     byte* data = (byte*)x.ToPointer();
@@ -209,8 +200,6 @@ namespace ImageManipulator.Application.Common.Services
                         data[1] = 255;
                         data[2] = 255;
                     }
-
-                    return new IntPtr(data);
                 }));
 
             return newSrc;
