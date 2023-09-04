@@ -48,7 +48,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <ItemsControl Items="{Binding CanvasLinesRGB, Mode=TwoWay}">
+                <ItemsControl ItemsSource="{Binding CanvasLinesRGB, Mode=TwoWay}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Width="300" Height="240" />
@@ -77,7 +77,7 @@
                 <Line StartPoint="0,0" EndPoint="300,0" />
             </Grid>
             <Grid Grid.Row="1">
-                <ItemsControl Items="{Binding CanvasLinesLuminance, Mode=TwoWay}">
+                <ItemsControl ItemsSource="{Binding CanvasLinesLuminance, Mode=TwoWay}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas Width="300" Height="240" />

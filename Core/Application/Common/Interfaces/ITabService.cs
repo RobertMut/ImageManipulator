@@ -1,6 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using ImageManipulator.Application.Common.Models;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using ImageManipulator.Application.ViewModels;
+using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
 namespace ImageManipulator.Application.Common.Interfaces;
 

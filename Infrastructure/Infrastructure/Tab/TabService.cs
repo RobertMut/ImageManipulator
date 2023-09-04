@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Avalonia.Controls;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.Common.Models;
 using ImageManipulator.Application.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
 namespace ImageManipulator.Infrastructure.Tab;
 
@@ -37,7 +38,7 @@ public class TabService : ITabService
         return default;
     }
 
-    public ObservableCollection<TabItem> GetTabItems() => new ObservableCollection<TabItem>(_tabItems.Values);
+    public ObservableCollection<TabItem> GetTabItems() => new(_tabItems.Values);
 
     public void SetTabs(ObservableCollection<TabItem> tabItems)
     {

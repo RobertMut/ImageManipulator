@@ -1,17 +1,16 @@
-﻿using Avalonia;
-using ImageManipulator.Application.Common.Helpers;
+﻿using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using DynamicData.Binding;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
@@ -132,17 +131,21 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private void PrepareNewTab()
     {
-        string[] filePath = _commonDialogService.ShowFileDialogInNewWindow().Result;
-        if (filePath != null && filePath.Length == 1)
+        Observable.StartAsync(async () =>
         {
-            var openedImageBitmap = new Bitmap(filePath[0]);
+            Stream stream = await _commonDialogService.ShowFileDialogInNewWindow();
+            if (stream.Length != 0)
+            {
+                var openedImageBitmap = new Bitmap(stream);
+                //TODO
+                //var newTab = new TabItem(Path.GetFileName(stream),
+                //    serviceProvider.GetRequiredService<TabControlViewModel>());
+                //await newTab.ViewModel.LoadImage(openedImageBitmap, stream);
 
-            var newTab = new TabItem(Path.GetFileName(filePath[0]), serviceProvider.GetRequiredService<TabControlViewModel>());
-            newTab.ViewModel.LoadImage(openedImageBitmap, filePath[0]);
-
-            CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
-            ImageTabs = _tabService.GetTabItems();
-        }
+                //CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
+                ImageTabs = _tabService.GetTabItems();
+            }
+        });
     }
 
     private void OpenContrastStretchWindow()

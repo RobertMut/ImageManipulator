@@ -6,6 +6,7 @@ using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Enums;
 using ReactiveUI;
 using System;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
@@ -88,7 +89,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         .ContinueWith(x =>
         {
             OperationImage = new Bitmap(
-                Observable.FromAsync<string[]>(() => x).FirstOrDefault()[0]
+                Observable.FromAsync<Stream>(() => x).FirstOrDefault()
             );
         });
 

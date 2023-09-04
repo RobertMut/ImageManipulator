@@ -2,11 +2,9 @@
     x:Class="ImageManipulator.Presentation.Views.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:app="clr-namespace:ImageManipulator.Presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:rxui="clr-namespace:Avalonia.ReactiveUI;assembly=Avalonia.ReactiveUI"
-    xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
     xmlns:viewModels="clr-namespace:ImageManipulator.Application.ViewModels;assembly=ImageManipulator.Application"
     Title="ImageManipulator"
     Icon="/Assets/avalonia-logo.ico"
@@ -46,10 +44,9 @@
             </Menu>
         </StackPanel>
         <StackPanel>
-
             <TabControl
                 Name="TabNav"
-                Items="{Binding ImageTabs, Mode=TwoWay}"
+                ItemsSource="{Binding ImageTabs, Mode=TwoWay}"
                 SelectedItem="{Binding CurrentTab, Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>

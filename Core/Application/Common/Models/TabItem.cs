@@ -1,9 +1,11 @@
-﻿using ImageManipulator.Application.ViewModels;
+﻿using Avalonia.Controls.Primitives;
+using CommunityToolkit.Mvvm.ComponentModel;
+using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Models
 {
-    public class TabItem
+    public class TabItem : ObservableObject
     {
         public string Name { get; set; } 
         public TabControlViewModel ViewModel { get; }

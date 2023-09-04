@@ -1,36 +1,42 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 
 namespace ImageManipulator.Application.Common.Services;
 
 public class CommonDialogService : ICommonDialogService
 {
-    public Task<string[]> ShowFileDialogInNewWindow()
+    public async Task<Stream> ShowFileDialogInNewWindow()
     {
-        return new OpenFileDialog().ShowAsync(new Window());
+        var image = await new Window().StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Select image..",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { FilePickerFileTypes.ImageAll }
+        });
+        
+        return await image[0].OpenReadAsync();
     }
 
-    public void ShowSaveFileDialog(Bitmap bitmap, string filePath)
+    public async Task ShowSaveFileDialog(Bitmap bitmap, string filePath)
     {
-        var saveDialog = new SaveFileDialog();
-        saveDialog.InitialFileName = Path.GetFileName(filePath);
-        saveDialog.Directory = Path.GetFullPath(filePath);
+        var window = new Window();
 
-        var filter = new FileDialogFilter();
-        filter.Extensions.Add(Path.GetExtension(saveDialog.DefaultExtension));
-
-        saveDialog.Filters = new System.Collections.Generic.List<FileDialogFilter>
+        var file = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            filter
-        };
-
-        string file = saveDialog.ShowAsync(new Window()).Result;
-
-        bitmap.Save(file);
+            Title = "Save Image..",
+            SuggestedStartLocation = await window.StorageProvider.TryGetFolderFromPathAsync(Path.GetFullPath(filePath)),
+            SuggestedFileName = Path.GetFileName(filePath),
+            FileTypeChoices = new FilePickerFileType[] { FilePickerFileTypes.ImageAll },
+            ShowOverwritePrompt = true
+        });
+        
+        bitmap.Save(file.Path.ToString());
     }
 
     public Task ShowDialog<TViewModel>(TViewModel viewModel)
