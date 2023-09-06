@@ -43,12 +43,12 @@ public partial class App : Avalonia.Application
 
     private void Configure(IServiceCollection serviceDescriptors)
     {
-        serviceDescriptors.AddTransient<IServiceCollection, ServiceCollection>();
-        serviceDescriptors.AddTransient<AppViewLocator>();
+        serviceDescriptors.AddSingleton<IServiceCollection, ServiceCollection>();
+        serviceDescriptors.AddSingleton<AppViewLocator>();
         serviceDescriptors.AddInfrastructure();
         serviceDescriptors.AddApplication();
         serviceDescriptors.AddSingleton<MainWindowViewModel>();
-        serviceDescriptors.AddScoped<TabControlViewModel>();
+        serviceDescriptors.AddTransient<TabControlViewModel>();
         serviceDescriptors.AddScoped<ContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<NonLinearContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();

@@ -3,14 +3,12 @@ using ImageManipulator.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
+using Avalonia.Platform.Storage;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
@@ -24,7 +22,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private readonly ITabService _tabService;
     private TabItem _currentTab;
     private ObservableCollection<TabItem> _imageTabs;
-    
+    private ObservableAsPropertyHelper<bool> _isPreparingImageToNewTab;
+
     public RoutingState Router { get; } = new RoutingState();
 
     public ObservableCollection<TabItem> ImageTabs
@@ -43,6 +42,10 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }
     public ReactiveCommand<Unit, Unit> GetImageToTab { get; }
+    public bool IsPreparingImageToNewTab
+    {
+        get { return _isPreparingImageToNewTab.Value; }
+    }
     public ReactiveCommand<Unit, Unit> Exit { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageAsCommand { get; }
@@ -68,8 +71,10 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         ImageTabs = _tabService.GetTabItems();
         
         AddNewTab = ReactiveCommand.Create(NewEmptyTab);
-        GetImageToTab = ReactiveCommand.Create(PrepareNewTab);
-
+        GetImageToTab = ReactiveCommand.CreateFromObservable(PrepareNewTab);
+        GetImageToTab.IsExecuting.ToProperty(this, x => x.IsPreparingImageToNewTab, out _isPreparingImageToNewTab);
+        GetImageToTab.ThrownExceptions.Subscribe(Console.WriteLine);
+        
         Exit = ReactiveCommand.Create(CloseApp);
         SaveImageCommand = ReactiveCommand.Create(SaveImage);
         SaveImageAsCommand = ReactiveCommand.Create(SaveImageAs);
@@ -129,24 +134,23 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         ImageTabs = _tabService.GetTabItems();
     }
 
-    private void PrepareNewTab()
-    {
+    private IObservable<Unit> PrepareNewTab() =>
         Observable.StartAsync(async () =>
         {
-            Stream stream = await _commonDialogService.ShowFileDialogInNewWindow();
-            if (stream.Length != 0)
+            IStorageFile file = await _commonDialogService.ShowFileDialogInNewWindow();
+            await using Stream fileStream = await file.OpenReadAsync();
+            
+            if (fileStream.Length != 0)
             {
-                var openedImageBitmap = new Bitmap(stream);
-                //TODO
-                //var newTab = new TabItem(Path.GetFileName(stream),
-                //    serviceProvider.GetRequiredService<TabControlViewModel>());
-                //await newTab.ViewModel.LoadImage(openedImageBitmap, stream);
+                var openedImageBitmap = new Bitmap(fileStream);
+                var newTab = new TabItem(Path.GetFileName(file.Path.AbsolutePath),
+                    serviceProvider.GetRequiredService<TabControlViewModel>());
+                await newTab.ViewModel.LoadImage(openedImageBitmap, file.Path.AbsolutePath);
 
-                //CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
+                CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
                 ImageTabs = _tabService.GetTabItems();
             }
         });
-    }
 
     private void OpenContrastStretchWindow()
     {

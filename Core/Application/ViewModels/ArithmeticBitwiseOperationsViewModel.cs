@@ -10,6 +10,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using Splat;
 
@@ -30,6 +31,8 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     private ArithmeticOperationType _arithmeticOperation;
     private BitwiseOperationType _bitwiseOperation;
 
+    private ObservableAsPropertyHelper<bool> _isSelecting;
+    
     public override Bitmap AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
     public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
     public Bitmap OperationImage { get => _operationImage; set => this.RaiseAndSetIfChanged(ref _operationImage, value); }
@@ -44,6 +47,10 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     public ReactiveCommand<Unit, Unit> Execute { get; }
     public ReactiveCommand<Unit, Unit> SelectImage { get; }
+    public bool IsSelecting
+    {
+        get { return _isSelecting.Value; }
+    }
 
     #endregion Commands
 
@@ -52,7 +59,10 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         this._imageArithmeticService = imageArithmeticService;
         this._imageBitwiseService = imageBitwiseService;
         this.commonDialogService = commonDialogService;
-        SelectImage = ReactiveCommand.Create(SelectImageCommand);
+        SelectImage = ReactiveCommand.CreateFromObservable(SelectImageCommand);
+        SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
+        SelectImage.ThrownExceptions.Subscribe(Console.WriteLine);
+        
         Execute = ReactiveCommand.CreateFromObservable(ExecuteOperationOnImage);
         Execute.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
         Execute.ThrownExceptions.Subscribe(ex =>
@@ -61,9 +71,8 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         CancelCommand = new RelayCommand<Window>(this.Cancel);
     }
 
-    private IObservable<Unit> ExecuteOperationOnImage()
-    {
-        return Observable.Start(() =>
+    private IObservable<Unit> ExecuteOperationOnImage() =>
+        Observable.Start(() =>
         {
             if (_isArithmeticSelected)
             {
@@ -82,16 +91,13 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
                 );
             }
         });
-    }
 
-    private void SelectImageCommand() => commonDialogService
-        .ShowFileDialogInNewWindow()
-        .ContinueWith(x =>
-        {
-            OperationImage = new Bitmap(
-                Observable.FromAsync<Stream>(() => x).FirstOrDefault()
-            );
-        });
+    private IObservable<Unit> SelectImageCommand() => Observable.StartAsync(async () =>
+    {
+        var storageFile = await commonDialogService.ShowFileDialogInNewWindow();
+        await using Stream fileStream = await storageFile.OpenReadAsync();
+        OperationImage = new Bitmap(fileStream);
+    });
 
     private object ParameterSelector(ElementaryOperationParameterEnum parameter) => parameter switch
     {

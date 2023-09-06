@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using Avalonia.Media.Imaging;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 
 namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface ICommonDialogService
     {
-        Task<Stream> ShowFileDialogInNewWindow();
+        Task<IStorageFile> ShowFileDialogInNewWindow();
 
         Task ShowSaveFileDialog(Bitmap bitmap, string filePath);
 

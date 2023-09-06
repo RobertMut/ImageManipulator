@@ -11,7 +11,7 @@ namespace ImageManipulator.Application.Common.Services;
 
 public class CommonDialogService : ICommonDialogService
 {
-    public async Task<Stream> ShowFileDialogInNewWindow()
+    public async Task<IStorageFile> ShowFileDialogInNewWindow()
     {
         var image = await new Window().StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -20,7 +20,7 @@ public class CommonDialogService : ICommonDialogService
             FileTypeFilter = new[] { FilePickerFileTypes.ImageAll }
         });
         
-        return await image[0].OpenReadAsync();
+        return image[0];
     }
 
     public async Task ShowSaveFileDialog(Bitmap bitmap, string filePath)
