@@ -80,7 +80,7 @@ public class TabService : ITabService
         return newTabItem;
     }
 
-    public TabItem Replace(string name, ref TabItem tabItem)
+    public TabItem Replace(string name, TabItem tabItem)
     {
         if (_tabItems.TryGetValue(name, out TabItem existingTabItems))
         {

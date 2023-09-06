@@ -17,14 +17,14 @@ namespace ImageManipulator.Application.ViewModels;
 public class MainWindowViewModel : ViewModelBase, IScreen
 {
     private readonly ICommonDialogService _commonDialogService;
-    private readonly IServiceProvider serviceProvider;
-    private readonly IImagePointOperationsService imagePointOperationsService;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IImagePointOperationsService _imagePointOperationsService;
     private readonly ITabService _tabService;
     private TabItem _currentTab;
     private ObservableCollection<TabItem> _imageTabs;
-    private ObservableAsPropertyHelper<bool> _isPreparingImageToNewTab;
+    private readonly ObservableAsPropertyHelper<bool> _isCommandActive;
 
-    public RoutingState Router { get; } = new RoutingState();
+    public RoutingState Router { get; } = new();
 
     public ObservableCollection<TabItem> ImageTabs
     {
@@ -38,14 +38,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         set => this.RaiseAndSetIfChanged(ref _currentTab, value);
     }
 
+    public bool IsCommandActive => _isCommandActive.Value;
+
     #region Commands
 
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }
     public ReactiveCommand<Unit, Unit> GetImageToTab { get; }
-    public bool IsPreparingImageToNewTab
-    {
-        get { return _isPreparingImageToNewTab.Value; }
-    }
     public ReactiveCommand<Unit, Unit> Exit { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageAsCommand { get; }
@@ -53,7 +51,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public ReactiveCommand<Unit, Unit> ContrastStretchingCommand { get; }
     public ReactiveCommand<Unit, Unit> GammaCorrectionCommand { get; }
     public ReactiveCommand<Unit, Unit> HistogramEqualizationCommand { get; }
-    public ReactiveCommand<Unit, Unit> TresholdingCommand { get; }
+    public ReactiveCommand<Unit, Unit> ThresholdCommand { get; }
     public ReactiveCommand<Unit, Unit> MultiThresholdingCommand { get; }
     public ReactiveCommand<Unit, Unit> NegationCommand { get; }
     public ReactiveCommand<Unit, Unit> ArithmeticBitwiseCommand { get; }
@@ -61,180 +59,190 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     #endregion Commands
 
-    public MainWindowViewModel(ICommonDialogService commonDialogService, IServiceProvider serviceProvider, IImagePointOperationsService imagePointOperationsService, ITabService tabService)
+    public MainWindowViewModel(ICommonDialogService commonDialogService, IServiceProvider serviceProvider,
+        IImagePointOperationsService imagePointOperationsService, ITabService tabService)
     {
         _commonDialogService = commonDialogService;
-        this.serviceProvider = serviceProvider;
-        this.imagePointOperationsService = imagePointOperationsService;
+        _serviceProvider = serviceProvider;
+        _imagePointOperationsService = imagePointOperationsService;
         _tabService = tabService;
         _currentTab = _tabService.GetTab("Tab 1");
-        ImageTabs = _tabService.GetTabItems();
+        _imageTabs = _tabService.GetTabItems();
+
+        AddNewTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NewEmptyTab));
+        AddNewTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        GetImageToTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(PrepareNewTab));
+        GetImageToTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        Exit = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(CloseApp));
+        SaveImageCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImage));
+        SaveImageCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
         
-        AddNewTab = ReactiveCommand.Create(NewEmptyTab);
-        GetImageToTab = ReactiveCommand.CreateFromObservable(PrepareNewTab);
-        GetImageToTab.IsExecuting.ToProperty(this, x => x.IsPreparingImageToNewTab, out _isPreparingImageToNewTab);
-        GetImageToTab.ThrownExceptions.Subscribe(Console.WriteLine);
+        SaveImageAsCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImageAs));
+        SaveImageAsCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
         
-        Exit = ReactiveCommand.Create(CloseApp);
-        SaveImageCommand = ReactiveCommand.Create(SaveImage);
-        SaveImageAsCommand = ReactiveCommand.Create(SaveImageAs);
-        DuplicateCommand = ReactiveCommand.Create(Duplicate);
-        ContrastStretchingCommand = ReactiveCommand.Create(OpenContrastStretchWindow);
-        GammaCorrectionCommand = ReactiveCommand.Create(OpenGammaCorrectionWindow);
-        HistogramEqualizationCommand = ReactiveCommand.Create(OpenHistogramEqualizationWindow);
-        TresholdingCommand = ReactiveCommand.Create(OpenTresholdingWindow);
-        MultiThresholdingCommand = ReactiveCommand.Create(OpenMultiTresholdingWindow);
-        NegationCommand = ReactiveCommand.Create(NegateImage);
-        ArithmeticBitwiseCommand = ReactiveCommand.Create(OpenArithmeticBitwiseWindow);
-        ImageConvolutionCommand = ReactiveCommand.Create(OpenImageConvolutionWindow);
+        DuplicateCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Duplicate));
+        DuplicateCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        ContrastStretchingCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenContrastStretchWindow));
+        ContrastStretchingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        GammaCorrectionCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenGammaCorrectionWindow));
+        GammaCorrectionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        HistogramEqualizationCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenHistogramEqualizationWindow));
+        HistogramEqualizationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        
+        ThresholdCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenThresholdWindow));
+        ThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        MultiThresholdingCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenMultiThresholdWindow));
+        MultiThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        NegationCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NegateImage));
+        NegationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        ArithmeticBitwiseCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenArithmeticBitwiseWindow));
+        ArithmeticBitwiseCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+
+        ImageConvolutionCommand =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenImageConvolutionWindow));
+        ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
     }
 
-    private void OpenImageConvolutionWindow()
+    private async Task OpenImageConvolutionWindow()
     {
-        var convolution = serviceProvider.GetRequiredService<ImageConvolutionViewModel>();
+        var convolution = _serviceProvider.GetRequiredService<ImageConvolutionViewModel>();
         convolution.BeforeImage = _currentTab.ViewModel.Image;
-
-        _commonDialogService.ShowDialog(convolution).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(convolution.BeforeImage, convolution.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        
+        await _commonDialogService.ShowDialog(convolution);
+        await ReloadImageAndReplaceTab(convolution.BeforeImage, convolution.AfterImage, CurrentTab);
     }
 
-    private void OpenArithmeticBitwiseWindow()
+    private async Task OpenArithmeticBitwiseWindow()
     {
-        var arithmeticBitwise = serviceProvider.GetRequiredService<ArithmeticBitwiseOperationsViewModel>();
+        var arithmeticBitwise = _serviceProvider.GetRequiredService<ArithmeticBitwiseOperationsViewModel>();
         arithmeticBitwise.BeforeImage = _currentTab.ViewModel.Image;
-
-        _commonDialogService.ShowDialog(arithmeticBitwise).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(arithmeticBitwise.BeforeImage, arithmeticBitwise.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        
+        await _commonDialogService.ShowDialog(arithmeticBitwise);
+        await ReloadImageAndReplaceTab(arithmeticBitwise.BeforeImage, arithmeticBitwise.AfterImage, CurrentTab);
     }
 
-    private void OpenGammaCorrectionWindow()
+    private async Task OpenGammaCorrectionWindow()
     {
-        var gammaCorrection = serviceProvider.GetRequiredService<NonLinearContrastStretchingViewModel>();
+        var gammaCorrection = _serviceProvider.GetRequiredService<NonLinearContrastStretchingViewModel>();
         gammaCorrection.BeforeImage = _currentTab.ViewModel.Image;
-
-        _commonDialogService.ShowDialog(gammaCorrection).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(gammaCorrection.BeforeImage, gammaCorrection.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        
+        await _commonDialogService.ShowDialog(gammaCorrection);
+        await ReloadImageAndReplaceTab(gammaCorrection.BeforeImage, gammaCorrection.AfterImage, CurrentTab);
     }
 
-    private void NewEmptyTab()
+    private async Task NewEmptyTab()
     {
-        _tabService.AddEmpty(new TabItem(serviceProvider.GetRequiredService<TabControlViewModel>()));
+        _tabService.AddEmpty(new TabItem(_serviceProvider.GetRequiredService<TabControlViewModel>()));
         ImageTabs = _tabService.GetTabItems();
     }
 
-    private IObservable<Unit> PrepareNewTab() =>
-        Observable.StartAsync(async () =>
-        {
-            IStorageFile file = await _commonDialogService.ShowFileDialogInNewWindow();
-            await using Stream fileStream = await file.OpenReadAsync();
-            
-            if (fileStream.Length != 0)
-            {
-                var openedImageBitmap = new Bitmap(fileStream);
-                var newTab = new TabItem(Path.GetFileName(file.Path.AbsolutePath),
-                    serviceProvider.GetRequiredService<TabControlViewModel>());
-                await newTab.ViewModel.LoadImage(openedImageBitmap, file.Path.AbsolutePath);
-
-                CurrentTab = _tabService.Replace(_currentTab.Name, ref newTab);
-                ImageTabs = _tabService.GetTabItems();
-            }
-        });
-
-    private void OpenContrastStretchWindow()
+    private async Task PrepareNewTab()
     {
-        var contrastStretching = serviceProvider.GetRequiredService<ContrastStretchingViewModel>();
+        IStorageFile file = await _commonDialogService.ShowFileDialogInNewWindow();
+        await using Stream fileStream = await file.OpenReadAsync();
+
+        if (fileStream.Length != 0)
+        {
+            var openedImageBitmap = new Bitmap(fileStream);
+            var newTab = new TabItem(Path.GetFileName(file.Path.AbsolutePath),
+                _serviceProvider.GetRequiredService<TabControlViewModel>());
+            await newTab.ViewModel.LoadImage(openedImageBitmap, file.Path.AbsolutePath);
+
+            CurrentTab = _tabService.Replace(_currentTab.Name, newTab);
+            ImageTabs = _tabService.GetTabItems();
+        }
+    }
+
+    private async Task OpenContrastStretchWindow()
+    {
+        var contrastStretching = _serviceProvider.GetRequiredService<ContrastStretchingViewModel>();
         contrastStretching.histogramValues = _currentTab.ViewModel.Luminance;
         contrastStretching.BeforeImage = _currentTab.ViewModel.Image;
 
-        _commonDialogService.ShowDialog(contrastStretching).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(contrastStretching.BeforeImage, contrastStretching.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        await _commonDialogService.ShowDialog(contrastStretching);
+        await ReloadImageAndReplaceTab(contrastStretching.BeforeImage, contrastStretching.AfterImage, CurrentTab);
     }
 
-    private void OpenHistogramEqualizationWindow()
+    private async Task OpenHistogramEqualizationWindow()
     {
-        var histogramEqualization = serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
+        var histogramEqualization = _serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
         histogramEqualization.BeforeImage = _currentTab.ViewModel.Image;
         histogramEqualization.lut = _currentTab.ViewModel.imageValues;
 
-        _commonDialogService.ShowDialog(histogramEqualization).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        await _commonDialogService.ShowDialog(histogramEqualization);
+        await ReloadImageAndReplaceTab(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab);
     }
 
-    private void NegateImage()
+    private async Task NegateImage()
     {
-        var bitmap = imagePointOperationsService.Negation(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
-        ResetTabAndReloadImage(CurrentTab.ViewModel.Image, ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab.ViewModel);
-        ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-        ImageTabs = _tabService.GetTabItems();
+        var bitmap =
+            _imagePointOperationsService.Negation(
+                ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
+
+        await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image, ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab);
     }
 
-    private void OpenTresholdingWindow()
+    private async Task OpenThresholdWindow()
     {
-        var thresholding = serviceProvider.GetRequiredService<ThresholdingViewModel>();
+        var thresholding = _serviceProvider.GetRequiredService<ThresholdingViewModel>();
         thresholding.BeforeImage = _currentTab.ViewModel.Image;
 
-        _commonDialogService.ShowDialog(thresholding).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(thresholding.BeforeImage, thresholding.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        await _commonDialogService.ShowDialog(thresholding);
+        await ReloadImageAndReplaceTab(thresholding.BeforeImage, thresholding.AfterImage, CurrentTab);
     }
 
-    private void OpenMultiTresholdingWindow()
+    private async Task OpenMultiThresholdWindow()
     {
-        var multiThresholding = serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
+        var multiThresholding = _serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
         multiThresholding.BeforeImage = _currentTab.ViewModel.Image;
 
-        _commonDialogService.ShowDialog(multiThresholding).ContinueWith(x =>
-        {
-            ResetTabAndReloadImage(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab.ViewModel);
-            ReplaceTab(CurrentTab, CurrentTab.ViewModel.Path);
-            ImageTabs = _tabService.GetTabItems();
-        });
+        await _commonDialogService.ShowDialog(multiThresholding);
+        await ReloadImageAndReplaceTab(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab);
     }
 
-    private void SaveImage()
+    private async Task SaveImage()
     {
         _currentTab.ViewModel.Image.Save(_currentTab.ViewModel.Path);
     }
 
-    private void SaveImageAs()
+    private async Task SaveImageAs()
     {
-        _commonDialogService.ShowSaveFileDialog(_currentTab.ViewModel.Image, _currentTab.ViewModel.Path);
+        await _commonDialogService.ShowSaveFileDialog(_currentTab.ViewModel.Image, _currentTab.ViewModel.Path);
     }
 
-    private void Duplicate()
+    private async Task Duplicate()
     {
         CurrentTab = _tabService.Duplicate(_currentTab.Name);
     }
 
-    private void CloseApp() => Environment.Exit(1);
+    private async Task CloseApp() => Environment.Exit(1);
+    
+    private async Task ReloadImageAndReplaceTab(Bitmap before, Bitmap after, TabItem tabItem)
+    {
+        TabControlViewModel newViewModel;
+        if (after != null && before != after)
+        {
+            newViewModel = await tabItem.ViewModel.ResetTab().LoadImage(after, tabItem.ViewModel.Path);
+        }
+        else
+        {
+            newViewModel = tabItem.ViewModel;
+        }
 
-    private Func<TabItem, string, TabItem> ReplaceTab => (tabItem, name) => _tabService.Replace(name, ref tabItem);
-
-    private Func<Bitmap, Bitmap, TabControlViewModel, Task<TabControlViewModel>> ResetTabAndReloadImage => async (beforeImage, afterImage, currentTab) =>
-    afterImage != null && beforeImage != afterImage ?
-        await currentTab.ResetTab().LoadImage(afterImage, currentTab.Path) :
-        currentTab;
+        CurrentTab = _tabService.Replace(tabItem.Name, new TabItem(newViewModel));
+        ImageTabs = _tabService.GetTabItems();
+    }
 }

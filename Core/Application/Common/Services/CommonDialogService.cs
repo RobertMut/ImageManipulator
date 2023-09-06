@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;

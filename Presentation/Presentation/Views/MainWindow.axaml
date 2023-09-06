@@ -29,7 +29,7 @@
                     <MenuItem Command="{Binding DuplicateCommand}" Header="Duplicate" />
                     <Separator />
                     <MenuItem Command="{Binding NegationCommand}" Header="Negation" />
-                    <MenuItem Command="{Binding TresholdingCommand}" Header="Tresholding" />
+                    <MenuItem Command="{Binding ThresholdCommand}" Header="Tresholding" />
                     <MenuItem Command="{Binding MultiThresholdingCommand}" Header="Multi-Thresholding" />
                     <Separator />
                     <MenuItem Command="{Binding ContrastStretchingCommand}" Header="Contrast stretching" />

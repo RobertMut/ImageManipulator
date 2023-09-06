@@ -6,9 +6,11 @@ using ReactiveUI;
 using Splat;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
 
 namespace ImageManipulator.Application.ViewModels
 {
@@ -24,15 +26,12 @@ namespace ImageManipulator.Application.ViewModels
         public ObservableCollection<CanvasLineModel> CanvasLinesRGB { get => _canvasLinesRGB; private set => this.RaiseAndSetIfChanged(ref _canvasLinesRGB, value); }
         public ObservableCollection<CanvasLineModel> CanvasLinesLuminance { get => _canvasLinesLuminance; private set => this.RaiseAndSetIfChanged(ref _canvasLinesLuminance, value); }
         public int Height { get; private set; }
-        public Avalonia.Media.Imaging.Bitmap Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
+        public Bitmap Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
         public double[] Luminance { get => _luminance; }
         public string Path { get; private set; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }
-
-        /// <inheritdoc/>
-        public string UrlPathSegment { get; }
 
         public TabControlViewModel(IGraphService graphService, IImageDataService imageDataService)
         {
@@ -55,8 +54,6 @@ namespace ImageManipulator.Application.ViewModels
 
         public TabControlViewModel ResetTab()
         {
-            CanvasLinesRGB = null;
-            CanvasLinesLuminance = null;
             CanvasLinesRGB = new ObservableCollection<CanvasLineModel>();
             CanvasLinesLuminance = new ObservableCollection<CanvasLineModel>();
             Image = null;

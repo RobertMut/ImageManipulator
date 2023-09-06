@@ -15,5 +15,5 @@ public interface ITabService
     void SetTabs(ObservableCollection<TabItem> tabItems);
     TabItem AddExistingTab(string name, TabControlViewModel viewModel);
     TabItem AddEmpty(TabItem tabItem);
-    TabItem Replace(string name, ref TabItem tabItem);
+    TabItem Replace(string name, TabItem tabItem);
 }
