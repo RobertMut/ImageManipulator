@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
@@ -14,19 +15,19 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 {
 	private readonly IImagePointOperationsService imagePointOperationsService;
 	private readonly IImageDataService imageDataService;
-	private Avalonia.Media.Imaging.Bitmap _beforeImage;
-	private Avalonia.Media.Imaging.Bitmap _afterImage;
+	private Bitmap? _beforeImage;
+	private Bitmap? _afterImage;
 	private int _enteredLowerThreshold;
 	private int _enteredUpperThreshold;
 
-	public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
+	public override Bitmap? BeforeImage { get => _beforeImage; set
 		{
 			CalculateSuggestedThresholds();
 			_ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
 		}
 	}
 
-	public override Avalonia.Media.Imaging.Bitmap AfterImage
+	public override Bitmap? AfterImage
 	{
 		get => _afterImage; set
 		{
@@ -34,7 +35,7 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 		}
 	}
 
-	public double[] histogramValues { get; set; }
+	public int[]? histogramValues { get; set; }
 	public int LowerThreshold { get; set; }
 	public int UpperThreshold { get; set; }
 	public int EnteredLowerThreshold { get => _enteredLowerThreshold; set => this.RaiseAndSetIfChanged(ref _enteredLowerThreshold, value); }

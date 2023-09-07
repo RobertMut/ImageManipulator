@@ -22,7 +22,6 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private readonly ITabService _tabService;
     private TabItem _currentTab;
     private ObservableCollection<TabItem> _imageTabs;
-    private readonly ObservableAsPropertyHelper<bool> _isCommandActive;
 
     public RoutingState Router { get; } = new();
 
@@ -37,9 +36,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         get => _currentTab;
         set => this.RaiseAndSetIfChanged(ref _currentTab, value);
     }
-
-    public bool IsCommandActive => _isCommandActive.Value;
-
+    
     #region Commands
 
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }
@@ -70,50 +67,50 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _imageTabs = _tabService.GetTabItems();
 
         AddNewTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NewEmptyTab));
-        AddNewTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        AddNewTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         GetImageToTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(PrepareNewTab));
-        GetImageToTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        GetImageToTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         Exit = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(CloseApp));
         SaveImageCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImage));
-        SaveImageCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        SaveImageCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
         SaveImageAsCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImageAs));
-        SaveImageAsCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        SaveImageAsCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
         DuplicateCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Duplicate));
-        DuplicateCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        DuplicateCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ContrastStretchingCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenContrastStretchWindow));
-        ContrastStretchingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        ContrastStretchingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         GammaCorrectionCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenGammaCorrectionWindow));
-        GammaCorrectionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        GammaCorrectionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         HistogramEqualizationCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenHistogramEqualizationWindow));
-        HistogramEqualizationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        HistogramEqualizationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
         ThresholdCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenThresholdWindow));
-        ThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        ThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         MultiThresholdingCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenMultiThresholdWindow));
-        MultiThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        MultiThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         NegationCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NegateImage));
-        NegationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        NegationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ArithmeticBitwiseCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenArithmeticBitwiseWindow));
-        ArithmeticBitwiseCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        ArithmeticBitwiseCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ImageConvolutionCommand =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenImageConvolutionWindow));
-        ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out _isCommandActive);
+        ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
     }
 
     private async Task OpenImageConvolutionWindow()
@@ -180,7 +177,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var histogramEqualization = _serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
         histogramEqualization.BeforeImage = _currentTab.ViewModel.Image;
-        histogramEqualization.lut = _currentTab.ViewModel.imageValues;
+        histogramEqualization.lut = _currentTab.ViewModel.ImageValues;
 
         await _commonDialogService.ShowDialog(histogramEqualization);
         await ReloadImageAndReplaceTab(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab);
@@ -230,7 +227,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task CloseApp() => Environment.Exit(1);
     
-    private async Task ReloadImageAndReplaceTab(Bitmap before, Bitmap after, TabItem tabItem)
+    private async Task ReloadImageAndReplaceTab(Bitmap? before, Bitmap? after, TabItem tabItem)
     {
         TabControlViewModel newViewModel;
         if (after != null && before != after)

@@ -10,14 +10,14 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImageConvolutionService : IImageConvolutionService
     {
-        private static readonly int[,] _kernelX =
+        private static readonly int[,] KernelX =
         {
             { -1, 0, 1 },
             { -2, 0, 2 },
             { -1, 0, 1 }
         };
 
-        private static readonly int[,] _kernelY =
+        private static readonly int[,] KernelY =
         {
             { 1, 2, 1 },
             { 0, 0, 0 },
@@ -53,25 +53,26 @@ namespace ImageManipulator.Application.Common.Services
                     for (int kernelY = 0; kernelY < kernelHeight; kernelY++)
                     {
                         int kernelYRadius = kernelY - radiusY;
-                        int offsetY = Math.Clamp((y + kernelYRadius), 0, affectedData.Height - 1);
+                        int offsetY = Math.Clamp(y + kernelYRadius, 0, affectedData.Height - 1);
 
                         for (int kernelX = 0; kernelX < kernelWidth; kernelX++)
                         {
                             int kernelXRadius = kernelX - radiusX;
-                            int offsetX = Math.Clamp((x + kernelXRadius), 0, affectedData.Width - 1);
+                            int offsetX = Math.Clamp(x + kernelXRadius, 0, affectedData.Width - 1);
 
-                            byte* offsetedPixel = (byte*)sourceData.GetPixel(offsetX, offsetY).ToPointer();
+                            byte* offsetPixel = (byte*)sourceData.GetPixel(offsetX, offsetY).ToPointer();
 
-                            color.Red += kernel[kernelY, kernelX] * offsetedPixel[0];
-                            color.Green += kernel[kernelY, kernelX] * offsetedPixel[1];
-                            color.Blue += kernel[kernelY, kernelX] * offsetedPixel[2];
+                            color.Red += kernel[kernelY, kernelX] * offsetPixel[0];
+                            color.Green += kernel[kernelY, kernelX] * offsetPixel[1];
+                            color.Blue += kernel[kernelY, kernelX] * offsetPixel[2];
                         }
                     }
 
                     byte* pixel = (byte*)affectedData.GetPixel(x, y).ToPointer();
-                    pixel[0] = (byte)((color.Red > 255) ? 255 : ((color.Red < 0) ? 0 : color.Red));
-                    pixel[1] = (byte)((color.Green > 255) ? 255 : ((color.Green < 0) ? 0 : color.Green));
-                    pixel[2] = (byte)((color.Blue > 255) ? 255 : ((color.Blue < 0) ? 0 : color.Blue));
+                    
+                    pixel[0] = CalculationHelper.HandleValueOutsideBounds(color.Red);
+                    pixel[1] = CalculationHelper.HandleValueOutsideBounds(color.Green);
+                    pixel[2] = CalculationHelper.HandleValueOutsideBounds(color.Blue);
                 }
             }
 
@@ -100,8 +101,8 @@ namespace ImageManipulator.Application.Common.Services
                             byte* pixelData = (byte*)bitmapData.GetPixel(x + j, y + i);
                             int intensity = pixelData[0];
 
-                            gx += intensity * _kernelX[i + 1, j + 1];
-                            gy += intensity * _kernelY[i + 1, j + 1];
+                            gx += intensity * KernelX[i + 1, j + 1];
+                            gy += intensity * KernelY[i + 1, j + 1];
                         }
                     }
 
@@ -114,13 +115,13 @@ namespace ImageManipulator.Application.Common.Services
             return gradient;
         }
 
-        public unsafe double[,] NonMaxSupression(double[,] gradientMagnitude, double[,] gradientDirection)
+        public double[,] NonMaxSupression(double[,] gradientMagnitude, double[,] gradientDirection)
         {
             int width = gradientMagnitude.GetLength(0);
             int height = gradientMagnitude.GetLength(1);
 
             var preparedDirectionsInAngle = PrepareDirections(gradientDirection);
-
+            
             for (int x = 1; x < width - 1; x++)
             {
                 for (int y = 1; y < height - 1; y++)
@@ -172,7 +173,7 @@ namespace ImageManipulator.Application.Common.Services
 
             var data = edgeImage.LockBitmap(edgeImage.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels(0, width,0 , height,
-                    (pixelPtr, scan0, stride, x, y) =>
+                    (pixelPtr, _, _, x, y) =>
                     {
                         byte* pixel = (byte*)pixelPtr.ToPointer();
                         double magnitude = gradientMagnitude[x, y];
@@ -197,12 +198,9 @@ namespace ImageManipulator.Application.Common.Services
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    if (x + j >= 0 && x + j < width && y + i >= 0 && y + i < height)
+                                    if (x + j >= 0 && x + j < width && y + i >= 0 && y + i < height && gradientMagnitude[x + j, y + i] > highThreshold)
                                     {
-                                        if (gradientMagnitude[x + j, y + i] > highThreshold)
-                                        {
-                                            isEdge = true;
-                                        }
+                                        isEdge = true;
                                     }
                                 }
                             }
@@ -229,27 +227,21 @@ namespace ImageManipulator.Application.Common.Services
                         direction += 360;
                     }
 
-                    if (direction <= 22.5 || (direction >= 157.5 && direction <= 202.5) || direction >= 337.5)
-                    {
-                        gradientDirection[x, y] = 0;
-                    }
-                    else if ((direction >= 22.5 && direction <= 67.5) || (direction >= 202.5 && direction <= 247.5))
-                    {
-                        gradientDirection[x, y] = 45;
-                    }
-                    else if ((direction >= 67.5 && direction <= 112.5) || (direction >= 247.5 && direction <= 292.5))
-                    {
-                        gradientDirection[x, y] = 90;
-                    }
-                    else
-                    {
-                        gradientDirection[x, y] = 135;
-                    }
+                    gradientDirection[x, y] = GetDegreeForGradient(direction);
                 }
             });
 
             return gradientDirection;
         }
+
+        private static double GetDegreeForGradient(double direction) =>
+            direction switch
+            {
+                <= 22.5 or >= 157.5 and <= 202.5 or >= 337.5 => 0,
+                >= 22.5 and <= 67.5 or >= 202.5 and <= 247.5 => 45,
+                >= 67.5 and <= 112.5 or >= 247.5 and <= 292.5 => 90,
+                _ => 135
+            };
 
         private double[,] PrepareKernel(double[,] kernel)
         {

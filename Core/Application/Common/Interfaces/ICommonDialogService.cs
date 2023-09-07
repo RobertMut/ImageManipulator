@@ -9,7 +9,7 @@ namespace ImageManipulator.Application.Common.Interfaces
     {
         Task<IStorageFile> ShowFileDialogInNewWindow();
 
-        Task ShowSaveFileDialog(Bitmap bitmap, string filePath);
+        Task ShowSaveFileDialog(Bitmap? bitmap, string filePath);
 
         public Task ShowDialog<TViewModel>(TViewModel viewModel)
             where TViewModel : class;

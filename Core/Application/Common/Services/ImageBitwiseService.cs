@@ -9,15 +9,15 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImageBitwiseService : ElementaryOperationServiceVirtual, IImageBitwiseService
     {
-        public unsafe Bitmap Execute(Bitmap bitmap, object parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
+        public unsafe Bitmap? Execute(Bitmap? bitmap, object? parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
 
         protected override IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType)
         => operationType switch
         {
-            BitwiseOperationType.AND => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current & other))),
-            BitwiseOperationType.OR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current | other))),
-            BitwiseOperationType.XOR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)((current ^ other))),
-            BitwiseOperationType.NOT => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(~current)),
+            BitwiseOperationType.AND => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current & other)),
+            BitwiseOperationType.OR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current | other)),
+            BitwiseOperationType.XOR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current ^ other)),
+            BitwiseOperationType.NOT => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)~current),
             BitwiseOperationType.LeftShift => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current << other)),
             BitwiseOperationType.RightShift => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current >> other)),
             _ => throw new Exception("Operation not found!")

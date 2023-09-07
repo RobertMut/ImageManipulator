@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
@@ -13,18 +14,18 @@ namespace ImageManipulator.Application.ViewModels;
 public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
 {
 	private readonly IImagePointOperationsService _imagePointOperationsService;
-	private Avalonia.Media.Imaging.Bitmap _beforeImage;
-	private Avalonia.Media.Imaging.Bitmap _afterImage;
+	private Bitmap? _beforeImage;
+	private Bitmap? _afterImage;
 	private double _gamma;
-	public double[][] lut;
+	public int[]?[] lut;
 
-	public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
+	public override Bitmap? BeforeImage { get => _beforeImage; set
 		{
 			_ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
 		}
 	}
 
-	public override Avalonia.Media.Imaging.Bitmap AfterImage
+	public override Bitmap? AfterImage
 	{
 		get => _afterImage; set
 		{

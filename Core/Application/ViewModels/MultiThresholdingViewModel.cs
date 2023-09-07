@@ -5,6 +5,7 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using Splat;
 
@@ -13,11 +14,11 @@ namespace ImageManipulator.Application.ViewModels
     public class MultiThresholdingViewModel : ImageOperationDialogViewModelBase
     {
         private readonly IImagePointOperationsService imagePointOperationsService;
-        private Avalonia.Media.Imaging.Bitmap _beforeImage;
-        private Avalonia.Media.Imaging.Bitmap _afterImage;
+        private Bitmap? _beforeImage;
+        private Bitmap? _afterImage;
         private int _enteredLowerThreshold;
         private int _enteredUpperThreshold;
-        public override Avalonia.Media.Imaging.Bitmap BeforeImage
+        public override Bitmap? BeforeImage
         {
             get => _beforeImage; set
             {
@@ -25,7 +26,7 @@ namespace ImageManipulator.Application.ViewModels
             }
         }
 
-        public override Avalonia.Media.Imaging.Bitmap AfterImage
+        public override Bitmap? AfterImage
         {
             get => _afterImage; set
             {

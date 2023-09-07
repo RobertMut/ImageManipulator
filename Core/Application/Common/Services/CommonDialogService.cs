@@ -22,7 +22,7 @@ public class CommonDialogService : ICommonDialogService
         return image[0];
     }
 
-    public async Task ShowSaveFileDialog(Bitmap bitmap, string filePath)
+    public async Task ShowSaveFileDialog(Bitmap? bitmap, string filePath)
     {
         var window = new Window();
 

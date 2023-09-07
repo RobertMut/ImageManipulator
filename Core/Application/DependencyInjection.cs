@@ -17,7 +17,7 @@ public static class DependencyInjection
         
         services.AddScoped<IImageDataService, ImageDataService>();
         services.AddScoped<ICommonDialogService, CommonDialogService>();
-        services.AddScoped<IGraphService, GraphService>();
+        //services.AddScoped<IGraphService, GraphService>();
         services.AddScoped<IImagePointOperationsService, ImagePointOperationsService>();
         services.AddScoped<IImageArithmeticService, ImageArithmeticService>();
         services.AddScoped<IImageBitwiseService, ImageBitwiseService>();

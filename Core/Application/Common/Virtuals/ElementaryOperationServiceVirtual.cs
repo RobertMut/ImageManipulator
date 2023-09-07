@@ -8,7 +8,7 @@ namespace ImageManipulator.Application.Common.Virtuals
 {
     public abstract class ElementaryOperationServiceVirtual
     {
-        public virtual unsafe Bitmap Execute(Bitmap bitmap, object parameter, Enum operationType) => parameter switch
+        protected Bitmap? Execute(Bitmap? bitmap, object? parameter, Enum operationType) => parameter switch
         {
             Bitmap anotherImage => ExecuteWithImage(bitmap, anotherImage, operationType),
             int value => ExecuteWithColor(bitmap, new[] { (byte)value, (byte)value, (byte)value }, operationType),
@@ -18,7 +18,7 @@ namespace ImageManipulator.Application.Common.Virtuals
 
         protected abstract IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType);
 
-        private unsafe Bitmap ExecuteWithImage(Bitmap bitmap, Bitmap anotherBitmap, Enum operationType)
+        private unsafe Bitmap ExecuteWithImage(Bitmap? bitmap, Bitmap anotherBitmap, Enum operationType)
         {
             var newBitmap = new Bitmap(bitmap);
             var otherImageData = anotherBitmap.LockBitmap(anotherBitmap.PixelFormat, ImageLockMode.ReadOnly);
@@ -38,7 +38,7 @@ namespace ImageManipulator.Application.Common.Virtuals
             return newBitmap;
         }
 
-        private unsafe Bitmap ExecuteWithColor(Bitmap bitmap, byte[] colorArr, Enum operationType)
+        private unsafe Bitmap ExecuteWithColor(Bitmap? bitmap, byte[] colorArr, Enum operationType)
         {
             IntPtr unmanagedColorPointer = Marshal.AllocHGlobal(colorArr.Length);
             Marshal.Copy(colorArr, 0, unmanagedColorPointer, colorArr.Length);

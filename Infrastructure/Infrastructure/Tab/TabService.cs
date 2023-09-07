@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Avalonia.Controls;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.ViewModels;
 using Microsoft.Extensions.DependencyInjection;

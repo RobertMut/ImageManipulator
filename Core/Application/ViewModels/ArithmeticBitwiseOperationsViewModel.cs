@@ -21,9 +21,9 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     private readonly IImageArithmeticService _imageArithmeticService;
     private readonly IImageBitwiseService _imageBitwiseService;
     private readonly ICommonDialogService commonDialogService;
-    private Bitmap _afterImage;
-    private Bitmap _beforeImage;
-    private Bitmap _operationImage;
+    private Bitmap? _afterImage;
+    private Bitmap? _beforeImage;
+    private Bitmap? _operationImage;
     private Color _pickedColor;
     private int? _value;
     private bool _isArithmeticSelected;
@@ -33,9 +33,9 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     private ObservableAsPropertyHelper<bool> _isSelecting;
     
-    public override Bitmap AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
-    public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
-    public Bitmap OperationImage { get => _operationImage; set => this.RaiseAndSetIfChanged(ref _operationImage, value); }
+    public override Bitmap? AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
+    public override Bitmap? BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
+    public Bitmap? OperationImage { get => _operationImage; set => this.RaiseAndSetIfChanged(ref _operationImage, value); }
     public Color PickedColor { get => _pickedColor; set => this.RaiseAndSetIfChanged(ref _pickedColor, value); }
     public int? Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
     public bool IsArithmeticSelected { get => _isArithmeticSelected; set => this.RaiseAndSetIfChanged(ref _isArithmeticSelected, value); }
@@ -99,7 +99,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         OperationImage = new Bitmap(fileStream);
     });
 
-    private object ParameterSelector(ElementaryOperationParameterEnum parameter) => parameter switch
+    private object? ParameterSelector(ElementaryOperationParameterEnum parameter) => parameter switch
     {
         ElementaryOperationParameterEnum.Value => _value.Value,
         ElementaryOperationParameterEnum.Color => _pickedColor,

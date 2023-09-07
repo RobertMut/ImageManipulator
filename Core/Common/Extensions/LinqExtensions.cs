@@ -2,7 +2,7 @@
 {
     public static class LinqExtensions
     {
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumerable, Action<T> action) //TODO CHECK IF NEEDED
         {
             foreach (var item in enumerable)
             {
@@ -12,7 +12,7 @@
             }
         }
 
-        public static T ReplaceAndReturn<T>(this IList<T> list, int index, T item)
+        public static T ReplaceAndReturn<T>(this IList<T> list, int index, T item) //TODO CHECK IF NEEDED
         {
             list.RemoveAt(index);
             list.Insert(index, item);
@@ -45,7 +45,7 @@
         /// <param name="doubles">Double enumerable</param>
         /// <param name="value">Value to be masked</param>
         /// <returns>Bool enumerable</returns>
-        public static IEnumerable<bool> MaskedEqual(this IEnumerable<double> doubles, double value)
+        public static IEnumerable<bool> MaskedEqual(this IEnumerable<double> doubles, double value) //TODO CHECK IF NEEDED
         {
             foreach (var item in doubles)
             {
@@ -61,7 +61,7 @@
         /// <param name="value"></param>
         /// <returns>Masking value</returns>
         /// <exception cref="Exception">When enumerables counts are different</exception>
-        public static IEnumerable<double> Filled(this IEnumerable<double> doubleEnumerable, IEnumerable<bool> boolEnumerable, double value)
+        public static IEnumerable<double> Filled(this IEnumerable<double> doubleEnumerable, IEnumerable<bool> boolEnumerable, double value) //TODO CHECK IF NEEDED
         {
             if (doubleEnumerable.Count() != boolEnumerable.Count())
             {
@@ -73,7 +73,7 @@
             var boolArray = boolEnumerable.ToArray();
             for (int i = 0; i < doubles.Length; i++)
             {
-                doubles[i] = boolArray[i] == false ? doublesArray[i] : value;
+                doubles[i] = !boolArray[i] ? doublesArray[i] : value;
             }
 
             return doubles;

@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 
@@ -24,8 +25,8 @@ public abstract class ImageOperationDialogViewModelBase : ViewModelBase
     
     #endregion
     
-    public abstract Avalonia.Media.Imaging.Bitmap AfterImage { get; set; }
-    public abstract Avalonia.Media.Imaging.Bitmap BeforeImage { get; set; }
+    public abstract Bitmap? AfterImage { get; set; }
+    public abstract Bitmap? BeforeImage { get; set; }
     
     public bool AcceptCommandCanExecute() => AfterImage != null;
 

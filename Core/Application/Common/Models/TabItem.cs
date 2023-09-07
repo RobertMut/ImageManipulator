@@ -1,7 +1,5 @@
-﻿using Avalonia.Controls.Primitives;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ImageManipulator.Application.ViewModels;
-using ImageManipulator.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Models
 {

@@ -20,8 +20,8 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     private readonly IImageConvolutionService imageConvolutionService;
     private readonly IImageBorderService imageBorderService;
     private readonly IImagePointOperationsService _imagePointOperationsService;
-    private Bitmap _afterImage;
-    private Bitmap _beforeImage;
+    private Bitmap? _afterImage;
+    private Bitmap? _beforeImage;
     private double _value;
     private bool _isSobelSelected = false;
     private SoftenSharpenEnum _selectedSoftenSharpen;
@@ -36,13 +36,13 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     private double _borderConstVal;
     private EdgeDetectionEnum _selectedEdgeDetection;
 
-    public override Bitmap AfterImage
+    public override Bitmap? AfterImage
     {
         get => _afterImage;
         set => this.RaiseAndSetIfChanged(ref _afterImage, value);
     }
 
-    public override Bitmap BeforeImage
+    public override Bitmap? BeforeImage
     {
         get => _beforeImage;
         set => this.RaiseAndSetIfChanged(ref _beforeImage, value);

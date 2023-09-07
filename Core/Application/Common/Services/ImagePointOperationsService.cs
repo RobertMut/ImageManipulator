@@ -11,9 +11,9 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImagePointOperationsService : IImagePointOperationsService
     {
-        private List<double> _histogramValues;
+        private List<int> _histogramValues;
 
-        public int CalculateLowerImageThresholdPoint(double[] histogram = null)
+        public int CalculateLowerImageThresholdPoint(int[]? histogram = null)
         {
             if (histogram == null && _histogramValues == null)
             {
@@ -22,14 +22,14 @@ namespace ImageManipulator.Application.Common.Services
 
             _histogramValues = histogram.ToList();
 
-            double max = _histogramValues.Max();
+            int max = _histogramValues.Max();
             int indexOfMax = _histogramValues.IndexOf(max);
             int index = _histogramValues.FindIndex(x => x != 0);
 
             return (((index + indexOfMax) / 2) + index) / 2;
         }
 
-        public int CalculateUpperImageThresholdPoint(double[] histogram = null)
+        public int CalculateUpperImageThresholdPoint(int[]? histogram = null)
         {
             if (histogram == null && _histogramValues == null)
             {
@@ -38,16 +38,16 @@ namespace ImageManipulator.Application.Common.Services
 
             _histogramValues = histogram.ToList();
 
-            double max = _histogramValues.Max();
+            int max = _histogramValues.Max();
             int indexOfMax = _histogramValues.IndexOf(max);
             int index = _histogramValues.FindLastIndex(x => x != 0);
 
             return (((index + indexOfMax) / 2) + index) / 2;
         }
 
-        public unsafe System.Drawing.Bitmap StretchContrast(System.Drawing.Bitmap bitmap, int lowest, int highest)
+        public unsafe Bitmap? StretchContrast(Bitmap? bitmap, int lowest, int highest)
         {
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
 
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
             {
@@ -66,9 +66,9 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe System.Drawing.Bitmap NonLinearlyStretchContrast(System.Drawing.Bitmap bitmap, double gamma)
+        public unsafe Bitmap? NonLinearlyStretchContrast(Bitmap? bitmap, double gamma)
         {
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
 
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
             {
@@ -84,7 +84,7 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe System.Drawing.Bitmap HistogramEqualization(System.Drawing.Bitmap bitmap, double[][] lut)
+        public unsafe Bitmap? HistogramEqualization(Bitmap? bitmap, int[]?[] lut)
         {
             var probability = new double[3][];
             
@@ -97,7 +97,7 @@ namespace ImageManipulator.Application.Common.Services
                 }
             }
 
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
             double totalNum = bitmap.Height * bitmap.Width;
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite);
             var sourceBitmapData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadOnly);
@@ -129,9 +129,9 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe Bitmap Negation(Bitmap bitmap)
+        public unsafe Bitmap? Negation(Bitmap? bitmap)
         {
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
             var bitmapData = newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
@@ -148,9 +148,9 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe Bitmap Thresholding(Bitmap bitmap, int threshold, bool replace = true)
+        public unsafe Bitmap? Thresholding(Bitmap? bitmap, int threshold, bool replace = true)
         {
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
@@ -175,9 +175,9 @@ namespace ImageManipulator.Application.Common.Services
             return newSrc;
         }
 
-        public unsafe Bitmap MultiThresholding(Bitmap bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
+        public unsafe Bitmap? MultiThresholding(Bitmap? bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
         {
-            System.Drawing.Bitmap newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
                 .ExecuteOnPixels((x, scan0, stride) =>
