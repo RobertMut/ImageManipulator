@@ -8,20 +8,11 @@ namespace ImageManipulator.Application.ViewModels;
 
 public abstract class ImageOperationDialogViewModelBase : ViewModelBase
 {
-    #region PropertyHelpers
-
-    protected ObservableAsPropertyHelper<bool> _isExecuting;
-    public bool IsExecuting => _isExecuting.Value;
-
-    #endregion
-    
     #region Commands
     
     public RelayCommand<Window> CancelCommand { get; protected set; }
     
     public RelayCommand<Window> AcceptCommand { get; protected set; }
-    
-    public ReactiveCommand<Unit, Unit> Execute { get; }
     
     #endregion
     

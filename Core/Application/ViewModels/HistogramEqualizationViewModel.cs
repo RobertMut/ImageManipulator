@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
@@ -17,7 +18,7 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
 	private Bitmap? _beforeImage;
 	private Bitmap? _afterImage;
 	private double _gamma;
-	public int[]?[] lut;
+	public int[]?[] Lut;
 
 	public override Bitmap? BeforeImage { get => _beforeImage; set
 		{
@@ -43,20 +44,19 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
 	public HistogramEqualizationViewModel(IImagePointOperationsService imagePointOperationsService)
 	{
 		_imagePointOperationsService = imagePointOperationsService;
-		ExecuteEqualizeHistogram = ReactiveCommand.CreateFromObservable(Equalization);
-		ExecuteEqualizeHistogram.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
-		ExecuteEqualizeHistogram.ThrownExceptions.Subscribe(ex =>
-			this.Log().ErrorException("Error during equalization!", ex));
+		ExecuteEqualizeHistogram = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Equalization));
+		ExecuteEqualizeHistogram.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+		
+		
 		AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
 		CancelCommand = new RelayCommand<Window>(this.Cancel);
 	}
 		
-	private IObservable<Unit> Equalization() =>
-		Observable.Start(() =>
-		{
+	private async Task Equalization() 
+	{
 			var equalizedImage =
 				_imagePointOperationsService.HistogramEqualization(
-					ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage), lut);
+					ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage), Lut);
 			AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(equalizedImage);
-		});
+	}
 }

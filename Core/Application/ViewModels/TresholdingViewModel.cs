@@ -46,7 +46,7 @@ public class ThresholdingViewModel : ImageOperationDialogViewModelBase
     {
         this.imagePointOperationsService = imagePointOperationsService;
         TresholdingCommand = ReactiveCommand.CreateFromObservable(ExecuteTresholding);
-        TresholdingCommand.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
+        TresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         TresholdingCommand.ThrownExceptions.Subscribe(ex =>
             this.Log().ErrorException("Error during stretching!", ex));
         AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());

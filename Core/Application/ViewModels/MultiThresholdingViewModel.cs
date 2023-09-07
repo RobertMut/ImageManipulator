@@ -49,7 +49,7 @@ namespace ImageManipulator.Application.ViewModels
         {
             this.imagePointOperationsService = imagePointOperationsService;
             ThresholdingCommand = ReactiveCommand.CreateFromObservable(ExecuteThresholding);
-            ThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
+            ThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
             ThresholdingCommand.ThrownExceptions.Subscribe(ex =>
                 this.Log().ErrorException("Error during thresholding!", ex));
             AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());

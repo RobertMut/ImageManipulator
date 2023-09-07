@@ -64,7 +64,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         SelectImage.ThrownExceptions.Subscribe(Console.WriteLine);
         
         Execute = ReactiveCommand.CreateFromObservable(ExecuteOperationOnImage);
-        Execute.IsExecuting.ToProperty(this, x => x.IsExecuting, out _isExecuting);
+        Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         Execute.ThrownExceptions.Subscribe(ex =>
             this.Log().ErrorException("Error during thresholding!", ex));
         AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());

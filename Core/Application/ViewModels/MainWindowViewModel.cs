@@ -177,7 +177,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     {
         var histogramEqualization = _serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
         histogramEqualization.BeforeImage = _currentTab.ViewModel.Image;
-        histogramEqualization.lut = _currentTab.ViewModel.ImageValues;
+        histogramEqualization.Lut = _currentTab.ViewModel.ImageValues;
 
         await _commonDialogService.ShowDialog(histogramEqualization);
         await ReloadImageAndReplaceTab(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab);
