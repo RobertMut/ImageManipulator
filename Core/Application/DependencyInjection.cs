@@ -1,4 +1,3 @@
-using System.Windows.Input;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Services;
 using ImageManipulator.Domain.Common.CQRS.Implementation;

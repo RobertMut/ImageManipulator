@@ -1,4 +1,3 @@
-using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
@@ -6,6 +5,7 @@ using Splat;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 

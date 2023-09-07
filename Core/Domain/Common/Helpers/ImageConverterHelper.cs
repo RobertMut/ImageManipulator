@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace ImageManipulator.Application.Common.Helpers;
+namespace ImageManipulator.Domain.Common.Helpers;
 
 public static class ImageConverterHelper
 {

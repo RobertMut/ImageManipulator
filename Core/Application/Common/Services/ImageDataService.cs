@@ -1,5 +1,4 @@
-﻿using ImageManipulator.Application.Common.Helpers;
-using ImageManipulator.Application.Common.Interfaces;
+﻿using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;

@@ -2,8 +2,8 @@
 using System;
 using System.Drawing;
 using ImageManipulator.Domain.Common.Helpers;
-using ImageManipulator.Application.Common.Virtuals;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.Virtuals;
 
 namespace ImageManipulator.Application.Common.Services
 {

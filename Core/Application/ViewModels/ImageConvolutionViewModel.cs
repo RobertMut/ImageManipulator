@@ -1,5 +1,4 @@
 using Avalonia.Media.Imaging;
-using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Enums;
 using ImageManipulator.Common.Interfaces;
@@ -11,6 +10,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Domain.Common.Dictionaries;
+using ImageManipulator.Domain.Common.Helpers;
 using Splat;
 
 namespace ImageManipulator.Application.ViewModels;

@@ -1,5 +1,4 @@
-﻿using ImageManipulator.Application.Common.Helpers;
-using ImageManipulator.Application.Common.Interfaces;
+﻿using ImageManipulator.Application.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
@@ -9,6 +8,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
+using ImageManipulator.Domain.Common.Helpers;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 

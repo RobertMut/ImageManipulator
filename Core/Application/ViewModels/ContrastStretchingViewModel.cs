@@ -4,8 +4,8 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.Helpers;
 using ReactiveUI;
 using Splat;
 

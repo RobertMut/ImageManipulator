@@ -1,9 +1,9 @@
 ﻿using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.Common.Virtuals;
 using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
+using ImageManipulator.Domain.Common.Virtuals;
 
 namespace ImageManipulator.Application.Common.Services
 {

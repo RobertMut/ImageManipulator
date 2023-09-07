@@ -1,7 +1,7 @@
 ﻿using Avalonia.Data.Converters;
-using ImageManipulator.Application.Common.Helpers;
 using System;
 using System.Globalization;
+using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Converters
 {

@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ImageManipulator.Application;
@@ -14,7 +13,6 @@ namespace ImageManipulator.Presentation;
 public partial class App : Avalonia.Application
 {
     private ServiceProvider _serviceProvider;
-    public static Window CurrentWindow { get; private set; }
 
     public override void Initialize()
     {

@@ -1,10 +1,10 @@
-﻿using ImageManipulator.Domain.Common.Helpers;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using ImageManipulator.Domain.Common.Helpers;
 
-namespace ImageManipulator.Application.Common.Virtuals
+namespace ImageManipulator.Domain.Common.Virtuals
 {
     public abstract class ElementaryOperationServiceVirtual
     {

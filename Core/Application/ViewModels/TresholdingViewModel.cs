@@ -1,5 +1,4 @@
 using System;
-using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ReactiveUI;
 using System.Reactive;
@@ -7,6 +6,7 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
+using ImageManipulator.Domain.Common.Helpers;
 using Splat;
 
 namespace ImageManipulator.Application.ViewModels;
