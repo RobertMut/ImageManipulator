@@ -44,7 +44,7 @@ namespace ImageManipulator.Application.ViewModels
         public TabControlViewModel(IImageDataService imageDataService)
         {
             HostScreen = Locator.Current.GetService<IScreen>();
-            this._imageDataService = imageDataService;
+            _imageDataService = imageDataService;
             ClearValues();
         }
 

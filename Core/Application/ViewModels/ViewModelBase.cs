@@ -4,7 +4,7 @@ namespace ImageManipulator.Application.ViewModels;
 
 public class ViewModelBase : ReactiveObject
 {    
-    protected ObservableAsPropertyHelper<bool> isCommandActive;
+    protected ObservableAsPropertyHelper<bool>? isCommandActive;
 
-    public bool IsCommandActive => isCommandActive.Value;
+    protected bool IsCommandActive => isCommandActive.Value;
 }

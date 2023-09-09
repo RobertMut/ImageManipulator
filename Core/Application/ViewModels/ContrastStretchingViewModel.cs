@@ -52,8 +52,8 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 		ExecuteLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 		ExecuteLinearStretching.ThrownExceptions.Subscribe(ex =>
 			this.Log().ErrorException("Error during thresholding!", ex));
-		AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
-		CancelCommand = new RelayCommand<Window>(this.Cancel);		}
+		AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+		CancelCommand = new RelayCommand<Window>(Cancel);		}
 
 	private void CalculateSuggestedThresholds()
 	{

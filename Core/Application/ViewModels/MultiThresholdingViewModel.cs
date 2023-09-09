@@ -52,8 +52,8 @@ namespace ImageManipulator.Application.ViewModels
             ThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
             ThresholdingCommand.ThrownExceptions.Subscribe(ex =>
                 this.Log().ErrorException("Error during thresholding!", ex));
-            AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
-            CancelCommand = new RelayCommand<Window>(this.Cancel);
+            AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+            CancelCommand = new RelayCommand<Window>(Cancel);
         }
 
         private IObservable<Unit> ExecuteThresholding() =>

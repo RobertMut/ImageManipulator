@@ -5,7 +5,7 @@ namespace ImageManipulator.Common.Matrices;
 public static class EdgeDetection
 {
     public static Dictionary<EdgeDetectionEnum, double[,]> EdgeDetectionMatrices { get; } =
-        new Dictionary<EdgeDetectionEnum, double[,]>()
+        new()
         {
             {
                 EdgeDetectionEnum.Laplace, new double[,]

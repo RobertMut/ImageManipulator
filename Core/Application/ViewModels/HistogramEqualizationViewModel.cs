@@ -48,8 +48,8 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
 		ExecuteEqualizeHistogram.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 		
 		
-		AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
-		CancelCommand = new RelayCommand<Window>(this.Cancel);
+		AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+		CancelCommand = new RelayCommand<Window>(Cancel);
 	}
 		
 	private async Task Equalization() 

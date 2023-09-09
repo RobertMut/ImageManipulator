@@ -56,8 +56,8 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     public ArithmeticBitwiseOperationsViewModel(IImageArithmeticService imageArithmeticService, IImageBitwiseService imageBitwiseService, ICommonDialogService commonDialogService)
     {
-        this._imageArithmeticService = imageArithmeticService;
-        this._imageBitwiseService = imageBitwiseService;
+        _imageArithmeticService = imageArithmeticService;
+        _imageBitwiseService = imageBitwiseService;
         this.commonDialogService = commonDialogService;
         SelectImage = ReactiveCommand.CreateFromObservable(SelectImageCommand);
         SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
@@ -67,8 +67,8 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         Execute.ThrownExceptions.Subscribe(ex =>
             this.Log().ErrorException("Error during thresholding!", ex));
-        AcceptCommand = new RelayCommand<Window>(this.Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(this.Cancel);
+        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+        CancelCommand = new RelayCommand<Window>(Cancel);
     }
 
     private IObservable<Unit> ExecuteOperationOnImage() =>

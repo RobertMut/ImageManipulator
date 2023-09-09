@@ -16,4 +16,5 @@ public interface ITabService
     TabItem AddExistingTab(string name, TabControlViewModel viewModel);
     TabItem AddEmpty(TabItem tabItem);
     TabItem Replace(string name, TabItem tabItem);
+    string CurrentTabName { get; }
 }

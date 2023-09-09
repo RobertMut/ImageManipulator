@@ -9,7 +9,7 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImageBitwiseService : ElementaryOperationServiceVirtual, IImageBitwiseService
     {
-        public unsafe Bitmap? Execute(Bitmap? bitmap, object? parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
+        public Bitmap? Execute(Bitmap? bitmap, object? parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
 
         protected override IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType)
         => operationType switch

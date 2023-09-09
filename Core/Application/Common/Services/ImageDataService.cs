@@ -56,9 +56,9 @@ namespace ImageManipulator.Application.Common.Services
             return values;
         }
 
-        private int[]?[] GetLevels(ref byte[] buffer)
+        private int[][] GetLevels(ref byte[] buffer)
         {
-            int[]?[] levels = new int[3][]
+            int[][] levels = new int[3][]
             {
                 new int[256],
                 new int[256],

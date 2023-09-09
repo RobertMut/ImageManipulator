@@ -6,7 +6,7 @@ namespace ImageManipulator.Common.Matrices
     public class ConvolutionMatrices3x3 : IConvolutionMatrix
     {
 
-        public Dictionary<SoftenSharpenEnum, double[,]> SoftenSharpenMatrices { get; } = new Dictionary<SoftenSharpenEnum, double[,]>()
+        public Dictionary<SoftenSharpenEnum, double[,]> SoftenSharpenMatrices { get; } = new()
         {
             {SoftenSharpenEnum.SoftenAverage,  new double[,]
                 {
@@ -45,7 +45,7 @@ namespace ImageManipulator.Common.Matrices
             }
         };
 
-        public Dictionary<SobelEnum, double[,]> SobelMatrices { get; } = new Dictionary<SobelEnum, double[,]>()
+        public Dictionary<SobelEnum, double[,]> SobelMatrices { get; } = new()
         {
             {SobelEnum.Sobel1,  new double[,]
                 {

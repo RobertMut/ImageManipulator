@@ -15,7 +15,8 @@ public class TabService : ITabService
     private readonly IServiceProvider _serviceProvider;
     private Dictionary<string, TabItem> _tabItems;
     private int _nameIterator;
-    
+    public string CurrentTabName { get; }
+
     private int NameIterator
     {
         get => _nameIterator++;
@@ -26,6 +27,7 @@ public class TabService : ITabService
         _serviceProvider = serviceProvider;
         _tabItems = new Dictionary<string, TabItem>();
         AddEmpty(new TabItem( $"Tab {NameIterator}", serviceProvider.GetRequiredService<TabControlViewModel>()));
+        CurrentTabName = "Tab 1";
     }
     
     public TabItem GetTab(string name)

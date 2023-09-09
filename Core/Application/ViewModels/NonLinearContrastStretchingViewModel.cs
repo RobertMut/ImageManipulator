@@ -43,7 +43,7 @@ public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewMode
 
     public NonLinearContrastStretchingViewModel(IImagePointOperationsService imagePointOperationsService)
     {
-        this._imagePointOperationsService = imagePointOperationsService;
+        _imagePointOperationsService = imagePointOperationsService;
         ExecuteNonLinearStretching =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NonLinearlyStretchContrast));
         ExecuteNonLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
