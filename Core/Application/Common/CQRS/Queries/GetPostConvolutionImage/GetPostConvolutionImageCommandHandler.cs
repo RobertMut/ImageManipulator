@@ -12,7 +12,7 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 
-public class GetPostConvolutionImageCommandHandler : ICommandHandler<GetPostConvolutionImageCommand, Avalonia.Media.Imaging.Bitmap>
+public class GetPostConvolutionImageCommandHandler : IQueryHandler<GetPostConvolutionImageQuery, Avalonia.Media.Imaging.Bitmap>
 {
     private readonly ITabService _tabService;
     private readonly IImageBorderService _imageBorderService;
@@ -26,15 +26,15 @@ public class GetPostConvolutionImageCommandHandler : ICommandHandler<GetPostConv
         _imageConvolutionService = imageConvolutionService;
     }
 
-    public async Task<Avalonia.Media.Imaging.Bitmap> Handle(GetPostConvolutionImageCommand command, CancellationToken cancellationToken)
+    public async Task<Avalonia.Media.Imaging.Bitmap> Handle(GetPostConvolutionImageQuery query, CancellationToken cancellationToken)
     {
         var tab = _tabService.GetTab(_tabService.CurrentTabName);
         
         Bitmap? bitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image);
-        Bitmap modifiedBItmap = GetModifiedImage(command, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
+        Bitmap modifiedBItmap = GetModifiedImage(query, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
         var avaloniaBitmap =
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedBItmap, command.ImageWrapType,
-                command.Value));
+            ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedBItmap, query.ImageWrapType,
+                query.Value));
         
         return avaloniaBitmap;
     }
@@ -46,30 +46,30 @@ public class GetPostConvolutionImageCommandHandler : ICommandHandler<GetPostConv
                 Color.FromArgb(weight, weight, weight))
             : bitmap;
     }
-    private Bitmap GetModifiedImage(GetPostConvolutionImageCommand command, Bitmap bitmap)
+    private Bitmap GetModifiedImage(GetPostConvolutionImageQuery query, Bitmap bitmap)
     {
-        if (command.ImageWrapType > 0 && (int)command.ImageWrapType < 4)
+        if (query.ImageWrapType > 0 && (int)query.ImageWrapType < 4)
         {
-            bitmap = _imageBorderService.Execute(bitmap, command.ImageWrapType, 5, 5, 5, 5, command.Color);
+            bitmap = _imageBorderService.Execute(bitmap, query.ImageWrapType, 5, 5, 5, 5, query.Color);
         }
 
-        if (!command.EdgeDetection)
+        if (!query.EdgeDetection)
         {
-            var matrix = GetMatrix(command);
+            var matrix = GetMatrix(query);
 
-            return command is { SoftenSharpenType: < SoftenSharpenEnum.SharpenLaplace1, Sobel: false }
-                ? _imageConvolutionService.Execute(bitmap, matrix, command.Value, true)
-                : _imageConvolutionService.Execute(bitmap, matrix, command.Value);
+            return query is { SoftenSharpenType: < SoftenSharpenEnum.SharpenLaplace1, Sobel: false }
+                ? _imageConvolutionService.Execute(bitmap, matrix, query.Value, true)
+                : _imageConvolutionService.Execute(bitmap, matrix, query.Value);
         }
 
-        if (command.EdgeDetectionType != EdgeDetectionEnum.Canny)
+        if (query.EdgeDetectionType != EdgeDetectionEnum.Canny)
         {
             return _imageConvolutionService.Execute(bitmap,
-                EdgeDetection.EdgeDetectionMatrices[command.EdgeDetectionType], command.Value);
+                EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], query.Value);
         }
 
         bitmap = _imageConvolutionService.Execute(bitmap,
-            EdgeDetection.EdgeDetectionMatrices[command.EdgeDetectionType], command.Value, true);
+            EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], query.Value, true);
         
         var gradientMagnitude =
             _imageConvolutionService.ComputeGradient(bitmap, (gx, gy) => Math.Sqrt(gx * gx + gy * gy));
@@ -78,18 +78,18 @@ public class GetPostConvolutionImageCommandHandler : ICommandHandler<GetPostConv
             gradientMagnitude);
     }
 
-    private double[,] GetMatrix(GetPostConvolutionImageCommand command)
+    private double[,] GetMatrix(GetPostConvolutionImageQuery query)
     {
-        IConvolutionMatrix matrices = MatrixSizeDictionary[command.MatrixSize]();
+        IConvolutionMatrix matrices = MatrixSizeDictionary[query.MatrixSize]();
 
-        if (command.Sobel)
+        if (query.Sobel)
         {
-            return matrices.SobelMatrices[command.SobelType];
+            return matrices.SobelMatrices[query.SobelType];
         }
 
-        return command.SoftenSharpenType != SoftenSharpenEnum.SoftenAverageWithWeight
-            ? matrices.SoftenSharpenMatrices[command.SoftenSharpenType]
-            : matrices.SoftenAverageWithWeight(command.Value);
+        return query.SoftenSharpenType != SoftenSharpenEnum.SoftenAverageWithWeight
+            ? matrices.SoftenSharpenMatrices[query.SoftenSharpenType]
+            : matrices.SoftenAverageWithWeight(query.Value);
     }
 
     private static readonly Dictionary<MatrixSize, Func<IConvolutionMatrix>> MatrixSizeDictionary =

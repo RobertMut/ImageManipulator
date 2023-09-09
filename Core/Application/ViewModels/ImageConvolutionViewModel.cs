@@ -118,7 +118,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
 
     private async Task ExecuteOperationOnImage()
     {
-        AfterImage = await _dispatcher.Dispatch<GetPostConvolutionImageCommand, Bitmap>(new GetPostConvolutionImageCommand
+        AfterImage = await _dispatcher.Dispatch<GetPostConvolutionImageQuery, Bitmap>(new GetPostConvolutionImageQuery
         {
             Sobel = _isSobelSelected,
             EdgeDetection = _isEdgeDetectionSelected,

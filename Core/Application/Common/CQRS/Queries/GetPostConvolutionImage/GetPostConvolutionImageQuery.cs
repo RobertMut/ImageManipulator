@@ -3,7 +3,7 @@ using ImageManipulator.Common.Enums;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 
-public class GetPostConvolutionImageCommand
+public class GetPostConvolutionImageQuery
 {
     public bool Sobel { get; set; }
     public bool EdgeDetection { get; set; }

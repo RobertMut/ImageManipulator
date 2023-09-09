@@ -166,7 +166,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private async Task OpenContrastStretchWindow()
     {
         var contrastStretching = _serviceProvider.GetRequiredService<ContrastStretchingViewModel>();
-        contrastStretching.histogramValues = _currentTab.ViewModel.Luminance;
+        contrastStretching.HistogramValues = _currentTab.ViewModel.Luminance;
         contrastStretching.BeforeImage = _currentTab.ViewModel.Image;
 
         await _commonDialogService.ShowDialog(contrastStretching);
