@@ -1,18 +1,19 @@
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterNonLinearContrastStretching;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels;
 
 public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewModelBase
 {
-    private readonly IImagePointOperationsService _imagePointOperationsService;
+    private readonly IQueryDispatcher _queryDispatcher;
     private Bitmap? _beforeImage;
     private Bitmap? _afterImage;
     private double _gamma;
@@ -41,9 +42,9 @@ public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewMode
 
     #endregion
 
-    public NonLinearContrastStretchingViewModel(IImagePointOperationsService imagePointOperationsService)
+    public NonLinearContrastStretchingViewModel(IQueryDispatcher queryDispatcher)
     {
-        _imagePointOperationsService = imagePointOperationsService;
+        _queryDispatcher = queryDispatcher;
         ExecuteNonLinearStretching =
             ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NonLinearlyStretchContrast));
         ExecuteNonLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
@@ -54,9 +55,10 @@ public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewMode
 
     private async Task NonLinearlyStretchContrast()
     {
-        var stretchedImage =
-            _imagePointOperationsService.NonLinearlyStretchContrast(
-                ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _gamma);
-        AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
+        AfterImage = await _queryDispatcher.Dispatch<GetImageAfterNonLinearContrastStretchingQuery, Bitmap>(
+            new GetImageAfterNonLinearContrastStretchingQuery()
+            {
+                Gamma = _gamma
+            }, new CancellationToken());
     }
 }
