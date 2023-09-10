@@ -1,6 +1,6 @@
 ﻿namespace ImageManipulator.Common.Enums
 {
-    public enum ImageWrapEnum
+    public enum ImageWrapType
     {
         BORDER_NONE = 0,
         BORDER_CONSTANT = 1,

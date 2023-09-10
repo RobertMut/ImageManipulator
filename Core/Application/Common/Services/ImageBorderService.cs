@@ -9,18 +9,18 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImageBorderService : IImageBorderService
     {
-        public Bitmap Execute(Bitmap bitmap, ImageWrapEnum wrapEnum, int top, int bottom, int left, int right, Color color = default)
+        public Bitmap Execute(Bitmap bitmap, ImageWrapType wrapType, int top, int bottom, int left, int right, Color color = default)
         {
             var borderedBitmap = new Bitmap(bitmap.Width + left + right, bitmap.Height + top + bottom);
             Tuple<RotateFlipType, RotateFlipType> rotateFlipType = null;
 
-            if (wrapEnum == ImageWrapEnum.BORDER_CONSTANT)
+            if (wrapType == ImageWrapType.BORDER_CONSTANT)
             {
                 borderedBitmap = SetBackground(borderedBitmap, color);
             }
             else
             {
-                rotateFlipType = TranslateWrap(wrapEnum);
+                rotateFlipType = TranslateWrap(wrapType);
             }
 
             using(Graphics graphics = FromImage(borderedBitmap))
@@ -90,14 +90,14 @@ namespace ImageManipulator.Application.Common.Services
             return bitmap;
         }
 
-        private Tuple<RotateFlipType, RotateFlipType> TranslateWrap(ImageWrapEnum wrapEnum)
+        private Tuple<RotateFlipType, RotateFlipType> TranslateWrap(ImageWrapType wrapType)
         {
-            switch (wrapEnum)
+            switch (wrapType)
             {
-                case ImageWrapEnum.BORDER_WRAP:
+                case ImageWrapType.BORDER_WRAP:
                     return new(RotateFlipType.RotateNoneFlipNone, RotateFlipType.RotateNoneFlipNone);
 
-                case ImageWrapEnum.BORDER_REFLECT:
+                case ImageWrapType.BORDER_REFLECT:
                     return new(RotateFlipType.Rotate180FlipY, RotateFlipType.Rotate180FlipX);
 
                 default:

@@ -22,14 +22,14 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     private Bitmap? _beforeImage;
     private int _value;
     private bool _isSobelSelected;
-    private SoftenSharpenEnum _selectedSoftenSharpen;
-    private SobelEnum _selectedSobel;
-    private ImageWrapEnum _imageWrap;
+    private SoftenSharpenType _selectedSoftenSharpen;
+    private SobelType _selectedSobel;
+    private ImageWrapType _imageWrap;
     private bool _isWeightedSelected;
     private MatrixSize _matrixSize;
     private bool _isEdgeDetectionSelected;
     private double _borderConstVal;
-    private EdgeDetectionEnum _selectedEdgeDetection;
+    private EdgeDetectionType _selectedEdgeDetection;
 
     public override Bitmap? AfterImage
     {
@@ -58,19 +58,19 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     public int SelectedEdgeDetection
     {
         get => (int)_selectedEdgeDetection;
-        set => ChangeAndSetWeightedBool(ref _selectedEdgeDetection, (EdgeDetectionEnum)value);
+        set => ChangeAndSetWeightedBool(ref _selectedEdgeDetection, (EdgeDetectionType)value);
     }
 
     public int SelectedSoftenSharpen3x3
     {
         get => (int)_selectedSoftenSharpen;
-        set => ChangeAndSetWeightedBool(ref _selectedSoftenSharpen, (SoftenSharpenEnum)value);
+        set => ChangeAndSetWeightedBool(ref _selectedSoftenSharpen, (SoftenSharpenType)value);
     }
 
     public int ImageWrap
     {
         get => (int)_imageWrap;
-        set => this.RaiseAndSetIfChanged(ref _imageWrap, (ImageWrapEnum)value);
+        set => this.RaiseAndSetIfChanged(ref _imageWrap, (ImageWrapType)value);
     }
 
     public int MatrixSize

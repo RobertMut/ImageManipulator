@@ -27,7 +27,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     private Color _pickedColor;
     private int? _value;
     private bool _isArithmeticSelected;
-    private ElementaryOperationParameterEnum _elementaryOperation;
+    private ElementaryOperationParameterType _elementaryOperation;
     private ArithmeticOperationType _arithmeticOperation;
     private BitwiseOperationType _bitwiseOperation;
 
@@ -39,7 +39,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     public Color PickedColor { get => _pickedColor; set => this.RaiseAndSetIfChanged(ref _pickedColor, value); }
     public int? Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
     public bool IsArithmeticSelected { get => _isArithmeticSelected; set => this.RaiseAndSetIfChanged(ref _isArithmeticSelected, value); }
-    public int SelectedElementaryOperation { get => (int)_elementaryOperation; set => this.RaiseAndSetIfChanged(ref _elementaryOperation, (ElementaryOperationParameterEnum)value); }
+    public int SelectedElementaryOperation { get => (int)_elementaryOperation; set => this.RaiseAndSetIfChanged(ref _elementaryOperation, (ElementaryOperationParameterType)value); }
     public int SelectedArithmeticOperation { get => (int)_arithmeticOperation; set => this.RaiseAndSetIfChanged(ref _arithmeticOperation, (ArithmeticOperationType)value); }
     public int SelectedBitwiseOperation { get => (int)_bitwiseOperation; set => this.RaiseAndSetIfChanged(ref _bitwiseOperation, (BitwiseOperationType)value); }
 
@@ -99,11 +99,11 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         OperationImage = new Bitmap(fileStream);
     });
 
-    private object? ParameterSelector(ElementaryOperationParameterEnum parameter) => parameter switch
+    private object? ParameterSelector(ElementaryOperationParameterType parameter) => parameter switch
     {
-        ElementaryOperationParameterEnum.Value => _value.Value,
-        ElementaryOperationParameterEnum.Color => _pickedColor,
-        ElementaryOperationParameterEnum.Image => ImageConverterHelper.ConvertFromAvaloniaUIBitmap(OperationImage),
+        ElementaryOperationParameterType.Value => _value.Value,
+        ElementaryOperationParameterType.Color => _pickedColor,
+        ElementaryOperationParameterType.Image => ImageConverterHelper.ConvertFromAvaloniaUIBitmap(OperationImage),
         _ => throw new Exception("Invalid operaton")
     };
 }

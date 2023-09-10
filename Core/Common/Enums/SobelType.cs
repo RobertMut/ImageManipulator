@@ -1,6 +1,6 @@
 ﻿namespace ImageManipulator.Common.Enums
 {
-    public enum SobelEnum
+    public enum SobelType
     {
         Sobel1 = 0,
         Sobel2 = 1,

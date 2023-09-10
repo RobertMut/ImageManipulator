@@ -39,10 +39,10 @@ public class GetPostConvolutionImageCommandHandler : IQueryHandler<GetPostConvol
         return avaloniaBitmap;
     }
     
-    private Bitmap BorderAfter(Bitmap bitmap, ImageWrapEnum imageWrapType, int weight)
+    private Bitmap BorderAfter(Bitmap bitmap, ImageWrapType imageWrapType, int weight)
     {
-        return imageWrapType == ImageWrapEnum.BORDER_AFTER
-            ? _imageBorderService.Execute(bitmap, ImageWrapEnum.BORDER_CONSTANT, 5, 5, 5, 5,
+        return imageWrapType == ImageWrapType.BORDER_AFTER
+            ? _imageBorderService.Execute(bitmap, ImageWrapType.BORDER_CONSTANT, 5, 5, 5, 5,
                 Color.FromArgb(weight, weight, weight))
             : bitmap;
     }
@@ -57,12 +57,12 @@ public class GetPostConvolutionImageCommandHandler : IQueryHandler<GetPostConvol
         {
             var matrix = GetMatrix(query);
 
-            return query is { SoftenSharpenType: < SoftenSharpenEnum.SharpenLaplace1, Sobel: false }
+            return query is { SoftenSharpenType: < SoftenSharpenType.SharpenLaplace1, Sobel: false }
                 ? _imageConvolutionService.Execute(bitmap, matrix, query.Value, true)
                 : _imageConvolutionService.Execute(bitmap, matrix, query.Value);
         }
 
-        if (query.EdgeDetectionType != EdgeDetectionEnum.Canny)
+        if (query.EdgeDetectionType != EdgeDetectionType.Canny)
         {
             return _imageConvolutionService.Execute(bitmap,
                 EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], query.Value);
@@ -87,7 +87,7 @@ public class GetPostConvolutionImageCommandHandler : IQueryHandler<GetPostConvol
             return matrices.SobelMatrices[query.SobelType];
         }
 
-        return query.SoftenSharpenType != SoftenSharpenEnum.SoftenAverageWithWeight
+        return query.SoftenSharpenType != SoftenSharpenType.SoftenAverageWithWeight
             ? matrices.SoftenSharpenMatrices[query.SoftenSharpenType]
             : matrices.SoftenAverageWithWeight(query.Value);
     }

@@ -1,6 +1,6 @@
 ﻿namespace ImageManipulator.Common.Enums;
 
-public enum EdgeDetectionEnum
+public enum EdgeDetectionType
 {
     Laplace,
     PrewittVertical,

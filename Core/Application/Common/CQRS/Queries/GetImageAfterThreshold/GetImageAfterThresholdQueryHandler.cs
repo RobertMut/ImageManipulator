@@ -1,0 +1,30 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
+using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
+using ImageManipulator.Domain.Common.Helpers;
+
+namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
+
+public class GetImageAfterThresholdQueryHandler : IQueryHandler<GetImageAfterThresholdQuery, Avalonia.Media.Imaging.Bitmap>
+{
+    private readonly ITabService _tabService;
+    private readonly IImagePointOperationsService _imagePointOperationsService;
+
+    public GetImageAfterThresholdQueryHandler(ITabService tabService, IImagePointOperationsService imagePointOperationsService)
+    {
+        _tabService = tabService;
+        _imagePointOperationsService = imagePointOperationsService;
+    }
+
+    public async Task<Bitmap> Handle(GetImageAfterThresholdQuery query, CancellationToken cancellationToken)
+    {
+        var tab = _tabService.GetTab(_tabService.CurrentTabName);
+        var result = _imagePointOperationsService.Thresholding(
+            ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image), query.Threshold, query.ReplaceColour);
+        
+        return ImageConverterHelper.ConvertFromSystemDrawingBitmap(result);
+    }
+}

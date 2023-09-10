@@ -9,9 +9,9 @@ public class GetPostConvolutionImageQuery
     public bool EdgeDetection { get; set; }
     public int Value { get; set; }
     public Color Color { get; set; }
-    public SoftenSharpenEnum SoftenSharpenType { get; set; }
-    public SobelEnum SobelType { get; set; }
+    public SoftenSharpenType SoftenSharpenType { get; set; }
+    public SobelType SobelType { get; set; }
     public MatrixSize MatrixSize { get; set; }
-    public EdgeDetectionEnum EdgeDetectionType { get; set; }
-    public ImageWrapEnum ImageWrapType { get; set; }
+    public EdgeDetectionType EdgeDetectionType { get; set; }
+    public ImageWrapType ImageWrapType { get; set; }
 }

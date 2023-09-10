@@ -7,6 +7,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;
 
@@ -17,7 +18,7 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
     private readonly IQueryDispatcher _queryDispatcher;
     private Bitmap? _beforeImage;
     private Bitmap? _afterImage;
-    private Threshold? _threshold;
+    private ThresholdLevels? _threshold;
     private int _enteredLowerThreshold;
     private int _enteredUpperThreshold;
 
@@ -35,7 +36,7 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 
     public int[]? HistogramValues { get; set; }
     
-    public Threshold? Threshold { get => _threshold; set => this.RaiseAndSetIfChanged(ref _threshold, value); }
+    public ThresholdLevels? Threshold { get => _threshold; set => this.RaiseAndSetIfChanged(ref _threshold, value); }
 
     public int EnteredLowerThreshold
     {
@@ -59,7 +60,7 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
     public ContrastStretchingViewModel(IQueryDispatcher queryDispatcher)
     {
         _queryDispatcher = queryDispatcher;
-        _threshold = new Threshold { Upper = 0, Lower = 0 };
+        _threshold = new ThresholdLevels { Upper = 0, Lower = 0 };
         
         ExecuteLinearStretching = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(StretchContrast));
         ExecuteLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
@@ -73,7 +74,7 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 
     private async Task CalculateSuggestedThresholds()
     {
-        Threshold = await _queryDispatcher.Dispatch<GetImageThresholdQuery, Threshold>(new GetImageThresholdQuery()
+        Threshold = await _queryDispatcher.Dispatch<GetImageThresholdLevelsQuery, ThresholdLevels>(new GetImageThresholdLevelsQuery()
         {
             HistogramValues = HistogramValues
         }, new CancellationToken());
