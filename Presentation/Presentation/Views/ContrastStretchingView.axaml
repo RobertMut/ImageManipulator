@@ -32,9 +32,9 @@
 		</StackPanel>
 		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
 			<TextBlock>Suggested lower threshold=</TextBlock>
-			<TextBlock Text="{Binding LowerThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBlock Text="{Binding Threshold.Lower, Converter={StaticResource intStringConverter}}"/>
 			<TextBlock>Suggested upper threshold= </TextBlock>
-			<TextBlock Text="{Binding UpperThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBlock Text="{Binding Threshold.Upper, Converter={StaticResource intStringConverter}}"/>
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">

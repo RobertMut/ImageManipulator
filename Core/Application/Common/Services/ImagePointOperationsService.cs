@@ -47,9 +47,10 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe Bitmap? StretchContrast(Bitmap? bitmap, int lowest, int highest)
         {
-            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
+                .ExecuteOnPixels((x, _, _) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
@@ -70,7 +71,7 @@ namespace ImageManipulator.Application.Common.Services
         {
             Bitmap? newSrc = new Bitmap(bitmap);
 
-            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, scan0, stride) =>
+            var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite).ExecuteOnPixels((x, _, _) =>
             {
                 byte* data = (byte*)x.ToPointer();
 
@@ -97,7 +98,7 @@ namespace ImageManipulator.Application.Common.Services
                 }
             }
 
-            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
             double totalNum = bitmap.Height * bitmap.Width;
             var bitmapData = newSrc.LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite);
             var sourceBitmapData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadOnly);
@@ -113,7 +114,7 @@ namespace ImageManipulator.Application.Common.Services
             int[] green = probability[1].CumulativeSum().Select(x => CalculationHelper.FloorValue(x)).ToArray();
             int[] blue = probability[2].CumulativeSum().Select(x => CalculationHelper.FloorValue(x)).ToArray();
 
-            bitmapData.ExecuteOnPixels((x, scan0, stride, i, j) =>
+            bitmapData.ExecuteOnPixels((x, _, _, i, j) =>
             {
                 byte* pixelData = (byte*)x.ToPointer();
                 byte* otherImagePixelData = (byte*)sourceBitmapData.GetPixel(i, j).ToPointer();
@@ -131,10 +132,10 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe Bitmap? Negation(Bitmap? bitmap)
         {
-            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
             var bitmapData = newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
-                .ExecuteOnPixels((x, scan0, stride) =>
+                .ExecuteOnPixels((x, _, _) =>
                 {
                     byte* data = (byte*)x.ToPointer();
 
@@ -150,10 +151,10 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe Bitmap? Thresholding(Bitmap? bitmap, int threshold, bool replace = true)
         {
-            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
-                .ExecuteOnPixels((x, scan0, stride) =>
+                .ExecuteOnPixels((x, _, _) =>
                 {
                     byte* data = (byte*)x.ToPointer();
                     double rgb = data[0];
@@ -177,10 +178,10 @@ namespace ImageManipulator.Application.Common.Services
 
         public unsafe Bitmap? MultiThresholding(Bitmap? bitmap, int lowerThreshold, int upperThreshold, bool replace = true)
         {
-            Bitmap? newSrc = new System.Drawing.Bitmap(bitmap);
+            Bitmap? newSrc = new Bitmap(bitmap);
             newSrc.UnlockBits(newSrc
                 .LockBitmap(newSrc.PixelFormat, ImageLockMode.ReadWrite)
-                .ExecuteOnPixels((x, scan0, stride) =>
+                .ExecuteOnPixels((x, _, _) =>
                 {
                     byte* data = (byte*)x.ToPointer();
                     double rgb = data[0];
