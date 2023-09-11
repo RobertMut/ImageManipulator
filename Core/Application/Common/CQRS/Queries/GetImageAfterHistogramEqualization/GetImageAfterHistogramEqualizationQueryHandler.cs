@@ -7,22 +7,20 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterHistogramEqualization;
 
-public class GetImageAfterHistogramEqualizationQueryHandler : IQueryHandler<GetImageAfterHistogramEqualizationQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterHistogramEqualizationQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterHistogramEqualizationQuery, Avalonia.Media.Imaging.Bitmap>
 {
-    private readonly ITabService _tabService;
     private readonly IImagePointOperationsService _imagePointOperationsService;
 
-    public GetImageAfterHistogramEqualizationQueryHandler(ITabService tabService, IImagePointOperationsService imagePointOperationsService)
+    public GetImageAfterHistogramEqualizationQueryHandler(ITabService tabService,
+        IImagePointOperationsService imagePointOperationsService) : base(tabService)
     {
-        _tabService = tabService;
         _imagePointOperationsService = imagePointOperationsService;
     }
 
     public async Task<Bitmap> Handle(GetImageAfterHistogramEqualizationQuery query, CancellationToken cancellationToken)
     {
-        var tab = _tabService.GetTab(_tabService.CurrentTabName);
-        var result = _imagePointOperationsService.HistogramEqualization(
-            ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image), query.LookupTable);
+        var currentBitmap = await GetCurrentlyDisplayedBitmap();
+        var result = _imagePointOperationsService.HistogramEqualization(currentBitmap, query.LookupTable);
         
         return ImageConverterHelper.ConvertFromSystemDrawingBitmap(result);
     }

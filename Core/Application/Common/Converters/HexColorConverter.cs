@@ -15,14 +15,6 @@ namespace ImageManipulator.Application.Common.Converters
 
             if (value is string)
             {
-                //List<byte> colors = new List<byte>(3);
-                //IEnumerable<char[]> colorHex = ((string)value).Skip(1).ToArray().GetSlices(2);
-
-                //foreach(char[] color in colorHex)
-                //{
-                //    colors.Add(System.Convert.ToByte(string.Join("", color), 16));
-                //}
-
                 return Color.Parse(value.ToString());
             }
 

@@ -8,22 +8,19 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterNonLinearContrastStretching;
 
-public class GetImageAfterNonLinearContrastStretchingQueryHandler : IQueryHandler<GetImageAfterNonLinearContrastStretchingQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterNonLinearContrastStretchingQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterNonLinearContrastStretchingQuery, Avalonia.Media.Imaging.Bitmap>
 {
-    private readonly ITabService _tabService;
     private readonly IImagePointOperationsService _imagePointOperationsService;
 
     public GetImageAfterNonLinearContrastStretchingQueryHandler(ITabService tabService,
-        IImagePointOperationsService imagePointOperationsService)
+        IImagePointOperationsService imagePointOperationsService) : base(tabService)
     {
-        _tabService = tabService;
         _imagePointOperationsService = imagePointOperationsService;
     }
     
     public async Task<Bitmap> Handle(GetImageAfterNonLinearContrastStretchingQuery query, CancellationToken cancellationToken)
     {
-        var tab = _tabService.GetTab(_tabService.CurrentTabName);
-        var bitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image);
+        var bitmap = await GetCurrentlyDisplayedBitmap();
         var result =
             ImageConverterHelper.ConvertFromSystemDrawingBitmap(
                 _imagePointOperationsService.NonLinearlyStretchContrast(bitmap, query.Gamma));

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Avalonia.Controls;
+﻿using System.Collections.ObjectModel;
 using ImageManipulator.Application.ViewModels;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 

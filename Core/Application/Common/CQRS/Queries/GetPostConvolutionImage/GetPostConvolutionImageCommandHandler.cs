@@ -12,25 +12,22 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 
-public class GetPostConvolutionImageCommandHandler : IQueryHandler<GetPostConvolutionImageQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, IQueryHandler<GetPostConvolutionImageQuery, Avalonia.Media.Imaging.Bitmap>
 {
-    private readonly ITabService _tabService;
     private readonly IImageBorderService _imageBorderService;
     private readonly IImageConvolutionService _imageConvolutionService;
 
     public GetPostConvolutionImageCommandHandler(ITabService tabService, IImageBorderService imageBorderService,
-        IImageConvolutionService imageConvolutionService)
+        IImageConvolutionService imageConvolutionService) : base(tabService)
     {
-        _tabService = tabService;
         _imageBorderService = imageBorderService;
         _imageConvolutionService = imageConvolutionService;
     }
 
     public async Task<Avalonia.Media.Imaging.Bitmap> Handle(GetPostConvolutionImageQuery query, CancellationToken cancellationToken)
     {
-        var tab = _tabService.GetTab(_tabService.CurrentTabName);
+        var bitmap = await GetCurrentlyDisplayedBitmap();
         
-        Bitmap? bitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image);
         Bitmap modifiedBItmap = GetModifiedImage(query, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
         var avaloniaBitmap =
             ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedBItmap, query.ImageWrapType,

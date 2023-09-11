@@ -8,22 +8,19 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 
-public class GetImageAfterThresholdQueryHandler : IQueryHandler<GetImageAfterThresholdQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterThresholdQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterThresholdQuery, Avalonia.Media.Imaging.Bitmap>
 {
-    private readonly ITabService _tabService;
     private readonly IImagePointOperationsService _imagePointOperationsService;
 
-    public GetImageAfterThresholdQueryHandler(ITabService tabService, IImagePointOperationsService imagePointOperationsService)
+    public GetImageAfterThresholdQueryHandler(ITabService tabService, IImagePointOperationsService imagePointOperationsService) : base(tabService)
     {
-        _tabService = tabService;
         _imagePointOperationsService = imagePointOperationsService;
     }
 
     public async Task<Bitmap> Handle(GetImageAfterThresholdQuery query, CancellationToken cancellationToken)
     {
-        var tab = _tabService.GetTab(_tabService.CurrentTabName);
-        var result = _imagePointOperationsService.Thresholding(
-            ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image), query.Threshold, query.ReplaceColour);
+        var bitmap = await GetCurrentlyDisplayedBitmap();
+        var result = _imagePointOperationsService.Thresholding(bitmap, query.Threshold, query.ReplaceColour);
         
         return ImageConverterHelper.ConvertFromSystemDrawingBitmap(result);
     }
