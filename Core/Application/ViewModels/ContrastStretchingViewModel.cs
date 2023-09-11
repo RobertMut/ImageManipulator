@@ -6,7 +6,6 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;

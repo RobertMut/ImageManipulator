@@ -10,7 +10,6 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using Splat;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace ImageManipulator.Application.ViewModels;

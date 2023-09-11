@@ -1,19 +1,21 @@
 using System;
-using ImageManipulator.Application.Common.Interfaces;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ImageManipulator.Domain.Common.Helpers;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterMultiThreshold;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Splat;
 
 namespace ImageManipulator.Application.ViewModels
 {
     public class MultiThresholdingViewModel : ImageOperationDialogViewModelBase
     {
-        private readonly IImagePointOperationsService imagePointOperationsService;
+        private readonly IQueryDispatcher _queryDispatcher;
         private Bitmap? _beforeImage;
         private Bitmap? _afterImage;
         private int _enteredLowerThreshold;
@@ -45,10 +47,10 @@ namespace ImageManipulator.Application.ViewModels
 
         #endregion Commands
 
-        public MultiThresholdingViewModel(IImagePointOperationsService imagePointOperationsService)
+        public MultiThresholdingViewModel(IQueryDispatcher queryDispatcher)
         {
-            this.imagePointOperationsService = imagePointOperationsService;
-            ThresholdingCommand = ReactiveCommand.CreateFromObservable(ExecuteThresholding);
+            _queryDispatcher = queryDispatcher;
+            ThresholdingCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteThresholding));
             ThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
             ThresholdingCommand.ThrownExceptions.Subscribe(ex =>
                 this.Log().ErrorException("Error during thresholding!", ex));
@@ -56,13 +58,14 @@ namespace ImageManipulator.Application.ViewModels
             CancelCommand = new RelayCommand<Window>(Cancel);
         }
 
-        private IObservable<Unit> ExecuteThresholding() =>
-            Observable.Start(() =>
+        private async Task ExecuteThresholding()
+        {
+            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterMultiThresholdQuery, Bitmap>(new GetImageAfterMultiThresholdQuery
             {
-                var stretchedImage = imagePointOperationsService.MultiThresholding(
-                    ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold,
-                    _enteredUpperThreshold, ReplaceColours);
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
-            });
+                LowerThreshold = _enteredLowerThreshold,
+                UpperThreshold = _enteredUpperThreshold,
+                ReplaceColours = ReplaceColours
+            }, new CancellationToken());
+        }
     }
 }

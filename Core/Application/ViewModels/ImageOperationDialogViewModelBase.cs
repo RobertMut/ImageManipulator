@@ -1,8 +1,6 @@
-﻿using System.Reactive;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels;
 

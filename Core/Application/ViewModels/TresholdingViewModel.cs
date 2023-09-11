@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 
