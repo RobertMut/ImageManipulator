@@ -34,9 +34,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     public TabItem CurrentTab
     {
         get => _currentTab;
-        set => this.RaiseAndSetIfChanged(ref _currentTab, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _currentTab, value);
+        }
     }
-    
+
     #region Commands
 
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }

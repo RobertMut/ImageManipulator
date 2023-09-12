@@ -1,10 +1,12 @@
-using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
 using Splat;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -13,7 +15,7 @@ namespace ImageManipulator.Application.ViewModels
 {
     public class TabControlViewModel : ReactiveObject
     {
-        private readonly IImageDataService _imageDataService;
+        private readonly IQueryDispatcher _queryDispatcher;
         private Bitmap? _image;
         private ObservableCollection<ISeries> _canvasLinesLuminance;
         private ObservableCollection<ISeries> _canvasLinesRgb;
@@ -41,10 +43,10 @@ namespace ImageManipulator.Application.ViewModels
         /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }
 
-        public TabControlViewModel(IImageDataService imageDataService)
+        public TabControlViewModel(IQueryDispatcher queryDispatcher)
         {
+            _queryDispatcher = queryDispatcher;
             HostScreen = Locator.Current.GetService<IScreen>();
-            _imageDataService = imageDataService;
             ClearValues();
         }
 
@@ -68,36 +70,41 @@ namespace ImageManipulator.Application.ViewModels
 
         private async Task PrepareGraph()
         {
-            ImageValues = _imageDataService.CalculateLevels(Image);
-            Luminance = _imageDataService.CalculateAverageForGrayGraph(ImageValues);
-            
-            var histogramValues = _imageDataService.GetHistogramValues(ImageValues, ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image));
-            var grayScaleValues = _imageDataService.GetHistogramValues(new[] { Luminance }, ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image));
-            _canvasLinesRgb = new ObservableCollection<ISeries>
+            ImageValues = await _queryDispatcher.Dispatch<GetImageValuesQuery, int[][]>(new GetImageValuesQuery
             {
-                new ColumnSeries<int>
+                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image)
+            }, new CancellationToken());
+            Luminance = (await _queryDispatcher.Dispatch<GetImageValuesQuery, int[][]>(new GetImageValuesQuery
+            {
+                Luminance = true,
+                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image)
+            }, new CancellationToken()))[0];
+
+            _canvasLinesLuminance = new ObservableCollection<ISeries>()
+            {
+                new ColumnSeries<int>()
                 {
-                    Name = "Red",
-                    Values = histogramValues[0]
-                },
-                new ColumnSeries<int>
-                {
-                    Name = "Green",
-                    Values = histogramValues[1]
-                },
-                new ColumnSeries<int>
-                {
-                    Name = "Blue",
-                    Values = histogramValues[2]
+                    Name = "Luminance",
+                    Values = Luminance
                 }
             };
-
-            _canvasLinesLuminance = new ObservableCollection<ISeries>
+            
+            _canvasLinesRgb = new ObservableCollection<ISeries>()
             {
-                new ColumnSeries<int>
+                new ColumnSeries<int>()
                 {
-                    Values = grayScaleValues[0],
-                    Name = "Luminance"
+                    Name = "Red",
+                    Values = ImageValues[0]
+                },
+                new ColumnSeries<int>()
+                {
+                    Name = "Green",
+                    Values = ImageValues[1]
+                },
+                new ColumnSeries<int>()
+                {
+                    Name = "Blue",
+                    Values = ImageValues[2]
                 }
             };
         }

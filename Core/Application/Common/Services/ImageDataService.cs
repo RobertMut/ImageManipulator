@@ -11,24 +11,18 @@ namespace ImageManipulator.Application.Common.Services
 {
     public class ImageDataService : IImageDataService
     {
-        public int[]?[] CalculateLevels(Avalonia.Media.Imaging.Bitmap? bitmap)
+        public int[]?[] CalculateLevels(Bitmap? bitmap)
         {
-            Bitmap? newBitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(bitmap);
-            var bitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat, ImageLockMode.ReadWrite);
-            int bytes = Math.Abs(bitmapData.Stride) * newBitmap.Height;
+            var bitmapData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadOnly);
+            int bytes = Math.Abs(bitmapData.Stride) * bitmap.Height;
 
             byte[] buffer = new byte[bytes];
             Marshal.Copy(bitmapData.Scan0, buffer, 0, bytes);
 
-            newBitmap.UnlockBits(bitmapData);
+            bitmap.UnlockBits(bitmapData);
 
             return GetLevels(ref buffer);
         }
-
-        private static int[]? CalculateLut(ref int[]? values, int shift = 0) =>
-            values
-                .Select(n => Math.Abs(n << shift))
-                .ToArray();
 
         public int[]? CalculateAverageForGrayGraph(int[]?[] levels)
         {
@@ -40,21 +34,7 @@ namespace ImageManipulator.Application.Common.Services
 
             return result;
         }
-        
-        public int[]?[] GetHistogramValues(int[]?[] values, Bitmap? existingImage)
-        {
-            if (values.Length == 3)
-            {
-                values[0] = CalculateLut(ref values[0], 16);
-                values[1] = CalculateLut(ref values[1], 8);
-                values[2] = CalculateLut(ref values[2]);
-            } else
-            {
-                values[0] = CalculateLut(ref values[0]);
-            }
-            
-            return values;
-        }
+
 
         private int[][] GetLevels(ref byte[] buffer)
         {

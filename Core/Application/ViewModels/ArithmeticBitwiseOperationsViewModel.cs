@@ -20,7 +20,7 @@ namespace ImageManipulator.Application.ViewModels;
 public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewModelBase
 {
     private readonly IQueryDispatcher _queryDispatcher;
-    private readonly ICommonDialogService commonDialogService;
+    private readonly ICommonDialogService _commonDialogService;
     private Bitmap? _afterImage;
     private Bitmap? _beforeImage;
     private Bitmap? _operationImage;
@@ -100,7 +100,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         ICommonDialogService commonDialogService)
     {
         _queryDispatcher = queryDispatcher;
-        this.commonDialogService = commonDialogService;
+        this._commonDialogService = commonDialogService;
         SelectImage = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SelectImageCommand));
         SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
 
@@ -141,7 +141,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     private async Task SelectImageCommand()
     {
-        var storageFile = await commonDialogService.ShowFileDialogInNewWindow();
+        var storageFile = await _commonDialogService.ShowFileDialogInNewWindow();
         await using Stream fileStream = await storageFile.OpenReadAsync();
         OperationImage = new Bitmap(fileStream);
     }

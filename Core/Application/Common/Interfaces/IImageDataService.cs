@@ -1,4 +1,4 @@
-﻿using Avalonia.Media.Imaging;
+﻿using System.Drawing;
 
 namespace ImageManipulator.Application.Common.Interfaces
 {
@@ -6,6 +6,5 @@ namespace ImageManipulator.Application.Common.Interfaces
     {
         int[]?[] CalculateLevels(Bitmap? bitmap);
         int[]? CalculateAverageForGrayGraph(int[]?[] levels);
-        int[]?[] GetHistogramValues(int[]?[] values, System.Drawing.Bitmap? existingImage);
     }
 }

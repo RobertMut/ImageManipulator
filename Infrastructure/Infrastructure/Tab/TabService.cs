@@ -15,7 +15,7 @@ public class TabService : ITabService
     private readonly IServiceProvider _serviceProvider;
     private Dictionary<string, TabItem> _tabItems;
     private int _nameIterator;
-    public string CurrentTabName { get; }
+    public string CurrentTabName { get; set; }
 
     private int NameIterator
     {

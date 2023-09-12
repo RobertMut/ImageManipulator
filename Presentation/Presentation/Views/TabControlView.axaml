@@ -50,13 +50,13 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <lvc:CartesianChart 
-                    Series="{Binding CanvasLinesRGB}"
-                    ZoomMode="X"/><!-- TODO rgb graph -->
+                    Series="{Binding CanvasLinesRgb}"
+                    ZoomMode="X"/>
             </Grid>
             <Grid Grid.Row="1">
                 <lvc:CartesianChart 
                     Series="{Binding CanvasLinesLuminance}"
-                    ZoomMode="X"/><!-- TODO luminance graph -->
+                    ZoomMode="X"/>
             </Grid>
         </Grid>
     </Grid>
