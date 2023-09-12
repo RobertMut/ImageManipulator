@@ -33,7 +33,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     public TabItem CurrentTab
     {
-        get => _currentTab;
+        get
+        {
+            if(_currentTab is not null)
+                _tabService.CurrentTabName = _currentTab.ViewModel.Path;
+            return _currentTab;
+        }
         set
         {
             this.RaiseAndSetIfChanged(ref _currentTab, value);
@@ -215,7 +220,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task SaveImage()
     {
-        _currentTab.ViewModel.Image.Save(_currentTab.ViewModel.Path);
+        _currentTab.ViewModel.Image.Save(Path.GetFileName(_currentTab.ViewModel.Path));
     }
 
     private async Task SaveImageAs()
@@ -225,7 +230,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task Duplicate()
     {
-        CurrentTab = _tabService.Duplicate(_currentTab.Name);
+        CurrentTab = _tabService.Duplicate(_currentTab.ViewModel.Path);
     }
 
     private async Task CloseApp() => Environment.Exit(1);
@@ -241,8 +246,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         {
             newViewModel = tabItem.ViewModel;
         }
-
-        CurrentTab = _tabService.Replace(tabItem.Name, new TabItem(newViewModel));
+        
+        CurrentTab = _tabService.Replace(tabItem.ViewModel.Path, new TabItem(tabItem.Name, newViewModel));
         ImageTabs = _tabService.GetTabItems();
     }
 }
