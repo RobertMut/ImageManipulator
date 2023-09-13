@@ -3,9 +3,7 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using ImageManipulator.Domain.Common.Dictionaries;
 
 namespace ImageManipulator.Application.Common.Services
 {
