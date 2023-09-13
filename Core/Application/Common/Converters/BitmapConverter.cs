@@ -1,7 +1,8 @@
 ﻿using Avalonia.Data.Converters;
-using ImageManipulator.Application.Common.Helpers;
 using System;
+using System.Drawing;
 using System.Globalization;
+using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Converters
 {
@@ -13,7 +14,7 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(System.Drawing.Bitmap))
+            if (value is Bitmap)
             {
                 return ImageConverterHelper.ConvertFromSystemDrawingBitmap((System.Drawing.Bitmap)value);
             }

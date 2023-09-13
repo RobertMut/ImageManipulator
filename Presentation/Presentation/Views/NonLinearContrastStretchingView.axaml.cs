@@ -9,6 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public NonLinearContrastStretchingView()
         {
             InitializeComponent();
+            this.BindCommand(ViewModel, vm => vm.ExecuteNonLinearStretching, v => v.StretchCommand);
             this.WhenActivated(disposables => { });
         }
     }

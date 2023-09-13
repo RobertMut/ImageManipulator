@@ -5,9 +5,9 @@ namespace ImageManipulator.Common.Matrices
 {
     public class ConvolutionMatrices7x7 : IConvolutionMatrix
     {
-        public Dictionary<SoftenSharpenEnum, double[,]> SoftenSharpenMatrices { get; } = new Dictionary<SoftenSharpenEnum, double[,]>()
+        public Dictionary<SoftenSharpenType, double[,]> SoftenSharpenMatrices { get; } = new()
         {
-            {SoftenSharpenEnum.SoftenAverage,  new double[,]
+            {SoftenSharpenType.SoftenAverage,  new double[,]
                 {
                     {1, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 1},
@@ -18,7 +18,7 @@ namespace ImageManipulator.Common.Matrices
                     {1, 1, 1, 1, 1, 1, 1},
                 }
             },
-            {SoftenSharpenEnum.SoftenGauss,  new double[,]
+            {SoftenSharpenType.SoftenGauss,  new double[,]
                 {
                     {1,  1,  2,  2,  2,  1,  1},
                     {1,  2,  2,  4,  2,  2,  1},
@@ -29,7 +29,7 @@ namespace ImageManipulator.Common.Matrices
                     {1,  1,  2,  2,  2,  1,  1}
                 }
             },
-            {SoftenSharpenEnum.SharpenLaplace1,  new double[,]
+            {SoftenSharpenType.SharpenLaplace1,  new double[,]
                 {
                      {0,  0,  0,  1,  0,  0,  0 },
                      {0,  0,  1,  2,  1,  0,  0 },
@@ -42,9 +42,9 @@ namespace ImageManipulator.Common.Matrices
             }
         };
 
-        public Dictionary<SobelEnum, double[,]> SobelMatrices { get; } = new Dictionary<SobelEnum, double[,]>()
+        public Dictionary<SobelType, double[,]> SobelMatrices { get; } = new()
         {
-            {SobelEnum.Sobel1,  new double[,]
+            {SobelType.Sobel1,  new double[,]
                 {
                     { 4, 4, 4, 8, 4, 4, 4  },
                     { 2, 2, 2, 4, 2, 2, 2  },
@@ -55,7 +55,7 @@ namespace ImageManipulator.Common.Matrices
                     { -4, -4, -4, -8, -4, -4, -4},
                 }
             },
-            {SobelEnum.Sobel2,  new double[,]
+            {SobelType.Sobel2,  new double[,]
                 {
                     {-4, -2, -1, 0, 1, 2, 4},
                     {-4, -2, -1, 0, 1, 2, 4},
@@ -66,7 +66,7 @@ namespace ImageManipulator.Common.Matrices
                     {-4, -2, -1, 0, 1, 2, 4},
                 }
             },
-            {SobelEnum.Sobel3,  new double[,]
+            {SobelType.Sobel3,  new double[,]
                 {
                     {0, 0, 0, 1, 2,  4, 8},
                     {0, 0, 0, 1, 2,  4, 4},
@@ -77,7 +77,7 @@ namespace ImageManipulator.Common.Matrices
                     {-8, -4, -2, -1, 0, 0, 0},
                 }
             },
-            {SobelEnum.Sobel4,  new double[,]
+            {SobelType.Sobel4,  new double[,]
                 {
                     {-8, -4, -2, -1, 0, 0, 0},
                     {-4, -4, -2, -1, 0, 0, 0},
@@ -88,7 +88,7 @@ namespace ImageManipulator.Common.Matrices
                     {0, 0, 0, 1, 2, 4, 8 },
                 }
             },
-            {SobelEnum.Sobel5,  new double[,]
+            {SobelType.Sobel5,  new double[,]
                 {
                     { -4, -4, -4, -8, -4, -4, -4  },
                     { -2, -2, -2, -4, -2, -2, -2  },
@@ -99,7 +99,7 @@ namespace ImageManipulator.Common.Matrices
                     { 4, 4, 4, 8, 4, 4, 4},
                 }
             },
-            {SobelEnum.Sobel6,  new double[,]
+            {SobelType.Sobel6,  new double[,]
                 {
                     {8, 4, 2, 1, 0, 0, 0},
                     {4, 4, 2, 1, 0, 0, 0},
@@ -110,7 +110,7 @@ namespace ImageManipulator.Common.Matrices
                     {0, 0, 0, -1, -2, -4, -8 },
                 }
             },
-            {SobelEnum.Sobel7,  new double[,]
+            {SobelType.Sobel7,  new double[,]
                 {
                     {4, 2, 1, 0, -1, -2, -4},
                     {4, 2, 1, 0, -1, -2, -4},
@@ -121,7 +121,7 @@ namespace ImageManipulator.Common.Matrices
                     {4, 2, 1, 0, -1, -2, -4},
                 }
             },
-            {SobelEnum.Sobel8,  new double[,]
+            {SobelType.Sobel8,  new double[,]
                 {
                     {0, 0, 0, -1, -2,  -4, -8},
                     {0, 0, 0, -1, -2,  -4, -4},

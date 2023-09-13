@@ -8,7 +8,8 @@ namespace ImageManipulator.Presentation.Views
     {
         public MultiThresholdingView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+            this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.thresholdCommand);
             this.WhenActivated(disposables => { });
         }
     }

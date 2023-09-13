@@ -13,16 +13,8 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(string))
+            if (value is string)
             {
-                //List<byte> colors = new List<byte>(3);
-                //IEnumerable<char[]> colorHex = ((string)value).Skip(1).ToArray().GetSlices(2);
-
-                //foreach(char[] color in colorHex)
-                //{
-                //    colors.Add(System.Convert.ToByte(string.Join("", color), 16));
-                //}
-
                 return Color.Parse(value.ToString());
             }
 
@@ -33,7 +25,7 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(Color))
+            if (value is Color)
             {
                 Color color = (Color)value;
 

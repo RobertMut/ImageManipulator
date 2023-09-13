@@ -1,11 +1,11 @@
-﻿using ImageManipulator.Application.ViewModels;
-using ImageManipulator.Common.Helpers;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ImageManipulator.Application.ViewModels;
 
 namespace ImageManipulator.Application.Common.Models
 {
-    public class TabItem
+    public class TabItem : ObservableObject
     {
-        public string Name { get; } = $"Tab {NamingIterator.TabNameIterator++}";
+        public string Name { get; set; } 
         public TabControlViewModel ViewModel { get; }
 
         public TabItem(string name, TabControlViewModel viewModel)
@@ -14,6 +14,9 @@ namespace ImageManipulator.Application.Common.Models
             ViewModel = viewModel;
         }
 
-        public TabItem(TabControlViewModel viewModel) { }
+        public TabItem(TabControlViewModel viewModel)
+        {
+            ViewModel = viewModel;
+        }
     }
 }

@@ -4,11 +4,11 @@ namespace ImageManipulator.Common.Matrices;
 
 public static class EdgeDetection
 {
-    public static Dictionary<EdgeDetectionEnum, double[,]> EdgeDetectionMatrices { get; } =
-        new Dictionary<EdgeDetectionEnum, double[,]>()
+    public static Dictionary<EdgeDetectionType, double[,]> EdgeDetectionMatrices { get; } =
+        new()
         {
             {
-                EdgeDetectionEnum.Laplace, new double[,]
+                EdgeDetectionType.Laplace, new double[,]
                 {
                     { -1, -1, -1, },
                     { -1, 8, -1, },
@@ -16,7 +16,7 @@ public static class EdgeDetection
                 }
             },
             {
-                EdgeDetectionEnum.PrewittVertical, new double[,]
+                EdgeDetectionType.PrewittVertical, new double[,]
                 {
                     { 1, 1, 1, },
                     { 0, 0, 0, },
@@ -24,7 +24,7 @@ public static class EdgeDetection
                 }
             },
             {
-                EdgeDetectionEnum.PrewittHorizontal, new double[,]
+                EdgeDetectionType.PrewittHorizontal, new double[,]
                 {
                     { -1, 0, 1, },
                     { -1, 0, 1, },
@@ -32,7 +32,7 @@ public static class EdgeDetection
                 }
             },
             {
-                EdgeDetectionEnum.Canny, new double[,]
+                EdgeDetectionType.Canny, new double[,]
                 {
                     { 1, 2, 1, },
                     { 2, 4, 2, },

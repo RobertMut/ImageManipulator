@@ -8,7 +8,7 @@
         x:Class="ImageManipulator.Presentation.Views.NonLinearContrastStretchingView">
 	<Grid>
 		<Grid.Resources>
-			<ext:DoubleStringConverter x:Key="doubleStringConverter"/>
+			<ext:DoubleStringConverter x:Key="DoubleStringConverter"/>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition MaxHeight="200"/>
@@ -23,12 +23,13 @@
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
-			<TextBox Text="{Binding GammaValue, Converter={StaticResource doubleStringConverter}}"/>
+			<TextBox Text="{Binding GammaValue, Converter={StaticResource DoubleStringConverter}}"/>
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding ExecuteNonLinearStretching}">Non-linearly stretch contrast</Button>
+			<Button x:Name="StretchCommand" Command="{Binding ExecuteNonLinearStretching}">Non-linearly stretch contrast</Button>
 		</StackPanel>
-			<Button Grid.Column="0" Grid.Row="3" HorizontalAlignment="Center">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="3" HorizontalAlignment="Center" Command="{Binding AcceptCommand}">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="3" HorizontalAlignment="Center" Command="{Binding CancelCommand}">Cancel</Button>
 	</Grid>
 </UserControl>

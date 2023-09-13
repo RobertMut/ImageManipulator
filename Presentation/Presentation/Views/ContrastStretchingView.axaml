@@ -3,9 +3,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
-        xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
+        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+        xmlns:iac="clr-namespace:Avalonia.Xaml.Interactions.Custom;assembly=Avalonia.Xaml.Interactions.Custom"
+        xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels;assembly=ImageManipulator.Application"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
-        x:Class="ImageManipulator.Presentation.Views.ContrastStretchingView">
+        x:Class="ImageManipulator.Presentation.Views.ContrastStretchingView"
+        x:Name="UserControl">
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
@@ -18,14 +21,20 @@
 			<RowDefinition MaxHeight="50"/>
 		</Grid.RowDefinitions>
 		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Image Source="{Binding BeforeImage}"/>
+			<Image Source="{Binding BeforeImage}">
+				<i:Interaction.Behaviors>
+					<EventTriggerBehavior EventName="EffectiveViewportChanged">
+						<InvokeCommandAction Command="{Binding CalculateSuggestions}"/>
+					</EventTriggerBehavior>
+				</i:Interaction.Behaviors>
+			</Image>
 			<Image Source="{Binding AfterImage}"/>
 		</StackPanel>
 		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
 			<TextBlock>Suggested lower threshold=</TextBlock>
-			<TextBlock Text="{Binding LowerThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBlock Text="{Binding Threshold.Lower, Converter={StaticResource intStringConverter}}"/>
 			<TextBlock>Suggested upper threshold= </TextBlock>
-			<TextBlock Text="{Binding UpperThreshold, Converter={StaticResource intStringConverter}}"/>
+			<TextBlock Text="{Binding Threshold.Upper, Converter={StaticResource intStringConverter}}"/>
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
@@ -36,8 +45,9 @@
 		</StackPanel>
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+			<Button x:Name="stretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
 		</StackPanel>
-			<Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Accept}">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Cancel}">Cancel</Button>	
 	</Grid>
 </UserControl>

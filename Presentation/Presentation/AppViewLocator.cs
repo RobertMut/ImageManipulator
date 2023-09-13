@@ -14,7 +14,7 @@ public class AppViewLocator : IDataTemplate, IViewLocator
     private const string PresentationAssembly = "ImageManipulator.Presentation.Views";
     private const string ApplicationAssembly = "ImageManipulator.Application";
 
-    public IControl Build(object data)
+    public Control Build(object data)
     {
         var name = $"{PresentationAssembly}{data.GetType().FullName!.Replace("ViewModel", "View").Replace(ApplicationAssembly+".Views", null)}";
         var types = Assembly.GetEntryAssembly().GetTypes();

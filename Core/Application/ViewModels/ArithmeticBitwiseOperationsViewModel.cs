@@ -1,92 +1,148 @@
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Enums;
-using ImageManipulator.Application.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Enums;
 using ReactiveUI;
-using System;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using CommunityToolkit.Mvvm.Input;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
 
-namespace ImageManipulator.Application.ViewModels
+namespace ImageManipulator.Application.ViewModels;
+
+public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewModelBase
 {
-    public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewModelBase
+    private readonly IQueryDispatcher _queryDispatcher;
+    private readonly ICommonDialogService _commonDialogService;
+    private Bitmap? _afterImage;
+    private Bitmap? _beforeImage;
+    private Bitmap? _operationImage;
+    private Color _pickedColor;
+    private int? _value;
+    private bool _isArithmeticSelected;
+    private ElementaryOperationParameterType _elementaryOperation;
+    private ArithmeticOperationType _arithmeticOperation;
+    private BitwiseOperationType _bitwiseOperation;
+
+    private ObservableAsPropertyHelper<bool> _isSelecting;
+
+    public override Bitmap? AfterImage
     {
-        private readonly IImageArithmeticService _imageArithmeticService;
-        private readonly IImageBitwiseService _imageBitwiseService;
-        private readonly ICommonDialogService commonDialogService;
-        private Bitmap _afterImage;
-        private Bitmap _beforeImage;
-        private Bitmap _operationImage;
-        private Color _pickedColor;
-        private int? _value;
-        private bool _isArithmeticSelected;
-        private ElementaryOperationParameterEnum _elementaryOperation;
-        private ArithmeticOperationType _arithmeticOperation;
-        private BitwiseOperationType _bitwiseOperation;
+        get => _afterImage;
+        set => this.RaiseAndSetIfChanged(ref _afterImage, value);
+    }
 
-        public override Bitmap AfterImage { get => _afterImage; set => this.RaiseAndSetIfChanged(ref _afterImage, value); }
-        public override Bitmap BeforeImage { get => _beforeImage; set => this.RaiseAndSetIfChanged(ref _beforeImage, value); }
-        public Bitmap OperationImage { get => _operationImage; set => this.RaiseAndSetIfChanged(ref _operationImage, value); }
-        public Color PickedColor { get => _pickedColor; set => this.RaiseAndSetIfChanged(ref _pickedColor, value); }
-        public int? Value { get => _value; set => this.RaiseAndSetIfChanged(ref _value, value); }
-        public bool IsArithmeticSelected { get => _isArithmeticSelected; set => this.RaiseAndSetIfChanged(ref _isArithmeticSelected, value); }
-        public int SelectedElementaryOperation { get => (int)_elementaryOperation; set => this.RaiseAndSetIfChanged(ref _elementaryOperation, (ElementaryOperationParameterEnum)value); }
-        public int SelectedArithmeticOperation { get => (int)_arithmeticOperation; set => this.RaiseAndSetIfChanged(ref _arithmeticOperation, (ArithmeticOperationType)value); }
-        public int SelectedBitwiseOperation { get => (int)_bitwiseOperation; set => this.RaiseAndSetIfChanged(ref _bitwiseOperation, (BitwiseOperationType)value); }
+    public override Bitmap? BeforeImage
+    {
+        get => _beforeImage;
+        set => this.RaiseAndSetIfChanged(ref _beforeImage, value);
+    }
 
-        #region Commands
+    public Bitmap? OperationImage
+    {
+        get => _operationImage;
+        set => this.RaiseAndSetIfChanged(ref _operationImage, value);
+    }
 
-        public ReactiveCommand<Unit, Unit> Execute { get; }
-        public ReactiveCommand<Unit, Unit> SelectImage { get; }
+    public Color PickedColor
+    {
+        get => _pickedColor;
+        set => this.RaiseAndSetIfChanged(ref _pickedColor, value);
+    }
 
-        #endregion Commands
+    public int? Value
+    {
+        get => _value;
+        set => this.RaiseAndSetIfChanged(ref _value, value);
+    }
 
-        public ArithmeticBitwiseOperationsViewModel(IImageArithmeticService imageArithmeticService, IImageBitwiseService imageBitwiseService, ICommonDialogService commonDialogService)
+    public bool IsArithmeticSelected
+    {
+        get => _isArithmeticSelected;
+        set => this.RaiseAndSetIfChanged(ref _isArithmeticSelected, value);
+    }
+
+    public int SelectedElementaryOperation
+    {
+        get => (int)_elementaryOperation;
+        set => this.RaiseAndSetIfChanged(ref _elementaryOperation, (ElementaryOperationParameterType)value);
+    }
+
+    public int SelectedArithmeticOperation
+    {
+        get => (int)_arithmeticOperation;
+        set => this.RaiseAndSetIfChanged(ref _arithmeticOperation, (ArithmeticOperationType)value);
+    }
+
+    public int SelectedBitwiseOperation
+    {
+        get => (int)_bitwiseOperation;
+        set => this.RaiseAndSetIfChanged(ref _bitwiseOperation, (BitwiseOperationType)value);
+    }
+
+    #region Commands
+
+    public ReactiveCommand<Unit, Unit> Execute { get; }
+    public ReactiveCommand<Unit, Unit> SelectImage { get; }
+
+    public bool IsSelecting => _isSelecting.Value;
+
+    #endregion Commands
+
+    public ArithmeticBitwiseOperationsViewModel(IQueryDispatcher queryDispatcher,
+        ICommonDialogService commonDialogService)
+    {
+        _queryDispatcher = queryDispatcher;
+        this._commonDialogService = commonDialogService;
+        SelectImage = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SelectImageCommand));
+        SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
+
+        Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
+        Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+
+        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+        CancelCommand = new RelayCommand<Window>(Cancel);
+    }
+
+    private async Task ExecuteOperationOnImage()
+    {
+        if (_isArithmeticSelected)
         {
-            this._imageArithmeticService = imageArithmeticService;
-            this._imageBitwiseService = imageBitwiseService;
-            this.commonDialogService = commonDialogService;
-            Execute = ReactiveCommand.Create(ExecuteOperationOnImage);
-            SelectImage = ReactiveCommand.Create(SelectImageCommand);
+            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Bitmap>(
+                new GetImageAfterArithmeticQuery
+                {
+                    OperationValue = _value.Value,
+                    OperationImage = _operationImage,
+                    OperationColor = _pickedColor,
+                    ElementaryOperationParameterType = _elementaryOperation,
+                    ArithmeticOperationType = _arithmeticOperation
+                }, new CancellationToken());
         }
-
-        private void ExecuteOperationOnImage()
+        else
         {
-            if (_isArithmeticSelected)
-            {
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    _imageArithmeticService.Execute(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage),
-                        ParameterSelector(_elementaryOperation),
-                        _arithmeticOperation)
-                    );
-            }
-            else
-            {
-                AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                    _imageBitwiseService.Execute(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(BeforeImage),
-                        ParameterSelector(_elementaryOperation),
-                        _bitwiseOperation)
-                    );
-            }
+            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterBitwiseQuery, Bitmap>(
+                new GetImageAfterBitwiseQuery
+                {
+                    OperationValue = _value.Value,
+                    OperationImage = _operationImage,
+                    OperationColor = _pickedColor,
+                    ElementaryOperationParameterType = _elementaryOperation,
+                    BitwiseOperationType = _bitwiseOperation
+                }, new CancellationToken());
         }
+    }
 
-        private void SelectImageCommand() => commonDialogService
-            .ShowFileDialogInNewWindow()
-            .ContinueWith(x =>
-            {
-                OperationImage = new Bitmap(
-                    Observable.FromAsync<string[]>(() => x).FirstOrDefault()[0]
-                    );
-            });
-
-        private object ParameterSelector(ElementaryOperationParameterEnum parameter) => parameter switch
-        {
-            ElementaryOperationParameterEnum.Value => _value.Value,
-            ElementaryOperationParameterEnum.Color => _pickedColor,
-            ElementaryOperationParameterEnum.Image => ImageConverterHelper.ConvertFromAvaloniaUIBitmap(OperationImage),
-            _ => throw new Exception("Invalid operaton")
-        };
+    private async Task SelectImageCommand()
+    {
+        var storageFile = await _commonDialogService.ShowFileDialogInNewWindow();
+        await using Stream fileStream = await storageFile.OpenReadAsync();
+        OperationImage = new Bitmap(fileStream);
     }
 }

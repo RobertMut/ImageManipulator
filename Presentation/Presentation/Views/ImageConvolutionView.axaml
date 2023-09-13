@@ -51,30 +51,16 @@
                              IsChecked="{Binding IsEdgeDetectionSelected}"/>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Vertical" IsVisible="{Binding ElementName=radioEdgeDetection, Path=!IsChecked}">
-				<RadioButton
-                    x:Name="select3x3"
-                    GroupName="size"
-                    IsChecked="{Binding Is3x3Selected, Mode=TwoWay}">
-                    3x3
-                </RadioButton>
-                <RadioButton
-                    x:Name="select5x5"
-                    GroupName="size"
-                    IsChecked="{Binding Is5x5Selected, Mode=TwoWay}">
-                    5x5
-                </RadioButton>
-                <RadioButton
-                    x:Name="select7x7"
-                    GroupName="size"
-                    IsChecked="{Binding Is7x7Selected, Mode=TwoWay}">
-                    7x7
-                </RadioButton>
-                <RadioButton
-                    x:Name="select9x9"
-                    GroupName="size"
-                    IsChecked="{Binding Is9x9Selected, Mode=TwoWay}">
-                    9x9
-                </RadioButton>
+                <ComboBox
+                    x:Name="MatrixSize"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
+                    SelectedIndex="{Binding MatrixSize}">
+                    <ComboBoxItem>3x3</ComboBoxItem>
+                    <ComboBoxItem>5x5</ComboBoxItem>
+                    <ComboBoxItem>7x7</ComboBoxItem>
+                    <ComboBoxItem>9x9</ComboBoxItem>
+                </ComboBox>
             </StackPanel>
             <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                 <ComboBox
@@ -115,7 +101,7 @@
             <TextBox
                 IsVisible="{Binding IsWeightedSelected}"
                 Text="{Binding Value, Converter={StaticResource doubleStringConverter}}"
-                Watermark="Weight" />
+                Watermark="Value" />
             <ComboBox SelectedIndex="{Binding ImageWrap, Mode=TwoWay}">
                 <ComboBoxItem>None</ComboBoxItem>
                 <ComboBoxItem>Constant</ComboBoxItem>
@@ -125,8 +111,9 @@
             </ComboBox>
             <TextBox Text="{Binding BorderConstVal, Converter={StaticResource doubleStringConverter}}" Watermark="Border const" />
             <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <Button Command="{Binding Execute}">Execute</Button>
-                <Button Command="{Binding Accept}" />
+                <Button x:Name="convolutionCommand" Command="{Binding Execute}">Execute</Button>
+                <Button Command="{Binding Accept}">Accept changes</Button>
+                <Button Command="{Binding Cancel}">Cancel</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

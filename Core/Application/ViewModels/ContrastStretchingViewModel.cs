@@ -1,60 +1,91 @@
 using System.Reactive;
-using ImageManipulator.Application.Common.Helpers;
-using ImageManipulator.Application.Common.Interfaces;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.Input;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
+using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;
 
-namespace ImageManipulator.Application.ViewModels
+namespace ImageManipulator.Application.ViewModels;
+
+public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
 {
-    public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
+    private readonly IQueryDispatcher _queryDispatcher;
+    private Bitmap? _beforeImage;
+    private Bitmap? _afterImage;
+    private ThresholdLevels? _threshold;
+    private int _enteredLowerThreshold;
+    private int _enteredUpperThreshold;
+
+    public override Bitmap? BeforeImage
     {
-		private readonly IImagePointOperationsService imagePointOperationsService;
-		private readonly IImageDataService imageDataService;
-		private Avalonia.Media.Imaging.Bitmap _beforeImage;
-        private Avalonia.Media.Imaging.Bitmap _afterImage;
-		private int _enteredLowerThreshold;
-		private int _enteredUpperThreshold;
+        get => _beforeImage;
+        set => _ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
+    }
 
-        public override Avalonia.Media.Imaging.Bitmap BeforeImage { get => _beforeImage; set
-			{
-				CalculateSuggestedThresholds();
-				_ = this.RaiseAndSetIfChanged(ref _beforeImage, value);
-			}
-		}
+    public override Bitmap? AfterImage
+    {
+        get => _afterImage;
+        set { this.RaiseAndSetIfChanged(ref _afterImage, value); }
+    }
 
-        public override Avalonia.Media.Imaging.Bitmap AfterImage
+    public int[]? HistogramValues { get; set; }
+    
+    public ThresholdLevels? Threshold { get => _threshold; set => this.RaiseAndSetIfChanged(ref _threshold, value); }
+
+    public int EnteredLowerThreshold
+    {
+        get => _enteredLowerThreshold;
+        set => this.RaiseAndSetIfChanged(ref _enteredLowerThreshold, value);
+    }
+
+    public int EnteredUpperThreshold
+    {
+        get => _enteredUpperThreshold;
+        set => this.RaiseAndSetIfChanged(ref _enteredUpperThreshold, value);
+    }
+
+    #region Commands
+
+    public ReactiveCommand<Unit, Unit> ExecuteLinearStretching { get; }
+    public ReactiveCommand<Unit, Unit> CalculateSuggestions { get; }
+
+    #endregion
+
+    public ContrastStretchingViewModel(IQueryDispatcher queryDispatcher)
+    {
+        _queryDispatcher = queryDispatcher;
+        _threshold = new ThresholdLevels { Upper = 0, Lower = 0 };
+        
+        ExecuteLinearStretching = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(StretchContrast));
+        ExecuteLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+        CalculateSuggestions =
+            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(CalculateSuggestedThresholds));
+        CalculateSuggestions.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+
+        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
+        CancelCommand = new RelayCommand<Window>(Cancel);
+    }
+
+    private async Task CalculateSuggestedThresholds()
+    {
+        Threshold = await _queryDispatcher.Dispatch<GetImageThresholdLevelsQuery, ThresholdLevels>(new GetImageThresholdLevelsQuery()
         {
-            get => _afterImage; set
+            HistogramValues = HistogramValues
+        }, new CancellationToken());
+    }
+
+    private async Task StretchContrast()
+    {
+        AfterImage = await _queryDispatcher.Dispatch<GetImageAfterContrastStretchQuery, Bitmap>(
+            new GetImageAfterContrastStretchQuery
             {
-                this.RaiseAndSetIfChanged(ref _afterImage, value);
-            }
-        }
-
-        public double[] histogramValues { get; set; }
-		public int LowerThreshold { get; set; }
-		public int UpperThreshold { get; set; }
-		public int EnteredLowerThreshold { get => _enteredLowerThreshold; set => this.RaiseAndSetIfChanged(ref _enteredLowerThreshold, value); }
-        public int EnteredUpperThreshold { get => _enteredUpperThreshold; set => this.RaiseAndSetIfChanged(ref _enteredUpperThreshold, value); }
-        #region Commands 
-        public ReactiveCommand<Unit, Unit> ExecuteLinearStretching { get; }
-
-		#endregion
-
-		public ContrastStretchingViewModel(IImagePointOperationsService imagePointOperationsService)
-		{
-			this.imagePointOperationsService = imagePointOperationsService;
-			ExecuteLinearStretching = ReactiveCommand.Create(LinearlyStreatchContrast);
-		}
-
-		private void CalculateSuggestedThresholds()
-		{
-            LowerThreshold = imagePointOperationsService.CalculateLowerImageThresholdPoint(histogramValues);
-			UpperThreshold = imagePointOperationsService.CalculateUpperImageThresholdPoint(histogramValues);
-        }
-
-		private void LinearlyStreatchContrast()
-		{
-			var stretchedImage = imagePointOperationsService.StretchContrast(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(_beforeImage), _enteredLowerThreshold, _enteredUpperThreshold);
-            AfterImage = ImageConverterHelper.ConvertFromSystemDrawingBitmap(stretchedImage);
-		}
+                Min = _enteredLowerThreshold,
+                Max = _enteredUpperThreshold
+            }, new CancellationToken());
     }
 }

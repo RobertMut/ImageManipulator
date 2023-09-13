@@ -20,8 +20,9 @@
 			<Image Source="{Binding AfterImage}"/>
 		</StackPanel>
 		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button Command="{Binding ExecuteEqualizeHistogram}">Equalize histogram</Button>
+			<Button x:Name="equalizeCommand" Command="{Binding ExecuteEqualizeHistogram}">Equalize histogram</Button>
 		</StackPanel>
-			<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Accept}">Accept changes</Button>
+		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Cancel}">Cancel</Button>
 	</Grid>
 </UserControl>

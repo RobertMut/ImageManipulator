@@ -9,6 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public ImageConvolutionView()
         {
             InitializeComponent();
+            this.BindCommand(ViewModel, vm => vm.Execute, v => v.convolutionCommand);
             this.WhenActivated(disposables => { });
         }
     }

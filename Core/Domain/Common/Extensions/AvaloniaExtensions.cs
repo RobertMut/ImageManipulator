@@ -14,9 +14,9 @@ namespace ImageManipulator.Domain.Common.Extensions
 
         public static Window? GetCurrentWindow(this Application? application)
         {
-            if (application.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (application?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 return desktop.MainWindow;
-            else return null;
+            return null;
         }
     }
 }

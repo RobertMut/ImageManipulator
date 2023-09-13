@@ -5,6 +5,6 @@ namespace ImageManipulator.Application.Common.Interfaces
 {
     public interface IImageArithmeticService
     {
-        Bitmap Execute(Bitmap bitmap, object parameter, ArithmeticOperationType operationType);
+        Bitmap? Execute(Bitmap? bitmap, object? parameter, ArithmeticOperationType operationType);
     }
 }
