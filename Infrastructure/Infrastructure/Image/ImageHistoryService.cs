@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace ImageManipulator.Infrastructure.Image;

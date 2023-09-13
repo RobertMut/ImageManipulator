@@ -1,4 +1,3 @@
-using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 using ReactiveUI;

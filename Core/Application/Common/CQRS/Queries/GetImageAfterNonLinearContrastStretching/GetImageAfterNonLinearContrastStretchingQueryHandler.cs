@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;

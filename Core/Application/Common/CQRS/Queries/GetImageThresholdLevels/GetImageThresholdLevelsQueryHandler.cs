@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 
