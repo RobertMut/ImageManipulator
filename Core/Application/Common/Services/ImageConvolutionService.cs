@@ -4,7 +4,6 @@ using ImageManipulator.Domain.Common.Helpers;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Threading.Tasks;
 
 namespace ImageManipulator.Application.Common.Services
 {
@@ -24,7 +23,7 @@ namespace ImageManipulator.Application.Common.Services
             { -1, -2, -1 }
         };
 
-        public unsafe Bitmap Execute(Bitmap bitmap, double[,] kernel, double factor, bool soften = false)
+        public unsafe Bitmap Execute(Bitmap bitmap, double[,] kernel, bool soften = false)
         {
             var newBitmap = new Bitmap(bitmap);
 
@@ -115,51 +114,6 @@ namespace ImageManipulator.Application.Common.Services
             return gradient;
         }
 
-        public double[,] NonMaxSupression(double[,] gradientMagnitude, double[,] gradientDirection)
-        {
-            int width = gradientMagnitude.GetLength(0);
-            int height = gradientMagnitude.GetLength(1);
-
-            var preparedDirectionsInAngle = PrepareDirections(gradientDirection);
-            
-            for (int x = 1; x < width - 1; x++)
-            {
-                for (int y = 1; y < height - 1; y++)
-                {
-                    double magnitude = gradientMagnitude[x, y];
-                    switch (preparedDirectionsInAngle[x, y])
-                    {
-                        case 0:
-                            if (magnitude < gradientMagnitude[x, y - 1] && magnitude < gradientMagnitude[x, y + 1])
-                            {
-                                gradientMagnitude[x - 1, y - 1] = 0;
-                            }
-                            break;
-                        case 45:
-                            if (magnitude < gradientMagnitude[x - 1, y + 1] && magnitude < gradientMagnitude[x + 1, y - 1])
-                            {
-                                gradientMagnitude[x - 1, y - 1] = 0;
-                            }
-                            break;
-                        case 90:
-                            if (magnitude < gradientMagnitude[x - 1, y] && magnitude < gradientMagnitude[x + 1, y])
-                            {
-                                gradientMagnitude[x - 1, y - 1] = 0;
-                            }
-                            break;
-                        case 135:
-                            if (magnitude < gradientMagnitude[x - 1, y - 1] && magnitude < gradientMagnitude[x + 1, y + 1])
-                            {
-                                gradientMagnitude[x - 1, y - 1] = 0;
-                            }
-                            break;
-                    }
-                }
-            }
-
-            return gradientMagnitude;
-        }
-
         public unsafe Bitmap HysteresisThresholding(int width, int height, int lowThreshold, int highThreshold, double[,] gradientMagnitude)
         {
             Bitmap edgeImage = new Bitmap(width, height);
@@ -213,35 +167,6 @@ namespace ImageManipulator.Application.Common.Services
 
             return edgeImage;
         }
-
-        private double[,] PrepareDirections(double[,] gradientDirection)
-        {
-            Parallel.For(0, gradientDirection.GetLength(0), x =>
-            {
-                for (int y = 0; y < gradientDirection.GetLength(1); y++)
-                {
-                    double direction = gradientDirection[x, y];
-
-                    if (direction < 0)
-                    {
-                        direction += 360;
-                    }
-
-                    gradientDirection[x, y] = GetDegreeForGradient(direction);
-                }
-            });
-
-            return gradientDirection;
-        }
-
-        private static double GetDegreeForGradient(double direction) =>
-            direction switch
-            {
-                <= 22.5 or >= 157.5 and <= 202.5 or >= 337.5 => 0,
-                >= 22.5 and <= 67.5 or >= 202.5 and <= 247.5 => 45,
-                >= 67.5 and <= 112.5 or >= 247.5 and <= 292.5 => 90,
-                _ => 135
-            };
 
         private double[,] PrepareKernel(double[,] kernel)
         {

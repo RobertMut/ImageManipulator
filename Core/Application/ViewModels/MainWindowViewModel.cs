@@ -121,32 +121,11 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
     }
 
-    private async Task OpenImageConvolutionWindow()
-    {
-        var convolution = _serviceProvider.GetRequiredService<ImageConvolutionViewModel>();
-        convolution.BeforeImage = _currentTab.ViewModel.Image;
-        
-        await _commonDialogService.ShowDialog(convolution);
-        await ReloadImageAndReplaceTab(convolution.BeforeImage, convolution.AfterImage, CurrentTab);
-    }
+    private async Task OpenImageConvolutionWindow() => await ShowWindow<ImageConvolutionViewModel>();
 
-    private async Task OpenArithmeticBitwiseWindow()
-    {
-        var arithmeticBitwise = _serviceProvider.GetRequiredService<ArithmeticBitwiseOperationsViewModel>();
-        arithmeticBitwise.BeforeImage = _currentTab.ViewModel.Image;
-        
-        await _commonDialogService.ShowDialog(arithmeticBitwise);
-        await ReloadImageAndReplaceTab(arithmeticBitwise.BeforeImage, arithmeticBitwise.AfterImage, CurrentTab);
-    }
+    private async Task OpenArithmeticBitwiseWindow() => await ShowWindow<ArithmeticBitwiseOperationsViewModel>();
 
-    private async Task OpenGammaCorrectionWindow()
-    {
-        var gammaCorrection = _serviceProvider.GetRequiredService<NonLinearContrastStretchingViewModel>();
-        gammaCorrection.BeforeImage = _currentTab.ViewModel.Image;
-        
-        await _commonDialogService.ShowDialog(gammaCorrection);
-        await ReloadImageAndReplaceTab(gammaCorrection.BeforeImage, gammaCorrection.AfterImage, CurrentTab);
-    }
+    private async Task OpenGammaCorrectionWindow() => await ShowWindow<NonLinearContrastStretchingViewModel>();
 
     private async Task NewEmptyTab()
     {
@@ -171,25 +150,11 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         }
     }
 
-    private async Task OpenContrastStretchWindow()
-    {
-        var contrastStretching = _serviceProvider.GetRequiredService<ContrastStretchingViewModel>();
-        contrastStretching.HistogramValues = _currentTab.ViewModel.Luminance;
-        contrastStretching.BeforeImage = _currentTab.ViewModel.Image;
+    private async Task OpenContrastStretchWindow() =>
+        await ShowWindow<ContrastStretchingViewModel>(x => x.HistogramValues = _currentTab.ViewModel.Luminance);
 
-        await _commonDialogService.ShowDialog(contrastStretching);
-        await ReloadImageAndReplaceTab(contrastStretching.BeforeImage, contrastStretching.AfterImage, CurrentTab);
-    }
-
-    private async Task OpenHistogramEqualizationWindow()
-    {
-        var histogramEqualization = _serviceProvider.GetRequiredService<HistogramEqualizationViewModel>();
-        histogramEqualization.BeforeImage = _currentTab.ViewModel.Image;
-        histogramEqualization.Lut = _currentTab.ViewModel.ImageValues;
-
-        await _commonDialogService.ShowDialog(histogramEqualization);
-        await ReloadImageAndReplaceTab(histogramEqualization.BeforeImage, histogramEqualization.AfterImage, CurrentTab);
-    }
+    private async Task OpenHistogramEqualizationWindow() =>
+        await ShowWindow<HistogramEqualizationViewModel>(x => x.Lut = _currentTab.ViewModel.ImageValues);
 
     private async Task NegateImage()
     {
@@ -197,25 +162,18 @@ public class MainWindowViewModel : ViewModelBase, IScreen
             _imagePointOperationsService.Negation(
                 ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
 
-        await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image, ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab);
+        await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image,
+            ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab);
     }
 
     private async Task OpenThresholdWindow()
     {
-        var thresholding = _serviceProvider.GetRequiredService<ThresholdingViewModel>();
-        thresholding.BeforeImage = _currentTab.ViewModel.Image;
-
-        await _commonDialogService.ShowDialog(thresholding);
-        await ReloadImageAndReplaceTab(thresholding.BeforeImage, thresholding.AfterImage, CurrentTab);
+        await ShowWindow<ThresholdingViewModel>();
     }
 
     private async Task OpenMultiThresholdWindow()
     {
-        var multiThresholding = _serviceProvider.GetRequiredService<MultiThresholdingViewModel>();
-        multiThresholding.BeforeImage = _currentTab.ViewModel.Image;
-
-        await _commonDialogService.ShowDialog(multiThresholding);
-        await ReloadImageAndReplaceTab(multiThresholding.BeforeImage, multiThresholding.AfterImage, CurrentTab);
+        await ShowWindow<MultiThresholdingViewModel>();
     }
 
     private async Task SaveImage()
@@ -249,5 +207,20 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         
         CurrentTab = _tabService.Replace(tabItem.ViewModel.Path, new TabItem(tabItem.Name, newViewModel));
         ImageTabs = _tabService.GetTabItems();
+    }
+
+    private async Task ShowWindow<T>(Action<T>? action = null) where T: ImageOperationDialogViewModelBase
+    {
+        var service = _serviceProvider.GetRequiredService<T>();
+
+        if (action is not null)
+        {
+            action(service);
+        }
+        
+        service.BeforeImage = _currentTab.ViewModel.Image;
+
+        await _commonDialogService.ShowDialog(service);
+        await ReloadImageAndReplaceTab(service.BeforeImage, service.AfterImage, CurrentTab);
     }
 }

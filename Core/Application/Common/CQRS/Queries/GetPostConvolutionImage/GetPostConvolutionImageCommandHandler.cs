@@ -55,18 +55,18 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
             var matrix = GetMatrix(query);
 
             return query is { SoftenSharpenType: < SoftenSharpenType.SharpenLaplace1, Sobel: false }
-                ? _imageConvolutionService.Execute(bitmap, matrix, query.Value, true)
-                : _imageConvolutionService.Execute(bitmap, matrix, query.Value);
+                ? _imageConvolutionService.Execute(bitmap, matrix, true)
+                : _imageConvolutionService.Execute(bitmap, matrix);
         }
 
         if (query.EdgeDetectionType != EdgeDetectionType.Canny)
         {
             return _imageConvolutionService.Execute(bitmap,
-                EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], query.Value);
+                EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType]);
         }
 
         bitmap = _imageConvolutionService.Execute(bitmap,
-            EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], query.Value, true);
+            EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], true);
         
         var gradientMagnitude =
             _imageConvolutionService.ComputeGradient(bitmap, (gx, gy) => Math.Sqrt(gx * gx + gy * gy));

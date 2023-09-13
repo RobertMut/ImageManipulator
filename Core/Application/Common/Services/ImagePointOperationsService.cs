@@ -185,12 +185,7 @@ namespace ImageManipulator.Application.Common.Services
                 {
                     byte* data = (byte*)x.ToPointer();
                     double rgb = data[0];
-                    if (rgb < lowerThreshold)
-                    {
-                        data[0] = data[1] = data[2] = 0;
-                    }
-
-                    if(rgb > upperThreshold)
+                    if (rgb < lowerThreshold || rgb > upperThreshold)
                     {
                         data[0] = data[1] = data[2] = 0;
                     }
