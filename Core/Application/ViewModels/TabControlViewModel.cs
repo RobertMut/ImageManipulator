@@ -2,10 +2,12 @@ using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
 using Splat;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
+using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
@@ -16,10 +18,18 @@ namespace ImageManipulator.Application.ViewModels
     public class TabControlViewModel : ReactiveObject
     {
         private readonly IQueryDispatcher _queryDispatcher;
+        private readonly IImageHistoryService _imageHistoryService;
         private Bitmap? _image;
         private ObservableCollection<ISeries> _canvasLinesLuminance;
         private ObservableCollection<ISeries> _canvasLinesRgb;
-        
+        private ObservableCollection<Bitmap> _history;
+
+        private ObservableCollection<Bitmap> History
+        {
+            get => _history;
+            set => this.RaiseAndSetIfChanged(ref _history, value);
+        }
+
         public int[]? Luminance { get; set; }
 
         public int[]?[] ImageValues { get; set; }
@@ -43,10 +53,12 @@ namespace ImageManipulator.Application.ViewModels
         /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }
 
-        public TabControlViewModel(IQueryDispatcher queryDispatcher)
+        public TabControlViewModel(IQueryDispatcher queryDispatcher, IImageHistoryService imageHistoryService)
         {
             _queryDispatcher = queryDispatcher;
+            _imageHistoryService = imageHistoryService;
             HostScreen = Locator.Current.GetService<IScreen>();
+            History = new ObservableCollection<Bitmap>();
             ClearValues();
         }
 
@@ -55,6 +67,11 @@ namespace ImageManipulator.Application.ViewModels
             Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
             Path = path;
             Image = image;
+            _imageHistoryService.StoreCurrentVersionAndGetThumbnail(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(image), path);
+            var images = await _imageHistoryService.GetVersions(path);
+            var history = images.Select(x => new System.Drawing.Bitmap(x))
+                .Select(x => ImageConverterHelper.ConvertFromSystemDrawingBitmap(x));
+            History = new ObservableCollection<Bitmap>(history);
             await PrepareGraph();
 
             return this;

@@ -21,10 +21,12 @@
             <ColumnDefinition Width="0.3*" MinWidth="150" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="{Binding Height}" />
+            <RowDefinition Height="0.9*" MinHeight="300" />
+            <RowDefinition Height="0.1*"/>
         </Grid.RowDefinitions>
         <ScrollViewer
             Grid.Column="0"
+            Grid.Row="0"
             VerticalAlignment="Top"
             HorizontalContentAlignment="Left"
             AllowAutoHide="True"
@@ -43,7 +45,7 @@
             </paz:ZoomBorder>
         </ScrollViewer>
 
-        <Grid x:Name="HistogramsGrid" Grid.Column="1">
+        <Grid x:Name="HistogramsGrid" Grid.Column="1" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
@@ -58,6 +60,24 @@
                     Series="{Binding CanvasLinesLuminance}"
                     ZoomMode="X"/>
             </Grid>
+        </Grid>
+        <Grid Grid.Row="1" ColumnSpan="2" Grid.Column="0" x:Name="HistoryGrid">
+            <ListBox ItemsSource="{Binding History, Mode=TwoWay}" 
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="1">
+                            <Image Source="{Binding}" Stretch="UniformToFill" Height="{Binding Height, ElementName=HistoryGrid, Mode=OneWay}"/>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Grid>
 </UserControl>
