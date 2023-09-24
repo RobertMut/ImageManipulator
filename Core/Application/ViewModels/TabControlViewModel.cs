@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
 using Splat;
@@ -8,7 +9,10 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using ImageManipulator.Application.Common.CQRS.Command.AddImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersion;
+using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
@@ -20,7 +24,7 @@ namespace ImageManipulator.Application.ViewModels
     public class TabControlViewModel : ViewModelBase
     {
         private readonly IQueryDispatcher _queryDispatcher;
-        private readonly IImageHistoryService _imageHistoryService;
+        private readonly ICommandDispatcher _commandDispatcher;
         private Bitmap? _image;
         private ObservableCollection<ISeries> _canvasLinesLuminance;
         private ObservableCollection<ISeries> _canvasLinesRgb;
@@ -58,10 +62,10 @@ namespace ImageManipulator.Application.ViewModels
         public ReactiveCommand<int, Unit> GetVersion { get; }
 
             
-        public TabControlViewModel(IQueryDispatcher queryDispatcher, IImageHistoryService imageHistoryService)
+        public TabControlViewModel(IQueryDispatcher queryDispatcher, ICommandDispatcher commandDispatcher)
         {
             _queryDispatcher = queryDispatcher;
-            _imageHistoryService = imageHistoryService;
+            _commandDispatcher = commandDispatcher;
             HostScreen = Locator.Current.GetService<IScreen>();
             History = new ObservableCollection<Bitmap>();
             
@@ -76,8 +80,13 @@ namespace ImageManipulator.Application.ViewModels
         {
             if (version > -1)
             {
-                var image = _imageHistoryService.RestoreVersion(Path, version);
-                await this.LoadImage(ImageConverterHelper.ConvertFromSystemDrawingBitmap(image), Path);
+                var image = await _queryDispatcher.Dispatch<GetImageVersionQuery, System.Drawing.Bitmap>(new GetImageVersionQuery
+                {
+                    Path = Path,
+                    Version = version
+                }, new CancellationToken());
+                
+                await LoadImage(ImageConverterHelper.ConvertFromSystemDrawingBitmap(image), Path);
             }
         }
 
@@ -86,15 +95,27 @@ namespace ImageManipulator.Application.ViewModels
             Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
             Path = path;
             Image = image;
-            _imageHistoryService.StoreCurrentVersionAndGetThumbnail(ImageConverterHelper.ConvertFromAvaloniaUIBitmap(image), path);
-            var images = await _imageHistoryService.GetVersions(path);
-            var history = images.Select(x => new System.Drawing.Bitmap(x))
-                .Select(x => ImageConverterHelper.ConvertFromSystemDrawingBitmap(x));
+            await StoreImage();
+            var history = await GetVersionThumbnails();
             History = new ObservableCollection<Bitmap>(history);
             await PrepareGraph();
 
             return this;
         }
+
+        private async Task<IEnumerable<Bitmap?>> GetVersionThumbnails() =>
+            (await _queryDispatcher.Dispatch<GetImageVersionsQuery, IEnumerable<System.Drawing.Bitmap>>(
+                new GetImageVersionsQuery
+                {
+                    Path = Path
+                }, new())).Select(x => ImageConverterHelper.ConvertFromSystemDrawingBitmap(x));
+
+        private async Task StoreImage() =>
+            await _commandDispatcher.Dispatch<AddImageVersionCommand, System.Drawing.Bitmap>(new AddImageVersionCommand
+            {
+                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image),
+                Path = Path
+            }, new CancellationToken());
 
         public TabControlViewModel ResetTab()
         {
