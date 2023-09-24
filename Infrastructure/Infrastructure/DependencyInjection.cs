@@ -1,4 +1,5 @@
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Infrastructure.Image;
 using ImageManipulator.Infrastructure.IO;
 using ImageManipulator.Infrastructure.Tab;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,8 @@ public static class DependencyInjection
     {
         services.AddScoped<IFileService, FileService>();
         services.AddSingleton<ITabService, TabService>();
-
+        services.AddSingleton<IImageHistoryService, ImageHistoryService>();
+        
         return services;
     }
 }

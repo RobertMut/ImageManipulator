@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using ImageManipulator.Application.Common.Interfaces;
 
 namespace ImageManipulator.Infrastructure.Image;
 
-public class ImageHistoryService
+public class ImageHistoryService : IImageHistoryService
 {
     private readonly string _tempLocation;
     private readonly string _sessionGuid;
-    private Dictionary<string, int> _history = new Dictionary<string, int>();
+    private Dictionary<string, int> _history = new();
 
     public ImageHistoryService()
     {
@@ -18,12 +20,22 @@ public class ImageHistoryService
         _sessionGuid = Guid.NewGuid().ToString();
     }
 
+    public async Task<IEnumerable<System.Drawing.Image>> GetVersions(string filename)
+    {
+        var fileNameWithoutPath = Path.GetFileName(filename);
+        var files = Directory.GetFiles(_tempLocation).Where(x => x.Contains(_sessionGuid) && x.Contains(fileNameWithoutPath));
+
+        return files.Select(x => System.Drawing.Image.FromFile(x));
+    }
+
     public async Task<Bitmap> StoreCurrentVersionAndGetThumbnail(Bitmap bitmap, string fileName)
     {
         string fileNameWithoutPath = Path.GetFileName(fileName);
-        _history[fileName] = _history.TryGetValue(fileName, out int value) ? ++value : 1;
         
-        bitmap.Save($"{_tempLocation}/{fileNameWithoutPath}");
+        _history[fileName] = _history.TryGetValue(fileName, out int value) ? ++value : 0;
+        string generatedName = GenerateFileName(fileNameWithoutPath, value);
+        
+        bitmap.Save($"{_tempLocation}/{generatedName}");
 
         return GetThumbnail(bitmap);
     }
@@ -32,7 +44,7 @@ public class ImageHistoryService
     {
         if (_history.TryGetValue(fileName, out int value))
         {
-            if (version > value || version < 1)
+            if (version > value || version < 0)
             {
                 throw new Exception("Provided version does not exists");
             }
