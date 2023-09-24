@@ -32,7 +32,7 @@ public class ImageHistoryService : IImageHistoryService
     {
         string fileNameWithoutPath = Path.GetFileName(fileName);
         
-        _history[fileName] = _history.TryGetValue(fileName, out int value) ? ++value : 1;
+        _history[fileName] = _history.TryGetValue(fileName, out int value) ? ++value : 0;
         string generatedName = GenerateFileName(fileNameWithoutPath, value);
         
         bitmap.Save($"{_tempLocation}/{generatedName}");
@@ -44,7 +44,7 @@ public class ImageHistoryService : IImageHistoryService
     {
         if (_history.TryGetValue(fileName, out int value))
         {
-            if (version > value || version < 1)
+            if (version > value || version < 0)
             {
                 throw new Exception("Provided version does not exists");
             }

@@ -3,6 +3,8 @@ using ReactiveUI;
 using Splat;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -15,7 +17,7 @@ using LiveChartsCore.SkiaSharpView;
 
 namespace ImageManipulator.Application.ViewModels
 {
-    public class TabControlViewModel : ReactiveObject
+    public class TabControlViewModel : ViewModelBase
     {
         private readonly IQueryDispatcher _queryDispatcher;
         private readonly IImageHistoryService _imageHistoryService;
@@ -52,14 +54,31 @@ namespace ImageManipulator.Application.ViewModels
 
         /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }
+        
+        public ReactiveCommand<int, Unit> GetVersion { get; }
 
+            
         public TabControlViewModel(IQueryDispatcher queryDispatcher, IImageHistoryService imageHistoryService)
         {
             _queryDispatcher = queryDispatcher;
             _imageHistoryService = imageHistoryService;
             HostScreen = Locator.Current.GetService<IScreen>();
             History = new ObservableCollection<Bitmap>();
+            
+            GetVersion = ReactiveCommand.CreateFromObservable<int, Unit>((version) => 
+                Observable.StartAsync(() => GetVersionCommand(version)));
+            GetVersion.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+            
             ClearValues();
+        }
+
+        private async Task GetVersionCommand(int version)
+        {
+            if (version > -1)
+            {
+                var image = _imageHistoryService.RestoreVersion(Path, version);
+                await this.LoadImage(ImageConverterHelper.ConvertFromSystemDrawingBitmap(image), Path);
+            }
         }
 
         public async Task<TabControlViewModel> LoadImage(Bitmap? image, string path)

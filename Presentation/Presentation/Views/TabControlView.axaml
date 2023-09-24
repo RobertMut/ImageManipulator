@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ext="using:ImageManipulator.Application.Common.Converters"
-    xmlns:i="using:Avalonia.Xaml.Interactivity"
-    xmlns:iac="using:Avalonia.Xaml.Interactions.Core"
+    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:iac="clr-namespace:Avalonia.Xaml.Interactions.Custom;assembly=Avalonia.Xaml.Interactions.Custom"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
     xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
@@ -62,9 +62,16 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="1" ColumnSpan="2" Grid.Column="0" x:Name="HistoryGrid">
-            <ListBox ItemsSource="{Binding History, Mode=TwoWay}" 
+            <ListBox x:Name="HistoryListBox"
+                     ItemsSource="{Binding History, Mode=TwoWay}" 
                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                     SelectedIndex="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto" FlowDirection="RightToLeft">
+                <i:Interaction.Behaviors>
+                    <EventTriggerBehavior EventName="DoubleTapped">
+                        <InvokeCommandAction Command="{Binding GetVersion}" CommandParameter="{Binding SelectedIndex, ElementName=HistoryListBox}"/>
+                    </EventTriggerBehavior>
+                </i:Interaction.Behaviors>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
