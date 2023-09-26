@@ -115,10 +115,10 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     {
         if (_isArithmeticSelected)
         {
-            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Bitmap>(
+            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Avalonia.Media.Imaging.Bitmap>(
                 new GetImageAfterArithmeticQuery
                 {
-                    OperationValue = _value.Value,
+                    OperationValue = _value.HasValue ? _value.Value : default,
                     OperationImage = _operationImage,
                     OperationColor = _pickedColor,
                     ElementaryOperationParameterType = _elementaryOperation,
@@ -130,7 +130,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
             AfterImage = await _queryDispatcher.Dispatch<GetImageAfterBitwiseQuery, Bitmap>(
                 new GetImageAfterBitwiseQuery
                 {
-                    OperationValue = _value.Value,
+                    OperationValue = _value.HasValue ? _value.Value : default,
                     OperationImage = _operationImage,
                     OperationColor = _pickedColor,
                     ElementaryOperationParameterType = _elementaryOperation,

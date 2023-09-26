@@ -21,7 +21,7 @@ public abstract class ImageOperationDialogViewModelBase : ViewModelBase
 
     protected void Cancel(Window? window)
     {
-        AfterImage = BeforeImage;
+        AfterImage = null;
         window.Close();
     }
 
