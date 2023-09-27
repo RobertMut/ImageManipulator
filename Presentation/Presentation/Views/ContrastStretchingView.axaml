@@ -4,9 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
         xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-        xmlns:iac="clr-namespace:Avalonia.Xaml.Interactions.Custom;assembly=Avalonia.Xaml.Interactions.Custom"
-        xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels;assembly=ImageManipulator.Application"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+        mc:Ignorable="d"
         x:Class="ImageManipulator.Presentation.Views.ContrastStretchingView"
         x:Name="UserControl">
 	<Grid>
@@ -14,40 +12,49 @@
 			<ext:IntStringConverter x:Key="intStringConverter"/>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
-			<RowDefinition MaxHeight="200"/>
-			<RowDefinition MaxHeight="50"/>
-			<RowDefinition MaxHeight="100"/>
-			<RowDefinition MaxHeight="100"/>
-			<RowDefinition MaxHeight="50"/>
+			<RowDefinition Height="0.5*"/>
+			<RowDefinition Height="0.5*"/>
 		</Grid.RowDefinitions>
-		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Image Source="{Binding BeforeImage}">
-				<i:Interaction.Behaviors>
-					<EventTriggerBehavior EventName="EffectiveViewportChanged">
-						<InvokeCommandAction Command="{Binding CalculateSuggestions}"/>
-					</EventTriggerBehavior>
-				</i:Interaction.Behaviors>
-			</Image>
-			<Image Source="{Binding AfterImage}"/>
-		</StackPanel>
-		<StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center">
-			<TextBlock>Suggested lower threshold=</TextBlock>
-			<TextBlock Text="{Binding Threshold.Lower, Converter={StaticResource intStringConverter}}"/>
-			<TextBlock>Suggested upper threshold= </TextBlock>
-			<TextBlock Text="{Binding Threshold.Upper, Converter={StaticResource intStringConverter}}"/>
-		</StackPanel>
-		
-		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
-			<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredLowerThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=lowerThreshold, Path=Value}"/>
-			<Slider x:Name="upperThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredUpperThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=upperThreshold, Path=Value}"/>
-		</StackPanel>
-		
-		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button x:Name="stretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
-		</StackPanel>
-		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Accept}">Accept changes</Button>
-		<Button Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" Command="{Binding Cancel}">Cancel</Button>	
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="0.7*"/>
+			<ColumnDefinition Width="0.3*"/>
+		</Grid.ColumnDefinitions>
+		<Image Grid.Column="0" Grid.Row="0" Source="{Binding BeforeImage}">
+			<i:Interaction.Behaviors>
+				<EventTriggerBehavior EventName="EffectiveViewportChanged">
+					<InvokeCommandAction Command="{Binding CalculateSuggestions}"/>
+				</EventTriggerBehavior>
+			</i:Interaction.Behaviors>
+		</Image>
+		<Image Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage}"/>
+		<Grid 
+			Height="{Binding Height, ElementName=UserControl}" 
+			Grid.Column="1" 
+			Grid.Row="0" 
+			Grid.RowSpan="2" 
+			HorizontalAlignment="Center" 
+			VerticalAlignment="Center">
+			<DockPanel Margin="0, 0, 0, 30" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<StackPanel DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
+					<TextBlock>Suggested lower threshold=</TextBlock>
+					<TextBlock Text="{Binding Threshold.Lower, Converter={StaticResource intStringConverter}}"/>
+					<TextBlock>Suggested upper threshold= </TextBlock>
+					<TextBlock Text="{Binding Threshold.Upper, Converter={StaticResource intStringConverter}}"/>
+				</StackPanel>
+				
+				<StackPanel Margin="0,30,0,30" DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="0">
+					<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredLowerThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
+					<TextBlock Text="{Binding ElementName=lowerThreshold, Path=Value}"/>
+					<Slider x:Name="upperThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredUpperThreshold}" MinWidth="100" Width="250" MaxWidth="250"/>
+					<TextBlock Text="{Binding ElementName=upperThreshold, Path=Value}"/>
+				</StackPanel>
+			
+				<StackPanel Margin="0,30,0,0" DockPanel.Dock="Bottom" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+					<Button x:Name="stretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+					<Button HorizontalAlignment="Center" Command="{Binding Accept}">Accept changes</Button>
+					<Button HorizontalAlignment="Center" Command="{Binding Cancel}">Cancel</Button>	
+				</StackPanel>
+			</DockPanel>
+		</Grid>
 	</Grid>
 </UserControl>
