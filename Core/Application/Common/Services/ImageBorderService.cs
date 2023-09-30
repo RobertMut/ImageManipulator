@@ -11,7 +11,7 @@ namespace ImageManipulator.Application.Common.Services
         public Bitmap Execute(Bitmap bitmap, ImageWrapType wrapType, int top, int bottom, int left, int right, Color color = default)
         {
             var borderedBitmap = new Bitmap(bitmap.Width + left + right, bitmap.Height + top + bottom);
-            Tuple<RotateFlipType, RotateFlipType> rotateFlipType = null;
+            Tuple<RotateFlipType, RotateFlipType>? rotateFlipType = null;
 
             if (wrapType == ImageWrapType.BORDER_CONSTANT)
             {
@@ -49,7 +49,7 @@ namespace ImageManipulator.Application.Common.Services
             return bitmap;
         }
 
-        private Bitmap Reflect(Bitmap bitmap, Bitmap source, Tuple<RotateFlipType, RotateFlipType> flipTypes, int top, int bottom, int left, int right)
+        private Bitmap Reflect(Bitmap bitmap, Bitmap source, Tuple<RotateFlipType, RotateFlipType>? flipTypes, int top, int bottom, int left, int right)
         {
             using (Graphics graphics = FromImage(bitmap))
             {
@@ -89,7 +89,7 @@ namespace ImageManipulator.Application.Common.Services
             return bitmap;
         }
 
-        private Tuple<RotateFlipType, RotateFlipType> TranslateWrap(ImageWrapType wrapType)
+        private Tuple<RotateFlipType, RotateFlipType>? TranslateWrap(ImageWrapType wrapType)
         {
             switch (wrapType)
             {

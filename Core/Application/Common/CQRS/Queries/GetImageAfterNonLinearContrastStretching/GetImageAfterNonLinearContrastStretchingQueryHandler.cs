@@ -7,7 +7,7 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterNonLinearContrastStretching;
 
-public class GetImageAfterNonLinearContrastStretchingQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterNonLinearContrastStretchingQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterNonLinearContrastStretchingQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterNonLinearContrastStretchingQuery, Bitmap>
 {
     private readonly IImagePointOperationsService _imagePointOperationsService;
 

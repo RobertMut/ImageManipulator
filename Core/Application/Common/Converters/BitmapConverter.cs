@@ -16,7 +16,7 @@ namespace ImageManipulator.Application.Common.Converters
 
             if (value is Bitmap)
             {
-                return ImageConverterHelper.ConvertFromSystemDrawingBitmap((System.Drawing.Bitmap)value);
+                return ImageConverterHelper.ConvertFromSystemDrawingBitmap((Bitmap)value);
             }
 
             return null;

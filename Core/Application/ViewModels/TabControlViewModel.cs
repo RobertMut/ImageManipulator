@@ -13,7 +13,6 @@ using ImageManipulator.Application.Common.CQRS.Command.AddImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
-using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;

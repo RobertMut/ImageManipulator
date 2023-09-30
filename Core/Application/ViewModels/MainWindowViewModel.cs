@@ -20,7 +20,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private readonly IServiceProvider _serviceProvider;
     private readonly IImagePointOperationsService _imagePointOperationsService;
     private readonly ITabService _tabService;
-    private TabItem _currentTab;
+    private TabItem? _currentTab;
     private ObservableCollection<TabItem> _imageTabs;
 
     public RoutingState Router { get; } = new();
@@ -31,7 +31,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         private set => this.RaiseAndSetIfChanged(ref _imageTabs, value);
     }
 
-    public TabItem CurrentTab
+    public TabItem? CurrentTab
     {
         get
         {
@@ -193,7 +193,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task CloseApp() => Environment.Exit(1);
     
-    private async Task ReloadImageAndReplaceTab(Bitmap? before, Bitmap? after, TabItem tabItem)
+    private async Task ReloadImageAndReplaceTab(Bitmap? before, Bitmap? after, TabItem? tabItem)
     {
         TabControlViewModel newViewModel;
         if (after != null && before != after)

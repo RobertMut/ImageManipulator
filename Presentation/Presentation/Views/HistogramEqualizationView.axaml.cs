@@ -10,7 +10,7 @@ namespace ImageManipulator.Presentation.Views
         {
             InitializeComponent();
             this.BindCommand(ViewModel, vm => vm.ExecuteEqualizeHistogram, v => v.equalizeCommand);
-            this.WhenActivated(disposables => { });
+            this.WhenActivated(_ => { });
         }
     }
 }

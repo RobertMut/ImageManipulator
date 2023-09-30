@@ -7,7 +7,7 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterMultiThreshold;
 
-public class GetImageAfterMultiThresholdQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterMultiThresholdQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterMultiThresholdQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterMultiThresholdQuery, Bitmap>
 {
     private readonly IImagePointOperationsService _imagePointOperationsService;
 

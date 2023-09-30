@@ -8,6 +8,7 @@ public class GetPostConvolutionImageQuery
     public bool Sobel { get; set; }
     public bool EdgeDetection { get; set; }
     public int Value { get; set; }
+    public int Border { get; set; }
     public Color Color { get; set; }
     public SoftenSharpenType SoftenSharpenType { get; set; }
     public SobelType SobelType { get; set; }

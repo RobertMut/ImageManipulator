@@ -10,7 +10,7 @@ namespace ImageManipulator.Presentation.Views
         {
             this.InitializeComponent();
             this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.thresholdCommand);
-            this.WhenActivated(disposables => { });
+            this.WhenActivated(_ => { });
         }
     }
 }

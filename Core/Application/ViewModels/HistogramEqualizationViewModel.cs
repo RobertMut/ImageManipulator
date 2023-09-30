@@ -50,7 +50,7 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
 
     private async Task Equalization()
     {
-        AfterImage = await _dispatcher.Dispatch<GetImageAfterHistogramEqualizationQuery, Avalonia.Media.Imaging.Bitmap>(
+        AfterImage = await _dispatcher.Dispatch<GetImageAfterHistogramEqualizationQuery, Bitmap>(
             new GetImageAfterHistogramEqualizationQuery()
             {
                 LookupTable = Lut

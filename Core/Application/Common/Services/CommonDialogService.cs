@@ -35,11 +35,11 @@ public class CommonDialogService : ICommonDialogService
             Title = "Save Image..",
             SuggestedStartLocation = await window.StorageProvider.TryGetFolderFromPathAsync(Path.GetFullPath(filePath)),
             SuggestedFileName = Path.GetFileName(filePath),
-            FileTypeChoices = new FilePickerFileType[] { FilePickerFileTypes.ImageAll },
+            FileTypeChoices = new[] { FilePickerFileTypes.ImageAll },
             ShowOverwritePrompt = true
         });
         
-        bitmap.Save(file.Path.ToString());
+        bitmap?.Save(file?.Path.ToString());
     }
 
     public Task ShowDialog<TViewModel>(TViewModel viewModel)
@@ -53,7 +53,7 @@ public class CommonDialogService : ICommonDialogService
 
         var task = new TaskCompletionSource<object>();
         
-        dialog.Closed += (s, a) => task.SetResult(null);
+        dialog.Closed += (s, a) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
         

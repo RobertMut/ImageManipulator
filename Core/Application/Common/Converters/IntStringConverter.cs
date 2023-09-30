@@ -12,7 +12,7 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if (value.GetType() == typeof(int))
+            if (value is int)
             {
                 return $"{(int)value}";
             }
@@ -24,9 +24,9 @@ namespace ImageManipulator.Application.Common.Converters
         {
             if (value == null) return null;
 
-            if(value.GetType() == typeof(string) && !string.IsNullOrEmpty((string)value))
+            if(value is string && !string.IsNullOrEmpty((string)value))
             {
-                return int.TryParse((string)value, out int result) == true ? result : null;
+                return int.TryParse((string)value, out int result) ? result : null;
             }
 
             return null;

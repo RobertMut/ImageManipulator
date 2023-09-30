@@ -2,13 +2,13 @@
 {
     public enum SobelType
     {
-        Sobel1 = 0,
-        Sobel2 = 1,
-        Sobel3 = 2,
-        Sobel4 = 3,
-        Sobel5 = 4,
-        Sobel6 = 5,
-        Sobel7 = 6,
-        Sobel8 = 7,
+        North = 0,
+        East = 1,
+        NorthEast = 2,
+        SouthEast = 3,
+        South = 4,
+        NorthWest = 5,
+        West = 6,
+        SouthWest = 7
     }
 }

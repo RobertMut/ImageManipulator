@@ -100,7 +100,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
         ICommonDialogService commonDialogService)
     {
         _queryDispatcher = queryDispatcher;
-        this._commonDialogService = commonDialogService;
+        _commonDialogService = commonDialogService;
         SelectImage = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SelectImageCommand));
         SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
 
@@ -115,7 +115,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     {
         if (_isArithmeticSelected)
         {
-            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Avalonia.Media.Imaging.Bitmap>(
+            AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Bitmap>(
                 new GetImageAfterArithmeticQuery
                 {
                     OperationValue = _value.HasValue ? _value.Value : default,

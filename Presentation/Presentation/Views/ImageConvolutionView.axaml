@@ -10,32 +10,22 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.Resources>
-            <ext:DoubleStringConverter x:Key="doubleStringConverter" />
+            <ext:IntStringConverter x:Key="IntStringConverter" />
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.5*" />
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.5*" />
-            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition Width="0.3*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Image Source="{Binding BeforeImage}" />
-        </Grid>
-        <Grid
-            Grid.Row="0"
-            Grid.Column="2"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <Image Source="{Binding AfterImage}" />
-        </Grid>
-        <StackPanel
-            Grid.Row="1"
-            Grid.ColumnSpan="3"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+        <Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage}" />
+        <Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage}" />
+        <DockPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" 
+            VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel DockPanel.Dock="Top" VerticalAlignment="Center" Orientation="Vertical">
+                <Label>Operation type:</Label>
                 <RadioButton
                     x:Name="radioSoftenSharpen"
                     Content="Soften/Sharpen"
@@ -50,8 +40,15 @@
                              GroupName="type"
                              IsChecked="{Binding IsEdgeDetectionSelected}"/>
             </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical" IsVisible="{Binding ElementName=radioEdgeDetection, Path=!IsChecked}">
-                <ComboBox
+            <StackPanel DockPanel.Dock="Top" 
+                        VerticalAlignment="Center" 
+                        Orientation="Vertical" 
+                        IsVisible="{Binding ElementName=radioEdgeDetection, Path=!IsChecked}">
+                <Label
+                    IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}">
+                    Matrix size:
+                </Label>
+                <ComboBox Margin="0, 0, 0, 15"
                     x:Name="MatrixSize"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
@@ -62,8 +59,14 @@
                     <ComboBoxItem>9x9</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+            <StackPanel DockPanel.Dock="Top" 
+                        VerticalAlignment="Center" 
+                        Orientation="Vertical">
+                <Label IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}" Margin="0, 15, 0, 0">
+                    Matrix:
+                </Label>
                 <ComboBox
+                    Margin="0, 0, 0, 15"
                     x:Name="softSharpBox"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ElementName=radioSoftenSharpen, Path=IsChecked}"
@@ -71,24 +74,32 @@
                     <ComboBoxItem>Average</ComboBoxItem>
                     <ComboBoxItem>Gauss</ComboBoxItem>
                     <ComboBoxItem>Average with weight</ComboBoxItem>
-                    <ComboBoxItem>Laplace1</ComboBoxItem>
-                    <ComboBoxItem>Laplace2</ComboBoxItem>
-                    <ComboBoxItem>Laplace3</ComboBoxItem>
+                    <ComboBoxItem>Laplace 1</ComboBoxItem>
+                    <ComboBoxItem>Laplace 2</ComboBoxItem>
+                    <ComboBoxItem>Laplace 3</ComboBoxItem>
                 </ComboBox>
+                <Label IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}" Margin="0, 15, 0, 0">
+                    Direction:
+                </Label>
                 <ComboBox
+                    Margin="0, 0, 0, 15"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ElementName=radioSobel, Path=IsChecked}"
                     SelectedIndex="{Binding SelectedSobel}">
-                    <ComboBoxItem>Sobel1</ComboBoxItem>
-                    <ComboBoxItem>Sobel2</ComboBoxItem>
-                    <ComboBoxItem>Sobel3</ComboBoxItem>
-                    <ComboBoxItem>Sobel4</ComboBoxItem>
-                    <ComboBoxItem>Sobel5</ComboBoxItem>
-                    <ComboBoxItem>Sobel6</ComboBoxItem>
-                    <ComboBoxItem>Sobel7</ComboBoxItem>
-                    <ComboBoxItem>Sobel8</ComboBoxItem>
+                    <ComboBoxItem>North</ComboBoxItem>
+                    <ComboBoxItem>East</ComboBoxItem>
+                    <ComboBoxItem>NorthEast</ComboBoxItem>
+                    <ComboBoxItem>SouthEast</ComboBoxItem>
+                    <ComboBoxItem>South</ComboBoxItem>
+                    <ComboBoxItem>NorthWest</ComboBoxItem>
+                    <ComboBoxItem>West</ComboBoxItem>
+                    <ComboBoxItem>SouthWest</ComboBoxItem>
                 </ComboBox>
+                <Label IsVisible="{Binding ElementName=radioEdgeDetection, Path=IsChecked}" Margin="0, 15, 0, 0">
+                    Algorithm:
+                </Label>
                 <ComboBox
+                    Margin="0, 0, 0, 15"
                     VerticalAlignment="Center"
                     IsVisible="{Binding ElementName=radioEdgeDetection, Path=IsChecked}"
 					SelectedIndex="{Binding SelectedEdgeDetection}">
@@ -97,24 +108,56 @@
 					<ComboBoxItem>Prewitt horizontal</ComboBoxItem>
                     <ComboBoxItem>Canny</ComboBoxItem>
                 </ComboBox>
+                
+                <StackPanel Orientation="Vertical" Margin="0,15">
+                    <Label IsVisible="{Binding IsWeightedSelected}">Weight:</Label>
+                    <TextBox
+                        IsVisible="{Binding IsWeightedSelected}"
+                        Text="{Binding Value, Converter={StaticResource IntStringConverter}}"
+                        Watermark="Value" />
+                </StackPanel>
+                
+                <StackPanel Orientation="Vertical" Margin="0,15">
+                    <Label>Image border:</Label>
+                    <ComboBox x:Name="BorderCombo" SelectedIndex="{Binding ImageWrap, Mode=TwoWay}">
+                        <ComboBoxItem>None</ComboBoxItem>
+                        <ComboBoxItem>Constant</ComboBoxItem>
+                        <ComboBoxItem>Reflect</ComboBoxItem>
+                        <ComboBoxItem>Wrap</ComboBoxItem>
+                        <ComboBoxItem>After</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+
+                <Label>Border constant value:
+                    <Interaction.Behaviors>
+                        <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=BorderCombo, Mode=OneWay}" Value="1" ComparisonCondition="NotEqual">
+                            <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                        </DataTriggerBehavior>
+                        <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=BorderCombo, Mode=OneWay}" Value="1" ComparisonCondition="Equal">
+                            <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                        </DataTriggerBehavior>
+                    </Interaction.Behaviors>
+                </Label>
+                <TextBox Text="{Binding BorderConstVal, Converter={StaticResource IntStringConverter}}" Watermark="Border const">
+                    <Interaction.Behaviors>
+                        <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=BorderCombo, Mode=OneWay}" Value="1" ComparisonCondition="NotEqual">
+                            <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                        </DataTriggerBehavior>
+                        <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=BorderCombo, Mode=OneWay}" Value="1" ComparisonCondition="Equal">
+                            <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                        </DataTriggerBehavior>
+                    </Interaction.Behaviors>
+                </TextBox>
             </StackPanel>
-            <TextBox
-                IsVisible="{Binding IsWeightedSelected}"
-                Text="{Binding Value, Converter={StaticResource doubleStringConverter}}"
-                Watermark="Value" />
-            <ComboBox SelectedIndex="{Binding ImageWrap, Mode=TwoWay}">
-                <ComboBoxItem>None</ComboBoxItem>
-                <ComboBoxItem>Constant</ComboBoxItem>
-                <ComboBoxItem>Reflect</ComboBoxItem>
-                <ComboBoxItem>Wrap</ComboBoxItem>
-                <ComboBoxItem>After</ComboBoxItem>
-            </ComboBox>
-            <TextBox Text="{Binding BorderConstVal, Converter={StaticResource doubleStringConverter}}" Watermark="Border const" />
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+            <StackPanel 
+                DockPanel.Dock="Bottom" 
+                VerticalAlignment="Center" 
+                Orientation="Horizontal" 
+                HorizontalAlignment="Center">
                 <Button x:Name="convolutionCommand" Command="{Binding Execute}">Execute</Button>
                 <Button Command="{Binding Accept}">Accept changes</Button>
                 <Button Command="{Binding Cancel}">Cancel</Button>
             </StackPanel>
-        </StackPanel>
+        </DockPanel>
     </Grid>
 </UserControl>
