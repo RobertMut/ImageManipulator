@@ -155,8 +155,15 @@
                 Orientation="Horizontal" 
                 HorizontalAlignment="Center">
                 <Button x:Name="convolutionCommand" Command="{Binding Execute}">Execute</Button>
-                <Button Command="{Binding Accept}">Accept changes</Button>
-                <Button Command="{Binding Cancel}">Cancel</Button>
+                <Button x:Name="AcceptCommand" 
+                        Command="{Binding Accept, Mode=OneTime}" 
+                        IsEnabled="{Binding Accept.CanExecute}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">Accept changes</Button>
+                <Button x:Name="CancelCommand"  
+                        Command="{Binding Cancel, Mode=OneTime}"
+                        IsEnabled="{Binding Cancel.CanExecute}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                >Cancel</Button>
             </StackPanel>
         </DockPanel>
     </Grid>

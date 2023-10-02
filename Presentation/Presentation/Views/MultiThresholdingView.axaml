@@ -10,52 +10,68 @@
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
 		</Grid.Resources>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="0.7*"/>
+			<ColumnDefinition Width="0.3*"/>
+		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
-			<RowDefinition MaxHeight="200"/>
-			<RowDefinition MaxHeight="200"/>
-			<RowDefinition MaxHeight="100"/>
-			<RowDefinition MaxHeight="100"/>
-			<RowDefinition MaxHeight="50"/>
+			<RowDefinition Height="0.5*"/>
+			<RowDefinition Height="0.5*"/>
 		</Grid.RowDefinitions>
-		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Image Source="{Binding BeforeImage}"/>
-			<Image Source="{Binding AfterImage}"/>
-		</StackPanel>
-		<Grid Grid.Column="0" Grid.Row="1">
-			<Grid.RowDefinitions>
-				<RowDefinition/>
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="0.3333*"/>
-				<ColumnDefinition Width="0.3333*"/>
-				<ColumnDefinition Width="0.3333*"/>
-			</Grid.ColumnDefinitions>
-					
-		<StackPanel Grid.Column="0" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center">
-			<TextBlock>Lower Treshold=</TextBlock>
-			<TextBox Text="{Binding EnteredLowerThreshold, Converter={StaticResource intStringConverter}}"/>
-		</StackPanel>
-		<StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center">
-			<TextBlock>Upper Treshold=</TextBlock>
-			<TextBox Text="{Binding EnteredUpperThreshold, Converter={StaticResource intStringConverter}}"/>
-		</StackPanel>
-		<StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center">
-			<TextBlock>Replace colours?</TextBlock>
-			<CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReplaceColours}"/>
-		</StackPanel>
-		</Grid>
-
-		<StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
-			<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredLowerThreshold, Mode=TwoWay}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=lowerThreshold, Path=Value}"/>
-			<Slider x:Name="upperThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredUpperThreshold, Mode=TwoWay}" MinWidth="100" Width="250" MaxWidth="250"/>
-			<TextBlock Text="{Binding ElementName=upperThreshold, Path=Value}"/>
-		</StackPanel>
-		
-		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-			<Button x:Name="thresholdCommand" Command="{Binding ThresholdingCommand}">Execute</Button>
-			<Button Command="{Binding Accept}">Accept changes</Button>
-			<Button Command="{Binding Cancel}">Cancel</Button>
+		<Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage}"/>
+		<Image x:Name="AfterImage" Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage}"/>
+		<StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Center" 
+		           VerticalAlignment="Center">
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+				<TextBlock>Live preview</TextBlock>
+				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<TextBlock Margin="5, 0">Lower Threshold</TextBlock>
+				<TextBlock Margin="5, 0">Upper Threshold</TextBlock>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<TextBox Margin="5, 0" Text="{Binding EnteredLowerThreshold, Converter={StaticResource intStringConverter}}"/>
+				<TextBox Margin="5, 0" Text="{Binding EnteredUpperThreshold, Converter={StaticResource intStringConverter}}"/>
+			</StackPanel>
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+				<TextBlock>Replace colours?</TextBlock>
+				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReplaceColours}"/>
+			</StackPanel>
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="0">
+				<Slider x:Name="lowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredLowerThreshold, Mode=TwoWay}" MinWidth="100" Width="250" MaxWidth="250">
+					<Interaction.Behaviors>
+						<EventTriggerBehavior EventName="ValueChanged">
+							<InvokeCommandAction Command="{Binding SliderInvokedThresholdCommand}"></InvokeCommandAction>
+						</EventTriggerBehavior>
+					</Interaction.Behaviors>
+				</Slider>
+				<TextBlock Text="{Binding ElementName=lowerThreshold, Path=Value}"/>
+				<Slider x:Name="upperThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredUpperThreshold, Mode=TwoWay}" MinWidth="100" Width="250" MaxWidth="250">
+					<Interaction.Behaviors>
+						<EventTriggerBehavior EventName="ValueChanged">
+							<InvokeCommandAction Command="{Binding SliderInvokedThresholdCommand}"></InvokeCommandAction>
+						</EventTriggerBehavior>
+					</Interaction.Behaviors>
+				</Slider>
+				<TextBlock Text="{Binding ElementName=upperThreshold, Path=Value}"/>
+			</StackPanel>
+			<StackPanel 
+				DockPanel.Dock="Bottom" 
+				VerticalAlignment="Center" 
+				Orientation="Horizontal" 
+				HorizontalAlignment="Center">
+				<Button x:Name="thresholdCommand" Command="{Binding ThresholdingCommand}">Execute</Button>
+				<Button x:Name="AcceptCommand" 
+				        Command="{Binding Accept, Mode=OneTime}" 
+				        IsEnabled="{Binding Accept.CanExecute}"
+				        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">Accept changes</Button>
+				<Button x:Name="CancelCommand"  
+				        Command="{Binding Cancel, Mode=OneTime}"
+				        IsEnabled="{Binding Cancel.CanExecute}"
+				        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+				        >Cancel</Button>
+			</StackPanel>
 		</StackPanel>
 	</Grid>
 </UserControl>

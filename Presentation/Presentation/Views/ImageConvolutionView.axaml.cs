@@ -10,7 +10,8 @@ namespace ImageManipulator.Presentation.Views
         {
             InitializeComponent();
             this.BindCommand(ViewModel, vm => vm.Execute, v => v.convolutionCommand);
-            this.WhenActivated(_ => { });
+            this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
+            this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 
@@ -50,8 +51,8 @@ public class ThresholdingViewModel : ImageOperationDialogViewModelBase
         TresholdingCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteTreshold));
         TresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task ExecuteTreshold()

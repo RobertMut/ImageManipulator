@@ -44,8 +44,15 @@
 		
 		<StackPanel Grid.Column="0" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
 			<Button x:Name="thresholdCommand" Command="{Binding TresholdingCommand}">Execute</Button>
-			<Button Command="{Binding AcceptCommand}">Accept changes</Button>
-			<Button Command="{Binding CancelCommand}">Cancel</Button>
+			<Button x:Name="AcceptCommand" 
+			        Command="{Binding Accept, Mode=OneTime}" 
+			        IsEnabled="{Binding Accept.CanExecute}"
+			        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">Accept changes</Button>
+			<Button x:Name="CancelCommand"  
+			        Command="{Binding Cancel, Mode=OneTime}"
+			        IsEnabled="{Binding Cancel.CanExecute}"
+			        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+			>Cancel</Button>
 		</StackPanel>
 	</Grid>
 </UserControl>

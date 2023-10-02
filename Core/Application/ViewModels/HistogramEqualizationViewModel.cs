@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterHistogramEqualization;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;
@@ -42,10 +43,9 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
         _dispatcher = dispatcher;
         ExecuteEqualizeHistogram = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Equalization));
         ExecuteEqualizeHistogram.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
-
-
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task Equalization()

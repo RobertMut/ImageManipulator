@@ -97,9 +97,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     }
 
     #region Commands
-
-    public RelayCommand<Window> CancelCommand { get; private set; }
-    public RelayCommand<Window> AcceptCommand { get; private set; }
+    
     public ReactiveCommand<Unit, Unit> Execute { get; }
     public ReactiveCommand<Unit, Unit> SelectImage { get; }
 
@@ -111,8 +109,8 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
         Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task ExecuteOperationOnImage()

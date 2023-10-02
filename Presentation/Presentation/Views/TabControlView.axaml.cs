@@ -9,7 +9,6 @@ namespace ImageManipulator.Presentation.Views
         public TabControlView()
         {
             InitializeComponent();
-            this.WhenActivated(_ => { });
         }
     }
 }
