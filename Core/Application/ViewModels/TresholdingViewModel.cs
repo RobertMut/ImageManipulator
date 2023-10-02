@@ -48,7 +48,7 @@ public class ThresholdingViewModel : ImageOperationDialogViewModelBase
     public ThresholdingViewModel(IQueryDispatcher queryDispatcher)
     {
         _queryDispatcher = queryDispatcher;
-        TresholdingCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteTreshold));
+        TresholdingCommand = ReactiveCommand.CreateFromTask(ExecuteTreshold);
         TresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);

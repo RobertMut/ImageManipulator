@@ -102,10 +102,10 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
     {
         _queryDispatcher = queryDispatcher;
         _commonDialogService = commonDialogService;
-        SelectImage = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SelectImageCommand));
+        SelectImage = ReactiveCommand.CreateFromTask(SelectImageCommand);
         SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
 
-        Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
+        Execute = ReactiveCommand.CreateFromTask(ExecuteOperationOnImage);
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);

@@ -47,7 +47,7 @@ public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewMode
     {
         _queryDispatcher = queryDispatcher;
         ExecuteNonLinearStretching =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NonLinearlyStretchContrast));
+            ReactiveCommand.CreateFromTask(NonLinearlyStretchContrast);
         ExecuteNonLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);

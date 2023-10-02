@@ -41,7 +41,7 @@ public class HistogramEqualizationViewModel : ImageOperationDialogViewModelBase
     public HistogramEqualizationViewModel(IQueryDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        ExecuteEqualizeHistogram = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Equalization));
+        ExecuteEqualizeHistogram = ReactiveCommand.CreateFromTask(Equalization);
         ExecuteEqualizeHistogram.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);

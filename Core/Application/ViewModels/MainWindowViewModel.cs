@@ -74,50 +74,50 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         _currentTab = _tabService.GetTab("Tab 1");
         _imageTabs = _tabService.GetTabItems();
 
-        AddNewTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NewEmptyTab));
+        AddNewTab = ReactiveCommand.CreateFromTask(NewEmptyTab);
         AddNewTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        GetImageToTab = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(PrepareNewTab));
+        GetImageToTab = ReactiveCommand.CreateFromTask(PrepareNewTab);
         GetImageToTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        Exit = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(CloseApp));
-        SaveImageCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImage));
+        Exit = ReactiveCommand.CreateFromTask(CloseApp);
+        SaveImageCommand = ReactiveCommand.CreateFromTask(SaveImage);
         SaveImageCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
-        SaveImageAsCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SaveImageAs));
+        SaveImageAsCommand = ReactiveCommand.CreateFromTask(SaveImageAs);
         SaveImageAsCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
-        DuplicateCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(Duplicate));
+        DuplicateCommand = ReactiveCommand.CreateFromTask(Duplicate);
         DuplicateCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ContrastStretchingCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenContrastStretchWindow));
+            ReactiveCommand.CreateFromTask(OpenContrastStretchWindow);
         ContrastStretchingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         GammaCorrectionCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenGammaCorrectionWindow));
+            ReactiveCommand.CreateFromTask(OpenGammaCorrectionWindow);
         GammaCorrectionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         HistogramEqualizationCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenHistogramEqualizationWindow));
+            ReactiveCommand.CreateFromTask(OpenHistogramEqualizationWindow);
         HistogramEqualizationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         
-        ThresholdCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenThresholdWindow));
+        ThresholdCommand = ReactiveCommand.CreateFromTask(OpenThresholdWindow);
         ThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         MultiThresholdingCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenMultiThresholdWindow));
+            ReactiveCommand.CreateFromTask(OpenMultiThresholdWindow);
         MultiThresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        NegationCommand = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NegateImage));
+        NegationCommand = ReactiveCommand.CreateFromTask(NegateImage);
         NegationCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ArithmeticBitwiseCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenArithmeticBitwiseWindow));
+            ReactiveCommand.CreateFromTask(OpenArithmeticBitwiseWindow);
         ArithmeticBitwiseCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         ImageConvolutionCommand =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(OpenImageConvolutionWindow));
+            ReactiveCommand.CreateFromTask(OpenImageConvolutionWindow);
         ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
     }
 

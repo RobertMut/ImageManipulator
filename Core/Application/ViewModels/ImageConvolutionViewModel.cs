@@ -106,7 +106,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     public ImageConvolutionViewModel(IQueryDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
+        Execute = ReactiveCommand.CreateFromTask(ExecuteOperationOnImage);
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
