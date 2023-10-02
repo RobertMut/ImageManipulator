@@ -10,8 +10,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;

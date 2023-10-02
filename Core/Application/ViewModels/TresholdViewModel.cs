@@ -5,19 +5,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 
 namespace ImageManipulator.Application.ViewModels;
 
-public class ThresholdingViewModel : ImageOperationDialogViewModelBase
+public class ThresholdViewModel : ImageOperationDialogViewModelBase
 {
     private readonly IQueryDispatcher _queryDispatcher;
     private Bitmap? _beforeImage;
     private Bitmap? _afterImage;
     private int _enteredThreshold;
+    private bool _livePreview;
 
     public override Bitmap? BeforeImage
     {
@@ -36,26 +35,35 @@ public class ThresholdingViewModel : ImageOperationDialogViewModelBase
         get => _enteredThreshold;
         set => this.RaiseAndSetIfChanged(ref _enteredThreshold, value);
     }
+    
+    public bool LivePreview
+    {
+        get => _livePreview;
+        set => this.RaiseAndSetIfChanged(ref _livePreview, value);
+    }
 
     public bool ReplaceColours { get; set; }
 
     #region Commands
 
-    public ReactiveCommand<Unit, Unit> TresholdingCommand { get; }
+    public ReactiveCommand<Unit, Unit> SliderInvokedThresholdCommand { get; }
+    public ReactiveCommand<Unit, Unit> ThresholdCommand { get; }
 
     #endregion Commands
 
-    public ThresholdingViewModel(IQueryDispatcher queryDispatcher)
+    public ThresholdViewModel(IQueryDispatcher queryDispatcher)
     {
         _queryDispatcher = queryDispatcher;
-        TresholdingCommand = ReactiveCommand.CreateFromTask(ExecuteTreshold);
-        TresholdingCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
-
+        ThresholdCommand = ReactiveCommand.CreateFromTask(ExecuteThreshold);
+        ThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+        SliderInvokedThresholdCommand = ReactiveCommand.CreateFromTask(ExecuteThreshold,
+            this.WhenAnyValue(x => x.LivePreview));
+        SliderInvokedThresholdCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
         CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
-
-    private async Task ExecuteTreshold()
+    
+    private async Task ExecuteThreshold()
     {
         AfterImage = await _queryDispatcher.Dispatch<GetImageAfterThresholdQuery, Bitmap>(
             new GetImageAfterThresholdQuery

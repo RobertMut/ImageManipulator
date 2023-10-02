@@ -1,13 +1,12 @@
-using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class MultiThresholdingView : ReactiveUserControl<MultiThresholdingViewModel>
+    public partial class MultiThresholdView : ReactiveUserControl<MultiThresholdViewModel>
     {
-        public MultiThresholdingView()
+        public MultiThresholdView()
         {
             InitializeComponent();
             this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.thresholdCommand);

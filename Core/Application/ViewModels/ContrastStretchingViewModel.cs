@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;

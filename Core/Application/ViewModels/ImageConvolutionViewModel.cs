@@ -7,7 +7,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;

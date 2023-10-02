@@ -6,15 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
-using DynamicData.Binding;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterMultiThreshold;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Splat;
 
 namespace ImageManipulator.Application.ViewModels
 {
-    public class MultiThresholdingViewModel : ImageOperationDialogViewModelBase
+    public class MultiThresholdViewModel : ImageOperationDialogViewModelBase
     {
         private readonly IQueryDispatcher _queryDispatcher;
         private Bitmap? _beforeImage;
@@ -58,7 +56,7 @@ namespace ImageManipulator.Application.ViewModels
 
         #endregion Commands
 
-        public MultiThresholdingViewModel(IQueryDispatcher queryDispatcher)
+        public MultiThresholdViewModel(IQueryDispatcher queryDispatcher)
         {
             _queryDispatcher = queryDispatcher;
             ThresholdingCommand = ReactiveCommand.CreateFromTask(ExecuteThresholding);

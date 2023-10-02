@@ -5,7 +5,7 @@
 		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
         xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
-        x:Class="ImageManipulator.Presentation.Views.MultiThresholdingView">
+        x:Class="ImageManipulator.Presentation.Views.MultiThresholdView">
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>

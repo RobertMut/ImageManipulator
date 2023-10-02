@@ -5,7 +5,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using ImageManipulator.Domain.Common.Helpers;
@@ -168,12 +167,12 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task OpenThresholdWindow()
     {
-        await ShowWindow<ThresholdingViewModel>();
+        await ShowWindow<ThresholdViewModel>();
     }
 
     private async Task OpenMultiThresholdWindow()
     {
-        await ShowWindow<MultiThresholdingViewModel>();
+        await ShowWindow<MultiThresholdViewModel>();
     }
 
     private async Task SaveImage()
