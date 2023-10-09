@@ -4,7 +4,9 @@ using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using ImageManipulator.Domain.Common.Helpers;
@@ -45,7 +47,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     }
 
     #region Commands
-
+    public ReactiveCommand<Unit, Unit> CloseTab { get; }
     public ReactiveCommand<Unit, Unit> AddNewTab { get; }
     public ReactiveCommand<Unit, Unit> GetImageToTab { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
@@ -79,6 +81,11 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         GetImageToTab = ReactiveCommand.CreateFromTask(PrepareNewTab);
         GetImageToTab.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
+        CloseTab = ReactiveCommand.CreateFromTask(CloseCurrentTab, this.WhenAnyValue(x => x.ImageTabs).Select(x => x is
+        {
+            Count: > 1
+        }), RxApp.TaskpoolScheduler);
+        
         Exit = ReactiveCommand.CreateFromTask(CloseApp);
         SaveImageCommand = ReactiveCommand.CreateFromTask(SaveImage);
         SaveImageCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
@@ -118,6 +125,22 @@ public class MainWindowViewModel : ViewModelBase, IScreen
         ImageConvolutionCommand =
             ReactiveCommand.CreateFromTask(OpenImageConvolutionWindow);
         ImageConvolutionCommand.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
+    }
+
+    private async Task CloseCurrentTab()
+    {
+        _tabService.RemoveTab(CurrentTab.ViewModel.Path ?? CurrentTab.Name);
+        ImageTabs = _tabService.GetTabItems();
+        TabItem? supposedCurrentTab = _imageTabs.FirstOrDefault();
+        
+        if (supposedCurrentTab != null)
+        {
+            CurrentTab = supposedCurrentTab;
+        }
+        else
+        {
+            await NewEmptyTab();
+        }
     }
 
     private async Task OpenImageConvolutionWindow() => await ShowWindow<ImageConvolutionViewModel>();

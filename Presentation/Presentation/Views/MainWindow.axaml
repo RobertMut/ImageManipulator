@@ -12,7 +12,7 @@
     mc:Ignorable="d">
 
     <Design.DataContext>
-        <viewModels:MainWindowViewModel />
+        <viewModels:MainWindowViewModel x:Name="ViewModel"/>
     </Design.DataContext>
     <StackPanel>
         <StackPanel Orientation="Horizontal">
@@ -29,8 +29,8 @@
                     <MenuItem Command="{Binding DuplicateCommand}" Header="Duplicate" />
                     <Separator />
                     <MenuItem Command="{Binding NegationCommand}" Header="Negation" />
-                    <MenuItem Command="{Binding ThresholdCommand}" Header="Tresholding" />
-                    <MenuItem Command="{Binding MultiThresholdingCommand}" Header="Multi-Thresholding" />
+                    <MenuItem Command="{Binding ThresholdCommand}" Header="Threshold" />
+                    <MenuItem Command="{Binding MultiThresholdingCommand}" Header="Multi-Threshold" />
                     <Separator />
                     <MenuItem Command="{Binding ContrastStretchingCommand}" Header="Contrast stretching" />
                     <MenuItem Command="{Binding GammaCorrectionCommand}" Header="Gamma correction" />
@@ -44,13 +44,20 @@
             </Menu>
         </StackPanel>
         <StackPanel>
-            <TabControl
+            <TabControl 
                 Name="TabNav"
                 ItemsSource="{Binding ImageTabs, Mode=TwoWay}"
                 SelectedItem="{Binding CurrentTab, Mode=TwoWay}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name, Mode=TwoWay}" />
+                        <StackPanel Height="35" Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name, Mode=TwoWay}" Margin="8,0, 0, 0" />
+                            <Button Background="Transparent" Command="{Binding Path=DataContext.CloseTab, RelativeSource={RelativeSource AncestorType={x:Type TabControl}, Mode=FindAncestor}, Mode=OneWay}"
+                                    Margin="0, 6, 0,5" BorderBrush="Transparent" BorderThickness="0" VerticalContentAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center"
+                                    IsEnabled="{Binding Path=DataContext.CloseTab.CanExecute, RelativeSource={RelativeSource AncestorType={x:Type TabControl}, Mode=FindAncestor}, Mode=OneWay}">
+                                <Image Stretch="Uniform" Source="/Assets/close.png"></Image>
+                            </Button>
+                        </StackPanel>
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
