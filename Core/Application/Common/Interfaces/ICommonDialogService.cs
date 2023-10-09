@@ -12,5 +12,7 @@ namespace ImageManipulator.Application.Common.Interfaces
 
         public Task ShowDialog<TViewModel>(TViewModel viewModel)
             where TViewModel : class;
+
+        Task ShowException(string exceptionMessage);
     }
 }

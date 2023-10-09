@@ -95,8 +95,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     #endregion Commands
 
-    public ArithmeticBitwiseOperationsViewModel(IQueryDispatcher queryDispatcher,
-        ICommonDialogService commonDialogService)
+    public ArithmeticBitwiseOperationsViewModel(IQueryDispatcher queryDispatcher, ICommonDialogService commonDialogService)
     {
         _queryDispatcher = queryDispatcher;
         _commonDialogService = commonDialogService;

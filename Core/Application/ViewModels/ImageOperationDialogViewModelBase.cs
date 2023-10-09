@@ -8,12 +8,12 @@ namespace ImageManipulator.Application.ViewModels;
 
 public abstract class ImageOperationDialogViewModelBase : ViewModelBase
 {
-    
     #region Commands
     
     public ReactiveCommand<Window, Unit>? CancelCommand { get; protected set; }
                            
     public ReactiveCommand<Window, Unit>? AcceptCommand { get; protected set; }
+    
     
     #endregion
     

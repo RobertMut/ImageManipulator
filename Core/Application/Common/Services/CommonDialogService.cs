@@ -5,6 +5,7 @@ using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 
 namespace ImageManipulator.Application.Common.Services;
@@ -53,6 +54,32 @@ public class CommonDialogService : ICommonDialogService
 
         var task = new TaskCompletionSource<object>();
         
+        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Show();
+        dialog.Focus();
+        
+        return task.Task;
+    }
+
+    public Task ShowException(string exceptionMessage)
+    {
+        var dialog = new Window
+        {
+            Name = "Exception",
+            Content = new TextBlock
+            {
+                Text = $"Exception has occured\r\n{exceptionMessage}",
+            },
+            SizeToContent = SizeToContent.WidthAndHeight,
+            Title = "Exception",
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
+            SystemDecorations = SystemDecorations.Full,
+            ShowInTaskbar = true,
+            WindowState = WindowState.Normal,
+            WindowStartupLocation = WindowStartupLocation.Manual,
+        };
+        
+        var task = new TaskCompletionSource<object>();
         dialog.Closed += (s, a) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
