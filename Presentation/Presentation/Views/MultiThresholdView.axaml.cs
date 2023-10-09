@@ -4,12 +4,12 @@ using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views
 {
-    public partial class NonLinearContrastStretchingView : ReactiveUserControl<NonLinearContrastStretchingViewModel>
+    public partial class MultiThresholdView : ReactiveUserControl<MultiThresholdViewModel>
     {
-        public NonLinearContrastStretchingView()
+        public MultiThresholdView()
         {
             InitializeComponent();
-            this.BindCommand(ViewModel, vm => vm.ExecuteNonLinearStretching, v => v.StretchCommand);
+            this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.thresholdCommand);
             this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
             this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
         }

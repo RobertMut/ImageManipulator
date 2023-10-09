@@ -1,14 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 
-public class GetImageAfterThresholdQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterThresholdQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterThresholdQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterThresholdQuery, Bitmap>
 {
     private readonly IImagePointOperationsService _imagePointOperationsService;
 

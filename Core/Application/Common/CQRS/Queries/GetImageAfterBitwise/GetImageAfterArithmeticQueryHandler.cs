@@ -19,7 +19,7 @@ public class GetImageAfterBitwiseQueryHandlerHandler : GetImageQueryHandlerBase,
     public async Task<Bitmap> Handle(GetImageAfterBitwiseQuery query, CancellationToken cancellationToken)
     {
         var bitmap = await GetCurrentlyDisplayedBitmap();
-        object parameter = ParameterSelector(query);
+        object? parameter = ParameterSelector(query);
 
         var newBitmap =
             ImageConverterHelper.ConvertFromSystemDrawingBitmap(

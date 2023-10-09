@@ -4,11 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:ext="using:ImageManipulator.Application.Common.Converters"
         xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="300"
-        x:Class="ImageManipulator.Presentation.Views.NonLinearContrastStretchingView">
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+        x:Class="ImageManipulator.Presentation.Views.ThresholdView">
 	<Grid>
 		<Grid.Resources>
-			<ext:DoubleStringConverter x:Key="DoubleStringConverter"/>
+			<ext:IntStringConverter x:Key="intStringConverter"/>
 		</Grid.Resources>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="0.7*"/>
@@ -21,13 +21,38 @@
 		<Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage}"/>
 		<Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage}"/>
 		<StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-			<TextBox Text="{Binding GammaValue, Converter={StaticResource DoubleStringConverter}}" Margin="0, 30"/>
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+				<TextBlock>Live preview</TextBlock>
+				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
+			</StackPanel>
+			
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+				<TextBlock>Threshold=</TextBlock>
+				<TextBox Text="{Binding EnteredThreshold, Converter={StaticResource intStringConverter}}"/>
+			</StackPanel>
+			
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<TextBlock>Replace colours?</TextBlock>
+				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReplaceColours}"/>
+			</StackPanel>
+			
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Slider x:Name="LowerThreshold" Maximum="255" Minimum="0" Value="{Binding EnteredThreshold}" MinWidth="100" Width="250" MaxWidth="250">
+					<Interaction.Behaviors>
+						<EventTriggerBehavior EventName="ValueChanged">
+							<InvokeCommandAction Command="{Binding SliderInvokedThresholdCommand}"></InvokeCommandAction>
+						</EventTriggerBehavior>
+					</Interaction.Behaviors>
+				</Slider>
+				<TextBlock Text="{Binding ElementName=EnteredThreshold, Path=Value}"/>
+			</StackPanel>
+			
 			<StackPanel 
 				DockPanel.Dock="Bottom" 
 				VerticalAlignment="Center" 
 				Orientation="Horizontal" 
 				HorizontalAlignment="Center">
-				<Button x:Name="StretchCommand" Command="{Binding ExecuteNonLinearStretching}">Non-linearly stretch contrast</Button>
+				<Button x:Name="ThresholdCommand" Command="{Binding ThresholdCommand}">Execute</Button>
 				<Button x:Name="AcceptCommand" 
 				        Command="{Binding Accept, Mode=OneTime}" 
 				        IsEnabled="{Binding Accept.CanExecute}"

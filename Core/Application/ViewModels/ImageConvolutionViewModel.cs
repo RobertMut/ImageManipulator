@@ -7,7 +7,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
@@ -21,14 +20,14 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     private Bitmap? _beforeImage;
     private int _value;
     private bool _isSobelSelected;
-    private SoftenSharpenType _selectedSoftenSharpen;
-    private SobelType _selectedSobel;
-    private ImageWrapType _imageWrap;
+    private SoftenSharpenType _selectedSoftenSharpen = SoftenSharpenType.SoftenAverage;
+    private SobelType _selectedSobel = SobelType.East;
+    private ImageWrapType _imageWrap = ImageWrapType.BORDER_NONE;
     private bool _isWeightedSelected;
-    private MatrixSize _matrixSize;
+    private MatrixSize _matrixSize = ImageManipulator.Common.Enums.MatrixSize.three;
     private bool _isEdgeDetectionSelected;
-    private double _borderConstVal;
-    private EdgeDetectionType _selectedEdgeDetection;
+    private int _borderConstVal;
+    private EdgeDetectionType _selectedEdgeDetection = EdgeDetectionType.Laplace;
 
     public override Bitmap? AfterImage
     {
@@ -60,7 +59,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
         set => ChangeAndSetWeightedBool(ref _selectedEdgeDetection, (EdgeDetectionType)value);
     }
 
-    public int SelectedSoftenSharpen3x3
+    public int SelectedSoftenSharpen
     {
         get => (int)_selectedSoftenSharpen;
         set => ChangeAndSetWeightedBool(ref _selectedSoftenSharpen, (SoftenSharpenType)value);
@@ -72,13 +71,13 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
         set => this.RaiseAndSetIfChanged(ref _imageWrap, (ImageWrapType)value);
     }
 
-    public int MatrixSize
+    public int MatrixSize 
     {
         get => (int)_matrixSize;
         set => this.RaiseAndSetIfChanged(ref _matrixSize, (MatrixSize)value);
     }
 
-    public double BorderConstVal
+    public int BorderConstVal
     {
         get => _borderConstVal;
         set => this.RaiseAndSetIfChanged(ref _borderConstVal, value);
@@ -97,9 +96,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     }
 
     #region Commands
-
-    public RelayCommand<Window> CancelCommand { get; private set; }
-    public RelayCommand<Window> AcceptCommand { get; private set; }
+    
     public ReactiveCommand<Unit, Unit> Execute { get; }
     public ReactiveCommand<Unit, Unit> SelectImage { get; }
 
@@ -108,11 +105,11 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
     public ImageConvolutionViewModel(IQueryDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
+        Execute = ReactiveCommand.CreateFromTask(ExecuteOperationOnImage);
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task ExecuteOperationOnImage()
@@ -123,6 +120,7 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
             EdgeDetection = _isEdgeDetectionSelected,
             Color = Color.FromArgb(_value, _value, _value),
             Value = _value,
+            Border = _borderConstVal,
             SoftenSharpenType = _selectedSoftenSharpen,
             SobelType = _selectedSobel,
             MatrixSize = _matrixSize,
@@ -131,10 +129,10 @@ public class ImageConvolutionViewModel : ImageOperationDialogViewModelBase
         }, new CancellationToken());
     }
 
-    private T ChangeAndSetWeightedBool<T>(ref T existing, T value)
+    private void ChangeAndSetWeightedBool<T>(ref T existing, T value)
     {
         if (Convert.ToInt32(value) == 2) IsWeightedSelected = true;
         else IsWeightedSelected = false;
-        return this.RaiseAndSetIfChanged(ref existing, value);
+        this.RaiseAndSetIfChanged(ref existing, value);
     }
 }

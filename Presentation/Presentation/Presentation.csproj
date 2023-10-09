@@ -52,10 +52,10 @@
     <Compile Update="Views\ImageConvolutionView.axaml.cs">
       <DependentUpon>ImageConvolutionView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\MultiThresholdingView.axaml.cs">
+    <Compile Update="Views\MultiThresholdView.axaml.cs">
       <DependentUpon>MultiThresholdingView.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\ThresholdingView.axaml.cs">
+    <Compile Update="Views\ThresholdView.axaml.cs">
       <DependentUpon>ThresholdingView.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\HistogramEqualizationView.axaml.cs">

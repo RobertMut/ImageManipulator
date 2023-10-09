@@ -10,7 +10,8 @@ namespace ImageManipulator.Presentation.Views
         {
             InitializeComponent();
             this.BindCommand(ViewModel, vm => vm.ExecuteLinearStretching, v => v.stretchingCommand);
-            this.WhenActivated(disposables => { });
+            this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
+            this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
         }
     }
 }

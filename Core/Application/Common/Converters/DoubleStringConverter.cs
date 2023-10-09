@@ -2,34 +2,24 @@
 using System;
 using System.Globalization;
 
-namespace ImageManipulator.Application.Common.Converters
+namespace ImageManipulator.Application.Common.Converters;
+
+public class DoubleStringConverter : IValueConverter
 {
-    public class DoubleStringConverter : IValueConverter
+    public static DoubleStringConverter Instance = new DoubleStringConverter();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        public static DoubleStringConverter Instance = new DoubleStringConverter();
+        return value == null ? null : value.ToString();
+    }
 
-        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value != null && Double.TryParse(value.ToString(), out double result))
         {
-            if (value == null) return null;
-
-            if (value is double)
-            {
-                return $"{(double)value}";
-            }
-
-            return null;
+            return result;
         }
 
-        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        {
-            if (value == null) return null;
-
-            if(value is string && !string.IsNullOrEmpty((string)value))
-            {
-                    return double.TryParse((string)value, out double result) == true ? result : null;
-            }
-
-            return null;
-        }
+        return null;
     }
 }

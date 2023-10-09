@@ -28,9 +28,9 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
     {
         var bitmap = await GetCurrentlyDisplayedBitmap();
         
-        Bitmap modifiedBItmap = GetModifiedImage(query, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
+        Bitmap modifiedImage = GetModifiedImage(query, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
         var avaloniaBitmap =
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedBItmap, query.ImageWrapType,
+            ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedImage, query.ImageWrapType,
                 query.Value));
         
         return avaloniaBitmap;
@@ -54,7 +54,7 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
         {
             var matrix = GetMatrix(query);
 
-            return query is { SoftenSharpenType: < SoftenSharpenType.SharpenLaplace1, Sobel: false }
+            return query is { SoftenSharpenType: < SoftenSharpenType.Laplace1, Sobel: false }
                 ? _imageConvolutionService.Execute(bitmap, matrix, true)
                 : _imageConvolutionService.Execute(bitmap, matrix);
         }

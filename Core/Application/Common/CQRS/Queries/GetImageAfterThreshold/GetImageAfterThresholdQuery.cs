@@ -1,4 +1,4 @@
-﻿namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageThreshold;
+﻿namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 
 public class GetImageAfterThresholdQuery
 {

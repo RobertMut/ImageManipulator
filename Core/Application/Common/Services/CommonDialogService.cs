@@ -1,9 +1,11 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
 using System.Threading.Tasks;
+using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 
 namespace ImageManipulator.Application.Common.Services;
@@ -12,14 +14,17 @@ public class CommonDialogService : ICommonDialogService
 {
     public async Task<IStorageFile> ShowFileDialogInNewWindow()
     {
-        var image = await new Window().StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        IReadOnlyList<IStorageFile> storageFiles = await new Window()
+        {
+            WindowState = WindowState.Maximized
+        }.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Select image..",
             AllowMultiple = false,
             FileTypeFilter = new[] { FilePickerFileTypes.ImageAll }
         });
-        
-        return image[0];
+
+        return storageFiles[0];
     }
 
     public async Task ShowSaveFileDialog(Bitmap? bitmap, string filePath)
@@ -31,22 +36,54 @@ public class CommonDialogService : ICommonDialogService
             Title = "Save Image..",
             SuggestedStartLocation = await window.StorageProvider.TryGetFolderFromPathAsync(Path.GetFullPath(filePath)),
             SuggestedFileName = Path.GetFileName(filePath),
-            FileTypeChoices = new FilePickerFileType[] { FilePickerFileTypes.ImageAll },
+            FileTypeChoices = new[] { FilePickerFileTypes.ImageAll },
             ShowOverwritePrompt = true
         });
         
-        bitmap.Save(file.Path.ToString());
+        bitmap?.Save(file?.Path.ToString());
     }
 
     public Task ShowDialog<TViewModel>(TViewModel viewModel)
     where TViewModel : class
     {
-        var dialog = new Window().SetContent(viewModel);
-        dialog.DataContext = viewModel;
+        var dialog = new Window()
+        {
+            WindowState = WindowState.Maximized,
+            DataContext = viewModel
+        }.SetContent(viewModel);
+
         var task = new TaskCompletionSource<object>();
-        dialog.Closed += (s, a) => task.SetResult(null);
+        
+        dialog.Closed += (s, a) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
+        
+        return task.Task;
+    }
+
+    public Task ShowException(string exceptionMessage)
+    {
+        var dialog = new Window
+        {
+            Name = "Exception",
+            Content = new TextBlock
+            {
+                Text = $"Exception has occured\r\n{exceptionMessage}",
+            },
+            SizeToContent = SizeToContent.WidthAndHeight,
+            Title = "Exception",
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome,
+            SystemDecorations = SystemDecorations.Full,
+            ShowInTaskbar = true,
+            WindowState = WindowState.Normal,
+            WindowStartupLocation = WindowStartupLocation.Manual,
+        };
+        
+        var task = new TaskCompletionSource<object>();
+        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Show();
+        dialog.Focus();
+        
         return task.Task;
     }
 }

@@ -1,4 +1,5 @@
 <UserControl
+    x:Name="Control"
     x:Class="ImageManipulator.Presentation.Views.ArithmeticBitwiseOperationsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,96 +9,144 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Height="{Binding Height, ElementName=Control}">
         <Grid.Resources>
             <ext:IntStringConverter x:Key="intStringConverter" />
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.5*" />
-            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.5*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.33*" />
-            <ColumnDefinition Width="0.33*" />
-            <ColumnDefinition Width="0.33*" />
+            <ColumnDefinition Width="0.7*" />
+            <ColumnDefinition Width="0.3*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0">
             <Image Source="{Binding BeforeImage}" />
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="1">
-            <Image IsVisible="{Binding ElementName=radioImage, Path=IsChecked}" Source="{Binding OperationImage}" />
-            <TextBox
-                IsVisible="{Binding ElementName=radioValue, Path=IsChecked}"
-                Text="{Binding Value, Converter={StaticResource intStringConverter}}"
-                Watermark="Value" />
-            <Grid IsVisible="{Binding ElementName=radioColor, Path=IsChecked}">
-                <colorpicker:ColorButton Color="{Binding PickedColor, Mode=TwoWay}" />
-            </Grid>
-        </Grid>
-        <Grid
-            Grid.Row="0"
-            Grid.Column="2"
-            HorizontalAlignment="Center"
+        <Grid Grid.Row="1" Grid.Column="0"
+              HorizontalAlignment="Center"
             VerticalAlignment="Center">
             <Image Source="{Binding AfterImage, Mode=TwoWay}" />
         </Grid>
-        <StackPanel
-            Grid.Row="1"
-            Grid.ColumnSpan="3"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <RadioButton
-                    x:Name="radioArithmetic"
-                    Content="Arithmetic"
-                    IsChecked="{Binding IsArithmeticSelected}" />
-                <RadioButton x:Name="radioBitwise" Content="Bitwise" />
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+            <StackPanel Height="{Binding Height, ElementName=Control}"
+            VerticalAlignment="Top"
+            Orientation="Vertical">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                        <Label>Select operation type:</Label>
+                        <RadioButton
+                            x:Name="radioArithmetic"
+                            Content="Arithmetic"
+                            IsChecked="{Binding IsArithmeticSelected}" />
+                        <RadioButton x:Name="radioBitwise" Content="Bitwise" />
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                        <Label>Select operand type:</Label>
+                        <ComboBox x:Name="Operand" SelectedIndex="{Binding SelectedElementaryOperation}">
+                            <ComboBoxItem>Image</ComboBoxItem>
+                            <ComboBoxItem>Color</ComboBoxItem>
+                            <ComboBoxItem>Value</ComboBoxItem>
+                        </ComboBox>
+                        <Button Command="{Binding SelectImage}">
+                            Select image
+                            <Interaction.Behaviors>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="0" ComparisonCondition="NotEqual">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                                </DataTriggerBehavior>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="0" ComparisonCondition="Equal">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                                </DataTriggerBehavior>
+                            </Interaction.Behaviors>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <Image Margin="10" Source="{Binding OperationImage}">
+                            <Interaction.Behaviors>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="0" ComparisonCondition="NotEqual">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                                </DataTriggerBehavior>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="0" ComparisonCondition="Equal">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                                </DataTriggerBehavior>
+                            </Interaction.Behaviors>
+                        </Image>
+                        <TextBox
+                            Text="{Binding Value, Converter={StaticResource intStringConverter}}"
+                            Watermark="Value">
+                            <Interaction.Behaviors>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="2" ComparisonCondition="NotEqual">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                                </DataTriggerBehavior>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="2" ComparisonCondition="Equal">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                                </DataTriggerBehavior>
+                            </Interaction.Behaviors>
+                        </TextBox>
+                        <Grid>
+                            <colorpicker:ColorButton Color="{Binding PickedColor, Mode=TwoWay}" />
+                            <Interaction.Behaviors>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="1" ComparisonCondition="NotEqual">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
+                                </DataTriggerBehavior>
+                                <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="1" ComparisonCondition="Equal">
+                                    <ChangePropertyAction PropertyName="IsVisible" Value="True"/>
+                                </DataTriggerBehavior>
+                            </Interaction.Behaviors>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+
+                    <Label IsVisible="{Binding ElementName=radioArithmetic, Path=IsChecked}">
+                        Arithmetic operation type:
+                    </Label>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioArithmetic, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedArithmeticOperation}">
+                        <ComboBoxItem>Average</ComboBoxItem>
+                        <ComboBoxItem>Add</ComboBoxItem>
+                        <ComboBoxItem>Subtract Left</ComboBoxItem>
+                        <ComboBoxItem>Subtract Right</ComboBoxItem>
+                        <ComboBoxItem>Difference</ComboBoxItem>
+					    <ComboBoxItem>Divide</ComboBoxItem>
+                        <ComboBoxItem>Multiply</ComboBoxItem>
+                        <ComboBoxItem>Min</ComboBoxItem>
+                        <ComboBoxItem>Max</ComboBoxItem>
+                        <ComboBoxItem>Amplitude</ComboBoxItem>
+                    </ComboBox>
+                    <Label IsVisible="{Binding ElementName=radioBitwise, Path=IsChecked}">
+                        Bitwise operation type:
+                    </Label>
+                    <ComboBox
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding ElementName=radioBitwise, Path=IsChecked}"
+                        SelectedIndex="{Binding SelectedBitwiseOperation}">
+                        <ComboBoxItem>AND</ComboBoxItem>
+                        <ComboBoxItem>OR</ComboBoxItem>
+                        <ComboBoxItem>XOR</ComboBoxItem>
+                        <ComboBoxItem>NOT</ComboBoxItem>
+                        <ComboBoxItem>Left Shift</ComboBoxItem>
+                        <ComboBoxItem>Right Shift</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Bottom" Orientation="Vertical">
+                    <Button x:Name="operationCommand" Command="{Binding Execute}">Execute</Button>
+                    <Button x:Name="AcceptCommand" 
+                            Command="{Binding Accept, Mode=OneTime}" 
+                            IsEnabled="{Binding Accept.CanExecute}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}">Accept changes</Button>
+                    <Button x:Name="CancelCommand"  
+                            Command="{Binding Cancel, Mode=OneTime}"
+                            IsEnabled="{Binding Cancel.CanExecute}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    >Cancel</Button>
+                </StackPanel>
             </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <RadioButton x:Name="radioImage" Content="Image" />
-                <Button Command="{Binding SelectImage}" IsVisible="{Binding ElementName=radioImage, Path=IsChecked}">
-                    Select image
-                </Button>
-                <RadioButton x:Name="radioColor" Content="Color" />
-                <RadioButton x:Name="radioValue" Content="Value" />
-            </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                <ComboBox SelectedIndex="{Binding SelectedElementaryOperation}">
-                    <ComboBoxItem>Image</ComboBoxItem>
-                    <ComboBoxItem>Color</ComboBoxItem>
-                    <ComboBoxItem>Value</ComboBoxItem>
-                </ComboBox>
-                <ComboBox
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ElementName=radioArithmetic, Path=IsChecked}"
-                    SelectedIndex="{Binding SelectedArithmeticOperation}">
-                    <ComboBoxItem>Average</ComboBoxItem>
-                    <ComboBoxItem>Add</ComboBoxItem>
-                    <ComboBoxItem>Subtract Left</ComboBoxItem>
-                    <ComboBoxItem>Subtract Right</ComboBoxItem>
-                    <ComboBoxItem>Difference</ComboBoxItem>
-					<ComboBoxItem>Divide</ComboBoxItem>
-                    <ComboBoxItem>Multiply</ComboBoxItem>
-                    <ComboBoxItem>Min</ComboBoxItem>
-                    <ComboBoxItem>Max</ComboBoxItem>
-                    <ComboBoxItem>Amplitude</ComboBoxItem>
-                </ComboBox>
-                <ComboBox
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding ElementName=radioBitwise, Path=IsChecked}"
-                    SelectedIndex="{Binding SelectedBitwiseOperation}">
-                    <ComboBoxItem>AND</ComboBoxItem>
-                    <ComboBoxItem>OR</ComboBoxItem>
-                    <ComboBoxItem>XOR</ComboBoxItem>
-                    <ComboBoxItem>NOT</ComboBoxItem>
-                    <ComboBoxItem>Left Shift</ComboBoxItem>
-                    <ComboBoxItem>Right Shift</ComboBoxItem>
-                </ComboBox>
-            </StackPanel>
-            <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                <Button x:Name="operationCommand" Command="{Binding Execute}">Execute</Button>
-                <Button Command="{Binding Accept}" />
-            </StackPanel>
-        </StackPanel>
+        </Grid>
+
     </Grid>
 </UserControl>

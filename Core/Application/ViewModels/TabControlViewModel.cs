@@ -13,7 +13,6 @@ using ImageManipulator.Application.Common.CQRS.Command.AddImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
-using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
@@ -54,7 +53,7 @@ namespace ImageManipulator.Application.ViewModels
 
         public int Height { get; private set; }
         public Bitmap? Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
-        public string Path { get; private set; }
+        public string? Path { get; private set; }
 
         /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }

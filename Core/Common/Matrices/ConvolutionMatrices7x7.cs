@@ -15,7 +15,7 @@ namespace ImageManipulator.Common.Matrices
                     {1, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 1},
                     {1, 1, 1, 1, 1, 1, 1},
-                    {1, 1, 1, 1, 1, 1, 1},
+                    {1, 1, 1, 1, 1, 1, 1}
                 }
             },
             {SoftenSharpenType.SoftenGauss,  new double[,]
@@ -29,7 +29,7 @@ namespace ImageManipulator.Common.Matrices
                     {1,  1,  2,  2,  2,  1,  1}
                 }
             },
-            {SoftenSharpenType.SharpenLaplace1,  new double[,]
+            {SoftenSharpenType.Laplace1,  new double[,]
                 {
                      {0,  0,  0,  1,  0,  0,  0 },
                      {0,  0,  1,  2,  1,  0,  0 },
@@ -44,7 +44,7 @@ namespace ImageManipulator.Common.Matrices
 
         public Dictionary<SobelType, double[,]> SobelMatrices { get; } = new()
         {
-            {SobelType.Sobel1,  new double[,]
+            {SobelType.North,  new double[,]
                 {
                     { 4, 4, 4, 8, 4, 4, 4  },
                     { 2, 2, 2, 4, 2, 2, 2  },
@@ -52,10 +52,10 @@ namespace ImageManipulator.Common.Matrices
                     { 0, 0, 0, 0, 0, 0, 0},
                     { -1, -1, -1, -2, -1, -1, -1},
                     { -2, -2, -2, -4, -2, -2, -2},
-                    { -4, -4, -4, -8, -4, -4, -4},
+                    { -4, -4, -4, -8, -4, -4, -4}
                 }
             },
-            {SobelType.Sobel2,  new double[,]
+            {SobelType.East,  new double[,]
                 {
                     {-4, -2, -1, 0, 1, 2, 4},
                     {-4, -2, -1, 0, 1, 2, 4},
@@ -63,10 +63,10 @@ namespace ImageManipulator.Common.Matrices
                     {-8, -4, -2, 0, 2, 4, 8},
                     {-4, -2, -1, 0, 1, 2, 4},
                     {-4, -2, -1, 0, 1, 2, 4},
-                    {-4, -2, -1, 0, 1, 2, 4},
+                    {-4, -2, -1, 0, 1, 2, 4}
                 }
             },
-            {SobelType.Sobel3,  new double[,]
+            {SobelType.NorthEast,  new double[,]
                 {
                     {0, 0, 0, 1, 2,  4, 8},
                     {0, 0, 0, 1, 2,  4, 4},
@@ -74,10 +74,10 @@ namespace ImageManipulator.Common.Matrices
                     {-1, -1, -1, 0, 1, 1, 1},
                     {-2, -2, -2, -1, 0, 0, 0},
                     {-4, -4, -2, -1, 0, 0, 0},
-                    {-8, -4, -2, -1, 0, 0, 0},
+                    {-8, -4, -2, -1, 0, 0, 0}
                 }
             },
-            {SobelType.Sobel4,  new double[,]
+            {SobelType.SouthEast,  new double[,]
                 {
                     {-8, -4, -2, -1, 0, 0, 0},
                     {-4, -4, -2, -1, 0, 0, 0},
@@ -85,10 +85,10 @@ namespace ImageManipulator.Common.Matrices
                     {-1, -1, -1, 0,  1, 1, 1 },
                     {0, 0, 0, 1, 2, 2, 2 },
                     {0, 0, 0, 1, 2, 4, 4 },
-                    {0, 0, 0, 1, 2, 4, 8 },
+                    {0, 0, 0, 1, 2, 4, 8 }
                 }
             },
-            {SobelType.Sobel5,  new double[,]
+            {SobelType.South,  new double[,]
                 {
                     { -4, -4, -4, -8, -4, -4, -4  },
                     { -2, -2, -2, -4, -2, -2, -2  },
@@ -96,10 +96,10 @@ namespace ImageManipulator.Common.Matrices
                     { 0, 0, 0, 0, 0, 0, 0},
                     { 1, 1, 1, 2, 1, 1, 1},
                     { 2, 2, 2, 4, 2, 2, 2},
-                    { 4, 4, 4, 8, 4, 4, 4},
+                    { 4, 4, 4, 8, 4, 4, 4}
                 }
             },
-            {SobelType.Sobel6,  new double[,]
+            {SobelType.NorthWest,  new double[,]
                 {
                     {8, 4, 2, 1, 0, 0, 0},
                     {4, 4, 2, 1, 0, 0, 0},
@@ -107,10 +107,10 @@ namespace ImageManipulator.Common.Matrices
                     {1, 1, 1, 0,  -1, -1, -1 },
                     {0, 0, 0, -1, -2, -2, -2 },
                     {0, 0, 0, -1, -2, -4, -4 },
-                    {0, 0, 0, -1, -2, -4, -8 },
+                    {0, 0, 0, -1, -2, -4, -8 }
                 }
             },
-            {SobelType.Sobel7,  new double[,]
+            {SobelType.West,  new double[,]
                 {
                     {4, 2, 1, 0, -1, -2, -4},
                     {4, 2, 1, 0, -1, -2, -4},
@@ -118,10 +118,10 @@ namespace ImageManipulator.Common.Matrices
                     {8, 4, 2, 0, -2, -4, -8},
                     {4, 2, 1, 0, -1, -2, -4},
                     {4, 2, 1, 0, -1, -2, -4},
-                    {4, 2, 1, 0, -1, -2, -4},
+                    {4, 2, 1, 0, -1, -2, -4}
                 }
             },
-            {SobelType.Sobel8,  new double[,]
+            {SobelType.SouthWest,  new double[,]
                 {
                     {0, 0, 0, -1, -2,  -4, -8},
                     {0, 0, 0, -1, -2,  -4, -4},
@@ -129,14 +129,14 @@ namespace ImageManipulator.Common.Matrices
                     {1, 1, 1, 0, -1, -1, -1},
                     {2, 2, 2, 1, 0, 0, 0},
                     {4, 4, 2, 1, 0, 0, 0},
-                    {8, 4, 2, 1, 0, 0, 0},
+                    {8, 4, 2, 1, 0, 0, 0}
                 }
             }
         };
 
         public double[,] SoftenAverageWithWeight(double weight)
         {
-            return new double[,]
+            return new[,]
             {
                 {1, 1, 1, 1, 1, 1, 1},
                 {1, 1, 1, 1, 1, 1, 1},
@@ -144,7 +144,7 @@ namespace ImageManipulator.Common.Matrices
                 {1, 1, 1, weight, 1, 1, 1},
                 {1, 1, 1, 1, 1, 1, 1},
                 {1, 1, 1, 1, 1, 1, 1},
-                {1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1}
             };
         }
     }

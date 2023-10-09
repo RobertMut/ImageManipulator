@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
@@ -61,14 +60,14 @@ public class ContrastStretchingViewModel : ImageOperationDialogViewModelBase
         _queryDispatcher = queryDispatcher;
         _threshold = new ThresholdLevels { Upper = 0, Lower = 0 };
         
-        ExecuteLinearStretching = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(StretchContrast));
+        ExecuteLinearStretching = ReactiveCommand.CreateFromTask(StretchContrast);
         ExecuteLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
         CalculateSuggestions =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(CalculateSuggestedThresholds));
+            ReactiveCommand.CreateFromTask(CalculateSuggestedThresholds);
         CalculateSuggestions.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task CalculateSuggestedThresholds()

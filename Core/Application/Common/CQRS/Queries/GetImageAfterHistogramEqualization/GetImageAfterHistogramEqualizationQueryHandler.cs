@@ -7,7 +7,7 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterHistogramEqualization;
 
-public class GetImageAfterHistogramEqualizationQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterHistogramEqualizationQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterHistogramEqualizationQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterHistogramEqualizationQuery, Bitmap>
 {
     private readonly IImagePointOperationsService _imagePointOperationsService;
 

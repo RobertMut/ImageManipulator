@@ -7,7 +7,7 @@ using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 
-public class GetImageAfterArithmeticQueryHandlerHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterArithmeticQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterArithmeticQueryHandlerHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterArithmeticQuery, Bitmap>
 {
     private readonly IImageArithmeticService _imageArithmeticService;
 
@@ -19,7 +19,7 @@ public class GetImageAfterArithmeticQueryHandlerHandler : GetImageQueryHandlerBa
     public async Task<Bitmap> Handle(GetImageAfterArithmeticQuery query, CancellationToken cancellationToken)
     {
         var bitmap = await GetCurrentlyDisplayedBitmap();
-        object parameter = ParameterSelector(query);
+        object? parameter = ParameterSelector(query);
 
         var newBitmap =
             ImageConverterHelper.ConvertFromSystemDrawingBitmap(

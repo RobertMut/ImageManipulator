@@ -1,8 +1,10 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using ImageManipulator.Application;
+using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Infrastructure;
+using ImageManipulator.Presentation.Filters;
 using ImageManipulator.Presentation.Views;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -22,6 +24,8 @@ public partial class App : Avalonia.Application
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
         Locator.CurrentMutable.RegisterLazySingleton(() => _serviceProvider.GetRequiredService<AppViewLocator>(), typeof(IViewLocator));
+        
+        RxApp.DefaultExceptionHandler = new ExceptionFilter(_serviceProvider.GetRequiredService<ICommonDialogService>());
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -32,7 +36,7 @@ public partial class App : Avalonia.Application
             var viewModel = _serviceProvider.GetService<MainWindowViewModel>();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = viewModel,
+                DataContext = viewModel
             };
         }
 
@@ -50,8 +54,8 @@ public partial class App : Avalonia.Application
         serviceDescriptors.AddScoped<ContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<NonLinearContrastStretchingViewModel>();
         serviceDescriptors.AddScoped<HistogramEqualizationViewModel>();
-        serviceDescriptors.AddScoped<ThresholdingViewModel>();
-        serviceDescriptors.AddScoped<MultiThresholdingViewModel>();
+        serviceDescriptors.AddScoped<ThresholdViewModel>();
+        serviceDescriptors.AddScoped<MultiThresholdViewModel>();
         serviceDescriptors.AddScoped<ArithmeticBitwiseOperationsViewModel>();
         serviceDescriptors.AddScoped<ImageConvolutionViewModel>();
     }

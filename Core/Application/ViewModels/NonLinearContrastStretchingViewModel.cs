@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
-using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterNonLinearContrastStretching;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ReactiveUI;
@@ -46,11 +45,11 @@ public class NonLinearContrastStretchingViewModel : ImageOperationDialogViewMode
     {
         _queryDispatcher = queryDispatcher;
         ExecuteNonLinearStretching =
-            ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(NonLinearlyStretchContrast));
+            ReactiveCommand.CreateFromTask(NonLinearlyStretchContrast);
         ExecuteNonLinearStretching.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task NonLinearlyStretchContrast()

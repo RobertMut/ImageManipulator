@@ -10,108 +10,108 @@ namespace ImageManipulator.Common.Matrices
         {
             {SoftenSharpenType.SoftenAverage,  new double[,]
                 {
-                    { 1, 1, 1, },
-                    { 1, 1, 1, },
-                    { 1, 1, 1, }
+                    { 1, 1, 1 },
+                    { 1, 1, 1 },
+                    { 1, 1, 1 }
                 }
             },
             {SoftenSharpenType.SoftenGauss,  new double[,]
                 {
-                    { 1, 2, 1, },
-                    { 2, 4, 2, },
-                    { 1, 2, 1, },
+                    { 1, 2, 1 },
+                    { 2, 4, 2 },
+                    { 1, 2, 1 }
                 }
             },
-            {SoftenSharpenType.SharpenLaplace1,  new double[,]
+            {SoftenSharpenType.Laplace1,  new double[,]
                 {
-                    { 0, -1, 0, },
-                    { -1, 4, -1,},
-                    { 0, -1, 0, },
+                    { 0, -1, 0 },
+                    { -1, 4, -1 },
+                    { 0, -1, 0 }
                 }
             },
-            {SoftenSharpenType.SharpenLaplace2,  new double[,]
+            {SoftenSharpenType.Laplace2,  new double[,]
                 {
-                    { -1, -1, -1,},
-                    { -1, 8, -1, },
-                    { -1, -1, -1,},
+                    { -1, -1, -1 },
+                    { -1, 8, -1 },
+                    { -1, -1, -1 }
                 }
             },
-            {SoftenSharpenType.SharpenLaplace3,  new double[,]
+            {SoftenSharpenType.Laplace3,  new double[,]
                 {
-                    { 1, -2, 1, },
-                    { -2, 4, -2,},
-                    { 1, -2, 1, },
+                    { 1, -2, 1 },
+                    { -2, 4, -2 },
+                    { 1, -2, 1 }
                 }
             }
         };
 
         public Dictionary<SobelType, double[,]> SobelMatrices { get; } = new()
         {
-            {SobelType.Sobel1,  new double[,]
+            {SobelType.North,  new double[,]
                 {
-                    { 1, 2, 1,   },
-                    { 0, 0, 0,   },
-                    { -1, -2, -1,},
+                    { 1, 2, 1 },
+                    { 0, 0, 0 },
+                    { -1, -2, -1 }
                 }
             },
-            {SobelType.Sobel2,  new double[,]
+            {SobelType.East,  new double[,]
                 {
-                    { -1, 0, 1, },
-                    { -2, 0, 2, },
-                    { -1, 0, 1, },
+                    { -1, 0, 1 },
+                    { -2, 0, 2 },
+                    { -1, 0, 1 }
                 }
             },
-            {SobelType.Sobel3,  new double[,]
+            {SobelType.NorthEast,  new double[,]
                 {
-                    { 0, 1, 2,  },
-                    { -1, 0, 1, },
-                    { -2, -1, 0,},
+                    { 0, 1, 2 },
+                    { -1, 0, 1 },
+                    { -2, -1, 0 }
                 }
             },
-            {SobelType.Sobel4,  new double[,]
+            {SobelType.SouthEast,  new double[,]
                 {
-                    { -2, -1, 0,},
-                    { -1, 0, 1, },
-                    { 0, 1, 2,  },
+                    { -2, -1, 0 },
+                    { -1, 0, 1 },
+                    { 0, 1, 2 }
                 }
             },
-            {SobelType.Sobel5,  new double[,]
+            {SobelType.South,  new double[,]
                 {
-                    { -1, -2, -1,},
-                    { 0, 0, 0,   },
-                    { 1, 2, 1,   },
+                    { -1, -2, -1 },
+                    { 0, 0, 0 },
+                    { 1, 2, 1 }
                 }
             },
-            {SobelType.Sobel6,  new double[,]
+            {SobelType.NorthWest,  new double[,]
                 {
-                    { 2, 1, 0,  },
-                    { 1, 0, -1, },
-                    { 0, -1, -2,},
+                    { 2, 1, 0 },
+                    { 1, 0, -1 },
+                    { 0, -1, -2 }
                 }
             },
-            {SobelType.Sobel7,  new double[,]
+            {SobelType.West,  new double[,]
                 {
-                    { 1, 0, -1, },
-                    { 2, 0, -2, },
-                    { 1, 0, -1, },
+                    { 1, 0, -1 },
+                    { 2, 0, -2 },
+                    { 1, 0, -1 }
                 }
             },
-            {SobelType.Sobel8,  new double[,]
+            {SobelType.SouthWest,  new double[,]
                 {
-                    { 0, -1, -2,},
-                    { 1, 0, -1, },
-                    { 2, 1, 0,  },
+                    { 0, -1, -2 },
+                    { 1, 0, -1 },
+                    { 2, 1, 0 }
                 }
-            },
+            }
         };
 
         public double[,] SoftenAverageWithWeight(double weight)
         {
-            return new double[,]
+            return new[,]
             {
-                { 1, 1, 1, },
-                { 1, weight, 1, },
-                { 1, 1, 1, },
+                { 1, 1, 1 },
+                { 1, weight, 1 },
+                { 1, 1, 1 }
             };
         }
     }

@@ -13,7 +13,7 @@ namespace ImageManipulator.Infrastructure.Tab;
 public class TabService : ITabService
 {
     private readonly IServiceProvider _serviceProvider;
-    private Dictionary<string, TabItem> _tabItems;
+    private Dictionary<string, TabItem?> _tabItems;
     private int _nameIterator;
     public string CurrentTabName { get; set; }
 
@@ -25,14 +25,14 @@ public class TabService : ITabService
     public TabService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        _tabItems = new Dictionary<string, TabItem>();
+        _tabItems = new Dictionary<string, TabItem?>();
         AddEmpty(new TabItem( $"Tab {NameIterator}", serviceProvider.GetRequiredService<TabControlViewModel>()));
         CurrentTabName = "Tab 1";
     }
     
-    public TabItem GetTab(string name)
+    public TabItem? GetTab(string name)
     {
-        _tabItems.TryGetValue(name, out TabItem value);
+        _tabItems.TryGetValue(name, out TabItem? value);
 
         if (value != null) return value;
         
@@ -48,7 +48,7 @@ public class TabService : ITabService
     
     public void RemoveTab(string name) => _tabItems.Remove(name);
 
-    public TabItem AddExistingTab(string name, TabControlViewModel viewModel)
+    public TabItem? AddExistingTab(string name, TabControlViewModel viewModel)
     {
         if (_tabItems.ContainsKey(name))
         {
@@ -70,7 +70,7 @@ public class TabService : ITabService
         return tabItem;
     }
 
-    public TabItem Duplicate(string name)
+    public TabItem? Duplicate(string name)
     {
         var tabItem = _tabItems[name];
         string newName = GenerateNewName(name);
@@ -81,7 +81,7 @@ public class TabService : ITabService
         return newTabItem;
     }
 
-    public TabItem Replace(string name, TabItem tabItem)
+    public TabItem? Replace(string name, TabItem? tabItem)
     {
         if (_tabItems.TryGetValue(name, out TabItem existingTabItems))
         {

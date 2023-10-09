@@ -10,7 +10,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using CommunityToolkit.Mvvm.Input;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
@@ -96,19 +95,18 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     #endregion Commands
 
-    public ArithmeticBitwiseOperationsViewModel(IQueryDispatcher queryDispatcher,
-        ICommonDialogService commonDialogService)
+    public ArithmeticBitwiseOperationsViewModel(IQueryDispatcher queryDispatcher, ICommonDialogService commonDialogService)
     {
         _queryDispatcher = queryDispatcher;
-        this._commonDialogService = commonDialogService;
-        SelectImage = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(SelectImageCommand));
+        _commonDialogService = commonDialogService;
+        SelectImage = ReactiveCommand.CreateFromTask(SelectImageCommand);
         SelectImage.IsExecuting.ToProperty(this, x => x.IsSelecting, out _isSelecting);
 
-        Execute = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(ExecuteOperationOnImage));
+        Execute = ReactiveCommand.CreateFromTask(ExecuteOperationOnImage);
         Execute.IsExecuting.ToProperty(this, x => x.IsCommandActive, out isCommandActive);
 
-        AcceptCommand = new RelayCommand<Window>(Accept, x => AcceptCommandCanExecute());
-        CancelCommand = new RelayCommand<Window>(Cancel);
+        AcceptCommand = ReactiveCommand.CreateFromTask<Window>(Accept, this.WhenAnyValue(x => x.AfterImage).Select(x => x != null), RxApp.TaskpoolScheduler);
+        CancelCommand = ReactiveCommand.CreateFromTask<Window>(Cancel);
     }
 
     private async Task ExecuteOperationOnImage()
@@ -118,7 +116,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
             AfterImage = await _queryDispatcher.Dispatch<GetImageAfterArithmeticQuery, Bitmap>(
                 new GetImageAfterArithmeticQuery
                 {
-                    OperationValue = _value.Value,
+                    OperationValue = _value.HasValue ? _value.Value : default,
                     OperationImage = _operationImage,
                     OperationColor = _pickedColor,
                     ElementaryOperationParameterType = _elementaryOperation,
@@ -130,7 +128,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
             AfterImage = await _queryDispatcher.Dispatch<GetImageAfterBitwiseQuery, Bitmap>(
                 new GetImageAfterBitwiseQuery
                 {
-                    OperationValue = _value.Value,
+                    OperationValue = _value.HasValue ? _value.Value : default,
                     OperationImage = _operationImage,
                     OperationColor = _pickedColor,
                     ElementaryOperationParameterType = _elementaryOperation,
