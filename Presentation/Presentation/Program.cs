@@ -1,9 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ImageManipulator.Presentation;
 
+[ExcludeFromCodeCoverage]
 public static class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
