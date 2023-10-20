@@ -23,7 +23,7 @@ namespace ImageManipulator.Application.Common.Services
             ArithmeticOperationType.Min => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => current < other ? current : other),
             ArithmeticOperationType.Max => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => current > other ? current : other),
             ArithmeticOperationType.Amplitude => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(Math.Sqrt(current * current + other * other) / Math.Sqrt(2.0))),
-            _ => throw new Exception("Operation not found!")
+            _ => throw new InvalidOperationException("Operation not found!")
         };
     }
 }

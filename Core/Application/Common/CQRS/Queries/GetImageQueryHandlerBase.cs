@@ -19,7 +19,7 @@ public abstract class GetImageQueryHandlerBase
     protected async Task<Bitmap> GetCurrentlyDisplayedBitmap()
     {
         var tab = tabService.GetTab(tabService.CurrentTabName);
-        Bitmap? bitmap = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(tab.ViewModel.Image);
+        Bitmap? bitmap = tab.ViewModel.Image;
 
         if (bitmap is null)
         {
@@ -33,7 +33,7 @@ public abstract class GetImageQueryHandlerBase
     {
         ElementaryOperationParameterType.Value => query.OperationValue,
         ElementaryOperationParameterType.Color => query.OperationColor,
-        ElementaryOperationParameterType.Image => ImageConverterHelper.ConvertFromAvaloniaUIBitmap(query.OperationImage),
-        _ => throw new Exception("Invalid operation")
+        ElementaryOperationParameterType.Image => query.OperationImage,
+        _ => throw new InvalidOperationException("Invalid operation")
     };
 }

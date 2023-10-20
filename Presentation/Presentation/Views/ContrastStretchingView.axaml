@@ -10,6 +10,7 @@
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
+			<ext:BitmapConverter x:Key="BitmapConverter"/>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="0.5*"/>
@@ -19,14 +20,14 @@
 			<ColumnDefinition Width="0.7*"/>
 			<ColumnDefinition Width="0.3*"/>
 		</Grid.ColumnDefinitions>
-		<Image Grid.Column="0" Grid.Row="0" Source="{Binding BeforeImage}">
+		<Image Grid.Column="0" Grid.Row="0" Source="{Binding BeforeImage, Converter={StaticResource BitmapConverter}}">
 			<i:Interaction.Behaviors>
 				<EventTriggerBehavior EventName="EffectiveViewportChanged">
 					<InvokeCommandAction Command="{Binding CalculateSuggestions}"/>
 				</EventTriggerBehavior>
 			</i:Interaction.Behaviors>
 		</Image>
-		<Image Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage}"/>
+		<Image Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage, Converter={StaticResource BitmapConverter}}"/>
 		<Grid 
 			Height="{Binding Height, ElementName=UserControl}" 
 			Grid.Column="1" 

@@ -1,7 +1,9 @@
 ﻿using Avalonia.Data.Converters;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
+using System.IO;
 using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.Converters

@@ -3,11 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 
-public class GetImageAfterContrastStretchQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterContrastStretchQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetImageAfterContrastStretchQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterContrastStretchQuery, Bitmap>
 {
     private readonly IImagePointOperationsService _imagePointOperationsService;
 
@@ -16,11 +15,11 @@ public class GetImageAfterContrastStretchQueryHandler : GetImageQueryHandlerBase
         _imagePointOperationsService = imagePointOperationsService;
     }
     
-    public async Task<Avalonia.Media.Imaging.Bitmap> Handle(GetImageAfterContrastStretchQuery query, CancellationToken cancellationToken)
+    public async Task<Bitmap> Handle(GetImageAfterContrastStretchQuery query, CancellationToken cancellationToken)
     {
         var currentBitmap = await GetCurrentlyDisplayedBitmap();
         Bitmap? image = _imagePointOperationsService.StretchContrast(currentBitmap, query.Min, query.Max);
 
-        return ImageConverterHelper.ConvertFromSystemDrawingBitmap(image);
+        return image;
     }
 }

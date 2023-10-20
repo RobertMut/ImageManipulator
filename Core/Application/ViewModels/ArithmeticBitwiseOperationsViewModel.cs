@@ -1,5 +1,4 @@
-using Avalonia.Media;
-using Avalonia.Media.Imaging;
+using System.Drawing;
 using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Common.Enums;
@@ -13,6 +12,7 @@ using Avalonia.Controls;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
+using Color = Avalonia.Media.Color;
 
 namespace ImageManipulator.Application.ViewModels;
 

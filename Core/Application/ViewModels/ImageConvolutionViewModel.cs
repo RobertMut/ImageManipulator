@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace ImageManipulator.Application.ViewModels;
 

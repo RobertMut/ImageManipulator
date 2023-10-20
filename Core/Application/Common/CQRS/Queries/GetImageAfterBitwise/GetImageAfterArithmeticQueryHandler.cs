@@ -1,17 +1,17 @@
-﻿using System.Threading;
+﻿using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
 
-public class GetImageAfterBitwiseQueryHandlerHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterBitwiseQuery, Bitmap>
+public class GetImageAfterBitwiseQueryHandler : GetImageQueryHandlerBase, IQueryHandler<GetImageAfterBitwiseQuery, Bitmap>
 {
     private readonly IImageBitwiseService _imageBitwiseService;
 
-    public GetImageAfterBitwiseQueryHandlerHandler (ITabService tabService, IImageBitwiseService imageBitwiseService) : base(tabService)
+    public GetImageAfterBitwiseQueryHandler (ITabService tabService, IImageBitwiseService imageBitwiseService) : base(tabService)
     {
         _imageBitwiseService = imageBitwiseService;
     }
@@ -21,9 +21,7 @@ public class GetImageAfterBitwiseQueryHandlerHandler : GetImageQueryHandlerBase,
         var bitmap = await GetCurrentlyDisplayedBitmap();
         object? parameter = ParameterSelector(query);
 
-        var newBitmap =
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                _imageBitwiseService.Execute(bitmap, parameter, query.BitwiseOperationType));
+        var newBitmap = _imageBitwiseService.Execute(bitmap, parameter, query.BitwiseOperationType);
         return newBitmap;
     }
 }

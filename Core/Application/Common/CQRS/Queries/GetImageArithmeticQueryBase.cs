@@ -1,6 +1,6 @@
-﻿using Avalonia.Media;
-using Avalonia.Media.Imaging;
+﻿using System.Drawing;
 using ImageManipulator.Application.Common.Enums;
+using Color = Avalonia.Media.Color;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries;
 

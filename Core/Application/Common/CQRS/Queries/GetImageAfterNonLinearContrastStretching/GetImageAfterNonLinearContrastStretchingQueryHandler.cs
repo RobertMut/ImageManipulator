@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Domain.Common.Helpers;
@@ -20,9 +20,7 @@ public class GetImageAfterNonLinearContrastStretchingQueryHandler : GetImageQuer
     public async Task<Bitmap> Handle(GetImageAfterNonLinearContrastStretchingQuery query, CancellationToken cancellationToken)
     {
         var bitmap = await GetCurrentlyDisplayedBitmap();
-        var result =
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(
-                _imagePointOperationsService.NonLinearlyStretchContrast(bitmap, query.Gamma));
+        var result = _imagePointOperationsService.NonLinearlyStretchContrast(bitmap, query.Gamma);
         
         return result;
     }

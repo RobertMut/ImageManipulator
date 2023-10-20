@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Core;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Infrastructure.Image;
 
@@ -20,7 +21,7 @@ public class ImageHistoryServiceTests
     {
         ClearTempImages();
         _imageHistoryService = new ImageHistoryService();
-        testBitmap = PaintImage(new Bitmap(200, 500), Color.Blue);
+        testBitmap = ImageHelper.PaintImage(new Bitmap(200, 500), Color.Blue);
 
         await _imageHistoryService.StoreCurrentVersionAndGetThumbnail(testBitmap, $"{TestFileName}.bmp");
     }
@@ -36,8 +37,8 @@ public class ImageHistoryServiceTests
 
         Bitmap thumbnail = new Bitmap(testBitmap.GetThumbnailImage((int)(testBitmap.Width * ratio), (int)(testBitmap.Height * ratio), null, IntPtr.Zero));
 
-        byte[] storedThumbnail = ImageToByte(bmp);
-        byte[] generatedThumbnail = ImageToByte(thumbnail);
+        byte[] storedThumbnail = ImageHelper.ImageToByte(bmp);
+        byte[] generatedThumbnail = ImageHelper.ImageToByte(thumbnail);
         
         Assert.That(storedThumbnail, Is.EqualTo(generatedThumbnail));
     }
@@ -46,12 +47,12 @@ public class ImageHistoryServiceTests
     public async Task ImageHistoryServiceReturnsVersions()
     {
         IEnumerable<string> files = Directory.GetFiles(_tempLocation).Where(x => x.Contains(TestFileName));
-        IEnumerable<Image> expected = files.Select(x => GetBitmapWithoutLock(x));
+        IEnumerable<Image> expected = files.Select(x => ImageHelper.GetBitmapWithoutLock(x));
 
         IEnumerable<Image> history = await _imageHistoryService.GetVersions($"{TestFileName}.bmp");
         
-        IEnumerable<byte[]> returnedImageBytes = history.Select(x => ImageToByte(x));
-        IEnumerable<byte[]> expectedImageBytes = expected.Select(x => ImageToByte(x));
+        IEnumerable<byte[]> returnedImageBytes = history.Select(x => ImageHelper.ImageToByte(x));
+        IEnumerable<byte[]> expectedImageBytes = expected.Select(x => ImageHelper.ImageToByte(x));
         
         Assert.That(history.Count(), Is.EqualTo(1));
         Assert.That(returnedImageBytes, Is.EquivalentTo(expectedImageBytes));
@@ -60,14 +61,14 @@ public class ImageHistoryServiceTests
     [Test]
     public async Task ImageHistoryServiceRestoresVersion()
     {
-        using Bitmap newBitmap = PaintImage(new Bitmap(200, 500), Color.Red);
+        using Bitmap newBitmap = ImageHelper.PaintImage(new Bitmap(200, 500), Color.Red);
         
         using Bitmap storedNewVersion = await _imageHistoryService.StoreCurrentVersionAndGetThumbnail(newBitmap, $"{TestFileName}.bmp");
         using Bitmap oldVersion = _imageHistoryService.RestoreVersion($"{TestFileName}.bmp", 0);
         {
-            byte[] storedNewVersionByte = ImageToByte(storedNewVersion);
-            byte[] oldVersionByte = ImageToByte(oldVersion);
-            byte[] firstVersionByte = ImageToByte(testBitmap);
+            byte[] storedNewVersionByte = ImageHelper.ImageToByte(storedNewVersion);
+            byte[] oldVersionByte = ImageHelper.ImageToByte(oldVersion);
+            byte[] firstVersionByte = ImageHelper.ImageToByte(testBitmap);
             
             Assert.That(oldVersionByte, Is.Not.EquivalentTo(storedNewVersionByte));
             Assert.That(oldVersionByte, Is.EquivalentTo(firstVersionByte));
@@ -80,18 +81,6 @@ public class ImageHistoryServiceTests
         ClearTempImages();
     }
     
-    private static byte[] ImageToByte(Image img)
-    {
-        byte[] bytes = null;
-        
-        using (var stream = new MemoryStream())
-        {
-            img.Save(stream, ImageFormat.Bmp);
-            bytes = stream.ToArray();
-        }
-        
-        return bytes;
-    }
 
     private void ClearTempImages()
     {
@@ -104,30 +93,5 @@ public class ImageHistoryServiceTests
                 File.Delete(file);
             }
         }
-    }
-
-    private static Bitmap PaintImage(Bitmap bitmap, Color color)
-    {
-        using (Graphics graphics = Graphics.FromImage(bitmap))
-        {
-            Pen pen = new Pen(color);
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-            graphics.DrawRectangle(pen, rect);
-            graphics.Save(); 
-        }
-        
-        return new Bitmap(bitmap);
-    }
-    
-    private static Image GetBitmapWithoutLock(string path)
-    {
-        Image img;
-            
-        using (var bmpTemp = new Bitmap(path))
-        {
-            img = new Bitmap(bmpTemp);
-        }
-            
-        return img;
     }
 }

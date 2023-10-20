@@ -8,11 +8,10 @@ using ImageManipulator.Common.Enums;
 using ImageManipulator.Common.Interfaces;
 using ImageManipulator.Common.Matrices;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 
-public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, IQueryHandler<GetPostConvolutionImageQuery, Avalonia.Media.Imaging.Bitmap>
+public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, IQueryHandler<GetPostConvolutionImageQuery, Bitmap>
 {
     private readonly IImageBorderService _imageBorderService;
     private readonly IImageConvolutionService _imageConvolutionService;
@@ -24,16 +23,14 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
         _imageConvolutionService = imageConvolutionService;
     }
 
-    public async Task<Avalonia.Media.Imaging.Bitmap> Handle(GetPostConvolutionImageQuery query, CancellationToken cancellationToken)
+    public async Task<Bitmap> Handle(GetPostConvolutionImageQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
         
-        Bitmap modifiedImage = GetModifiedImage(query, bitmap ?? throw new InvalidOperationException("Bitmap was null"));
-        var avaloniaBitmap =
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(BorderAfter(modifiedImage, query.ImageWrapType,
-                query.Value));
+        Bitmap modifiedImage = GetModifiedImage(query, bitmap);
         
-        return avaloniaBitmap;
+        return BorderAfter(modifiedImage, query.ImageWrapType,
+            query.Value);
     }
     
     private Bitmap BorderAfter(Bitmap bitmap, ImageWrapType imageWrapType, int weight)

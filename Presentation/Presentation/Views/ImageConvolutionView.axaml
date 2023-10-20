@@ -11,6 +11,7 @@
     <Grid>
         <Grid.Resources>
             <ext:IntStringConverter x:Key="IntStringConverter" />
+            <ext:BitmapConverter x:Key="BitmapConverter"/>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.5*"/>
@@ -20,8 +21,8 @@
             <ColumnDefinition Width="0.7*"/>
             <ColumnDefinition Width="0.3*"/>
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage}" />
-        <Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage}" />
+        <Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage, Converter={StaticResource BitmapConverter}}" />
+        <Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage, Converter={StaticResource BitmapConverter}}" />
         <DockPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" 
             VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel DockPanel.Dock="Top" VerticalAlignment="Center" Orientation="Vertical">
