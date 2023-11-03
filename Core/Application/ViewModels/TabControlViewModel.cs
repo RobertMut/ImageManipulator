@@ -91,7 +91,7 @@ namespace ImageManipulator.Application.ViewModels
 
         public async Task<TabControlViewModel> LoadImage(Bitmap? image, string path)
         {
-            Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
+            Height = (int)Avalonia.Application.Current.GetCurrentWindow()?.Bounds.Height - 100;
             Path = path;
             Image = image;
             await StoreImage();

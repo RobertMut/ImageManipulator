@@ -1,17 +1,23 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
+using NUnit.Framework;
 
 namespace Core;
 
+[ExcludeFromCodeCoverage(Justification = "Test helper class")]
 public static class ImageHelper
 {
-    public static byte[] ImageToByte(Image img)
+    public static byte[] ImageToByte(Bitmap img, ImageFormat? format = null)
     {
+        format ??= ImageFormat.Bmp;
+        
         byte[] bytes = null;
+        Bitmap copiedBitmap = new Bitmap(img);
         
         using (var stream = new MemoryStream())
         {
-            img.Save(stream, ImageFormat.Bmp);
+            copiedBitmap.Save(stream, format);
             stream.Position = 0;
             bytes = stream.ToArray();
         }
@@ -42,5 +48,13 @@ public static class ImageHelper
         }
             
         return img;
+    }
+
+    public static void Compare(this Bitmap returnedBitmap, Bitmap expectedBitmap, ImageFormat format = null)
+    {
+        byte[] expectedBytes = ImageToByte(expectedBitmap, format);
+        byte[] actualBytes = ImageToByte(returnedBitmap, format);
+        
+        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
     }
 }

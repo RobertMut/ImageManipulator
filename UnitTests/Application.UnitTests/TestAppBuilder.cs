@@ -1,5 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.UnitTests;
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Headless;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
@@ -9,6 +11,7 @@ using ImageManipulator.Presentation;
 
 namespace Application.UnitTests;
 
+[ExcludeFromCodeCoverage(Justification = "Used for [AvaloniaTest]")]
 public class TestAppBuilder
 {
     public static AppBuilder BuildAvaloniaApp() =>

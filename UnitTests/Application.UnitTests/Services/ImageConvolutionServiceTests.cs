@@ -43,58 +43,23 @@ public class ImageConvolutionServiceTests
     public async Task ImagePointOperationsServiceExecutesHysteresisThresholdWithSpecifiedGradient()
     {
         double[,] gradient = GetGradientFromFile(await File.ReadAllTextAsync("Resources/gradient"));
-        Bitmap expectedImage = new Bitmap("Resources/image_hysteresis.png");
-        Bitmap bitmap = _imageConvolutionService.HysteresisThresholding(512, 512, 10, 255, gradient);
         
-        Bitmap pngBitmap;
-        using (MemoryStream stream = new MemoryStream())
-        {
-            bitmap.Save(stream, ImageFormat.Png);
-            pngBitmap = new Bitmap(stream);
-        }
-        
-        byte[] expectedBytes = ImageHelper.ImageToByte(expectedImage);
-        byte[] actualBytes = ImageHelper.ImageToByte(pngBitmap);
-        
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+        _imageConvolutionService.HysteresisThresholding(512, 512, 10, 255, gradient)
+            .Compare(new Bitmap("Resources/image_hysteresis.png"));
     }
     
     [Test]
     public async Task ImagePointOperationsServiceExecutesWithSpecifiedKernelAndSharpen()
     {
-        Bitmap expectedImage = new Bitmap("Resources/image_convolution_sharpen.png");
-        Bitmap bitmap = _imageConvolutionService.Execute(_testImage, _kernel);
-        
-        Bitmap pngBitmap;
-        using (MemoryStream stream = new MemoryStream())
-        {
-            bitmap.Save(stream, ImageFormat.Png);
-            pngBitmap = new Bitmap(stream);
-        }
-        
-        byte[] expectedBytes = ImageHelper.ImageToByte(expectedImage);
-        byte[] actualBytes = ImageHelper.ImageToByte(pngBitmap);
-        
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+        _imageConvolutionService.Execute(_testImage, _kernel)
+            .Compare(new Bitmap("Resources/image_convolution_sharpen.png"));
     }
     
     [Test]
     public async Task ImagePointOperationsServiceExecutesWithSpecifiedKernelAndSoften()
     {
-        Bitmap expectedImage = new Bitmap("Resources/image_convolution_soften.png");
-        Bitmap bitmap = _imageConvolutionService.Execute(_testImage, _kernel, true);
-        
-        Bitmap pngBitmap;
-        using (MemoryStream stream = new MemoryStream())
-        {
-            bitmap.Save(stream, ImageFormat.Png);
-            pngBitmap = new Bitmap(stream);
-        }
-        
-        byte[] expectedBytes = ImageHelper.ImageToByte(expectedImage);
-        byte[] actualBytes = ImageHelper.ImageToByte(pngBitmap);
-        
-        Assert.That(actualBytes, Is.EqualTo(expectedBytes));
+        _imageConvolutionService.Execute(_testImage, _kernel, true)
+            .Compare(new Bitmap("Resources/image_convolution_soften.png"));
     }
     
     private static double[,] GetGradientFromFile(string fileWithArray)
