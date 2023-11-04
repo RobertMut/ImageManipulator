@@ -3,10 +3,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Text.Json;
-using Core;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Services;
 using NUnit.Framework;
+using UnitTests.Core;
 
 namespace Application.UnitTests.Services;
 

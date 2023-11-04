@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Headless.NUnit;
-using Core;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Interfaces;
@@ -9,6 +8,7 @@ using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Moq;
+using UnitTests.Core;
 using static Moq.It;
 using Bitmap = System.Drawing.Bitmap;
 using Is = NUnit.Framework.Is;

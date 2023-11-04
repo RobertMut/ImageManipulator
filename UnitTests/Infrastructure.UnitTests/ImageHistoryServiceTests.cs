@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Core;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Infrastructure.Image;
+using UnitTests.Core;
 
 namespace Infrastructure.UnitTests;
 
@@ -51,8 +51,8 @@ public class ImageHistoryServiceTests
 
         IEnumerable<Image> history = await _imageHistoryService.GetVersions($"{TestFileName}.bmp");
         
-        IEnumerable<byte[]> returnedImageBytes = history.Select(x => ImageHelper.ImageToByte(x));
-        IEnumerable<byte[]> expectedImageBytes = expected.Select(x => ImageHelper.ImageToByte(x));
+        IEnumerable<byte[]> returnedImageBytes = history.Select(x => ImageHelper.ImageToByte(new Bitmap(x)));
+        IEnumerable<byte[]> expectedImageBytes = expected.Select(x => ImageHelper.ImageToByte(new Bitmap(x)));
         
         Assert.That(history.Count(), Is.EqualTo(1));
         Assert.That(returnedImageBytes, Is.EquivalentTo(expectedImageBytes));
@@ -66,12 +66,7 @@ public class ImageHistoryServiceTests
         using Bitmap storedNewVersion = await _imageHistoryService.StoreCurrentVersionAndGetThumbnail(newBitmap, $"{TestFileName}.bmp");
         using Bitmap oldVersion = _imageHistoryService.RestoreVersion($"{TestFileName}.bmp", 0);
         {
-            byte[] storedNewVersionByte = ImageHelper.ImageToByte(storedNewVersion);
-            byte[] oldVersionByte = ImageHelper.ImageToByte(oldVersion);
-            byte[] firstVersionByte = ImageHelper.ImageToByte(testBitmap);
-            
-            Assert.That(oldVersionByte, Is.Not.EquivalentTo(storedNewVersionByte));
-            Assert.That(oldVersionByte, Is.EquivalentTo(firstVersionByte));
+            oldVersion.Compare(testBitmap);
         }
     }
 

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using NUnit.Framework;
 
-namespace Core;
+namespace UnitTests.Core;
 
 [ExcludeFromCodeCoverage(Justification = "Test helper class")]
 public static class ImageHelper

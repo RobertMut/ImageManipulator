@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Headless.NUnit;
 using Avalonia.Media;
-using Core;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
 using ImageManipulator.Application.Common.Enums;
@@ -11,6 +10,7 @@ using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Common.Enums;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Moq;
+using UnitTests.Core;
 using static Moq.It;
 using Bitmap = System.Drawing.Bitmap;
 using Color = System.Drawing.Color;

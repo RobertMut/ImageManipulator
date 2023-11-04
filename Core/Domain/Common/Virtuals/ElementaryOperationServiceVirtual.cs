@@ -28,7 +28,7 @@ namespace ImageManipulator.Domain.Common.Virtuals
                 {
                     byte* pixelData = (byte*)x.ToPointer();
                     byte* otherImagePixelData = (byte*)otherImageData.GetPixel(i, j).ToPointer();
-
+                    
                     Calculate((IntPtr)pixelData, (IntPtr)otherImagePixelData, operationType);
                 });
 

@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Avalonia.Headless.NUnit;
-using Core;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Models;
 using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Moq;
+using UnitTests.Core;
 
 namespace Application.UnitTests.CQRS;
 
