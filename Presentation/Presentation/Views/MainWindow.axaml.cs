@@ -1,10 +1,7 @@
-using System.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
-using ReactiveUI;
 
 namespace ImageManipulator.Presentation.Views;
 

@@ -1,9 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Headless.NUnit;
-using Avalonia.Media;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetPostConvolutionImage;
-using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Models;
 using ImageManipulator.Application.ViewModels;

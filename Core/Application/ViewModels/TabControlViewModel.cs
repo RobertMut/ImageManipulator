@@ -4,7 +4,6 @@ using ReactiveUI;
 using Splat;
 using System.Collections.ObjectModel;
 using System.Drawing;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
@@ -14,7 +13,6 @@ using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 

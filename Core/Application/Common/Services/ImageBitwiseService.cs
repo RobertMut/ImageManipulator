@@ -17,7 +17,7 @@ namespace ImageManipulator.Application.Common.Services
             BitwiseOperationType.AND => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current & other)),
             BitwiseOperationType.OR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current | other)),
             BitwiseOperationType.XOR => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current ^ other)),
-            BitwiseOperationType.NOT => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)~current),
+            BitwiseOperationType.NOT => pixelData.ExecuteOnPixel(otherImagePixelData, (current, _) => (byte)~current),
             BitwiseOperationType.LeftShift => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current << other)),
             BitwiseOperationType.RightShift => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current >> other)),
             _ => throw new Exception("Operation not found!")

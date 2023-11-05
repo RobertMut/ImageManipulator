@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Infrastructure.Image;
 using UnitTests.Core;

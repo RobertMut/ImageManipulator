@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries;
 

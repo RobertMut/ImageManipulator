@@ -59,7 +59,7 @@ public class CommonDialogService : ICommonDialogService
 
         var task = new TaskCompletionSource<object>();
         
-        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
         
@@ -85,7 +85,7 @@ public class CommonDialogService : ICommonDialogService
         };
         
         var task = new TaskCompletionSource<object>();
-        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
         

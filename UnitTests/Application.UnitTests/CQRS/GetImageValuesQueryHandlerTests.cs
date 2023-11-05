@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Avalonia.Headless.NUnit;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Models;

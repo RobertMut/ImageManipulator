@@ -1,15 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Avalonia.Headless.NUnit;
 using Avalonia.Platform.Storage;
 using ImageManipulator.Application.Common.Interfaces;
-using ImageManipulator.Application.Common.Models;
 using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Presentation;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace Application.UnitTests.ViewModels;

@@ -1,22 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
-using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
-using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterHistogramEqualization;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.ViewModels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using ImageManipulator.Presentation.Views;
 using Moq;
 using UnitTests.Core;
-using Color = System.Drawing.Color;
 
 namespace Presentation.UnitTests.Views;
 
@@ -119,7 +115,7 @@ public class ArithmeticBitwiseOperationsViewTests
     public async Task AcceptCommandClosesWindow()
     {
         int raisedCount = 0;
-        _window.Closed += (sender, args) => raisedCount++;
+        _window.Closed += (_, _) => raisedCount++;
         
         var button = ((ArithmeticBitwiseOperationsView)_window.Content).FindControl<Button>("AcceptCommand");
         button.Command.Execute(_window);
@@ -131,7 +127,7 @@ public class ArithmeticBitwiseOperationsViewTests
     public async Task CloseCommandClosesWindow()
     {
         int raisedCount = 0;
-        _window.Closed += (sender, args) => raisedCount++;
+        _window.Closed += (_, _) => raisedCount++;
         
         var button = ((ArithmeticBitwiseOperationsView)_window.Content).FindControl<Button>("CancelCommand");
         button.Command.Execute(_window);

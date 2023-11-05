@@ -1,12 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Text;
-using System.Text.Json;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Services;
 using ImageManipulator.Common.Enums;
-using NUnit.Framework;
 using UnitTests.Core;
 
 namespace Application.UnitTests.Services;
