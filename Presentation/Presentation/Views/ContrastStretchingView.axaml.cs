@@ -9,7 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public ContrastStretchingView()
         {
             InitializeComponent();
-            this.BindCommand(ViewModel, vm => vm.ExecuteLinearStretching, v => v.stretchingCommand);
+            this.BindCommand(ViewModel, vm => vm.ExecuteLinearStretching, v => v.StretchingCommand);
             this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
             this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
         }

@@ -24,7 +24,7 @@
 		<StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
 				<TextBlock>Live preview</TextBlock>
-				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
+				<CheckBox x:Name="LivePreview" HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
 			</StackPanel>
 			
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
