@@ -9,7 +9,7 @@ namespace ImageManipulator.Presentation.Views
         public MultiThresholdView()
         {
             InitializeComponent();
-            this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.thresholdCommand);
+            this.BindCommand(ViewModel, vm => vm.ThresholdingCommand, execute => execute.ThresholdCommand);
             this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
             this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
         }

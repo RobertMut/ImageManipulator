@@ -50,7 +50,7 @@
                             <ComboBoxItem>Color</ComboBoxItem>
                             <ComboBoxItem>Value</ComboBoxItem>
                         </ComboBox>
-                        <Button Command="{Binding SelectImage}">
+                        <Button x:Name="SelectImageButton" Command="{Binding SelectImage}">
                             Select image
                             <Interaction.Behaviors>
                                 <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="0" ComparisonCondition="NotEqual">
@@ -86,7 +86,7 @@
                             </Interaction.Behaviors>
                         </TextBox>
                         <Grid>
-                            <colorpicker:ColorButton Color="{Binding PickedColor, Mode=TwoWay}" />
+                            <colorpicker:ColorButton x:Name="ColorPicker" Color="{Binding PickedColor, Mode=TwoWay}" />
                             <Interaction.Behaviors>
                                 <DataTriggerBehavior Binding="{Binding SelectedIndex, ElementName=Operand, Mode=OneWay}" Value="1" ComparisonCondition="NotEqual">
                                     <ChangePropertyAction PropertyName="IsVisible" Value="False"/>
@@ -135,7 +135,7 @@
                     </ComboBox>
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" Orientation="Vertical">
-                    <Button x:Name="operationCommand" Command="{Binding Execute}">Execute</Button>
+                    <Button x:Name="OperationCommand" Command="{Binding Execute}">Execute</Button>
                     <Button x:Name="AcceptCommand" 
                             Command="{Binding Accept, Mode=OneTime}" 
                             IsEnabled="{Binding Accept.CanExecute}"

@@ -155,7 +155,7 @@
                 VerticalAlignment="Center" 
                 Orientation="Horizontal" 
                 HorizontalAlignment="Center">
-                <Button x:Name="convolutionCommand" Command="{Binding Execute}">Execute</Button>
+                <Button x:Name="ConvolutionCommand" Command="{Binding Execute}">Execute</Button>
                 <Button x:Name="AcceptCommand" 
                         Command="{Binding Accept, Mode=OneTime}" 
                         IsEnabled="{Binding Accept.CanExecute}"

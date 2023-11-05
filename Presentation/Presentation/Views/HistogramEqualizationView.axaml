@@ -28,7 +28,7 @@
 			HorizontalAlignment="Center" 
 			VerticalAlignment="Center">
 			<StackPanel Margin="0,30,0,30" DockPanel.Dock="Bottom" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-				<Button x:Name="equalizeCommand" Command="{Binding ExecuteEqualizeHistogram}">Equalize histogram</Button>
+				<Button x:Name="EqualizeCommand" Command="{Binding ExecuteEqualizeHistogram}">Equalize histogram</Button>
 				<Button x:Name="AcceptCommand" 
 				        Command="{Binding Accept, Mode=OneTime}" 
 				        IsEnabled="{Binding Accept.CanExecute}"

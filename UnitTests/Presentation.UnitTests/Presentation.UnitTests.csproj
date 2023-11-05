@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia.Headless.NUnit" Version="11.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
         <PackageReference Include="Moq" Version="4.20.69" />
         <PackageReference Include="NUnit" Version="3.13.3"/>
@@ -20,6 +21,14 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Core\Application\Application.csproj" />
       <ProjectReference Include="..\..\Presentation\Presentation\Presentation.csproj" />
+      <ProjectReference Include="..\UnitTests.Core\UnitTests.Core.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <None Update="Resources\image.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
