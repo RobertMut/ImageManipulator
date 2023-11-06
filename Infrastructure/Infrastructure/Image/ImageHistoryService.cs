@@ -25,7 +25,7 @@ public class ImageHistoryService : IImageHistoryService
         var fileNameWithoutPath = Path.GetFileName(filename);
         var files = Directory.GetFiles(_tempLocation).Where(x => x.Contains(_sessionGuid) && x.Contains(fileNameWithoutPath));
 
-        return files.Select(x => System.Drawing.Image.FromFile(x));
+        return files.Select(x => GetBitmapWithoutLock(x));
     }
 
     public async Task<Bitmap> StoreCurrentVersionAndGetThumbnail(Bitmap bitmap, string fileName)
@@ -66,5 +66,17 @@ public class ImageHistoryService : IImageHistoryService
         float ratio = Math.Min(ratioX, ratioY);
 
         return new Bitmap(bitmap.GetThumbnailImage((int)(bitmap.Width * ratio), (int)(bitmap.Height * ratio), null, IntPtr.Zero));
+    }
+
+    private static System.Drawing.Image GetBitmapWithoutLock(string path)
+    {
+        System.Drawing.Image img;
+            
+        using (var bmpTemp = new Bitmap(path))
+        {
+            img = new Bitmap(bmpTemp);
+        }
+            
+        return img;
     }
 }

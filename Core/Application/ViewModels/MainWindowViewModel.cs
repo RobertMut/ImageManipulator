@@ -3,14 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
-using ImageManipulator.Domain.Common.Helpers;
-using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using TabItem = ImageManipulator.Application.Common.Models.TabItem;
 
 namespace ImageManipulator.Application.ViewModels;
@@ -181,11 +180,9 @@ public class MainWindowViewModel : ViewModelBase, IScreen
     private async Task NegateImage()
     {
         var bitmap =
-            _imagePointOperationsService.Negation(
-                ImageConverterHelper.ConvertFromAvaloniaUIBitmap(CurrentTab.ViewModel.Image));
+            _imagePointOperationsService.Negation(CurrentTab.ViewModel.Image);
 
-        await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image,
-            ImageConverterHelper.ConvertFromSystemDrawingBitmap(bitmap), CurrentTab);
+        await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image, bitmap, CurrentTab);
     }
 
     private async Task OpenThresholdWindow()

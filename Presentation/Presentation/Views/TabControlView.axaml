@@ -12,7 +12,7 @@
     xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ext:BitmapConverter x:Key="variableImage" />
+        <ext:BitmapConverter x:Key="BitmapConverter"/>
     </UserControl.Resources>
 
     <Grid Height="{Binding Height}">
@@ -41,7 +41,7 @@
                 PanButton="Left"
                 Stretch="None"
                 ZoomSpeed="1.2">
-                <Image Source="{Binding Image, Mode=TwoWay}" />
+                <Image Source="{Binding Image, Converter={StaticResource BitmapConverter}}" />
             </paz:ZoomBorder>
         </ScrollViewer>
 

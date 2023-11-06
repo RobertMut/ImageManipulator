@@ -3,18 +3,16 @@ using ImageManipulator.Domain.Common.Extensions;
 using ReactiveUI;
 using Splat;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.CQRS.Command.AddImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageValues;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersion;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageVersions;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -52,8 +50,8 @@ namespace ImageManipulator.Application.ViewModels
         }
 
         public int Height { get; private set; }
-        public Bitmap? Image { get => _image; private set => this.RaiseAndSetIfChanged(ref _image, value); }
-        public string? Path { get; private set; }
+        public Bitmap? Image { get => _image; set => this.RaiseAndSetIfChanged(ref _image, value); }
+        public string? Path { get; set; }
 
         /// <inheritdoc cref="IScreen" />
         public IScreen HostScreen { get; }
@@ -85,13 +83,13 @@ namespace ImageManipulator.Application.ViewModels
                     Version = version
                 }, new CancellationToken());
                 
-                await LoadImage(ImageConverterHelper.ConvertFromSystemDrawingBitmap(image), Path);
+                await LoadImage(image, Path);
             }
         }
 
         public async Task<TabControlViewModel> LoadImage(Bitmap? image, string path)
         {
-            Height = (int)Avalonia.Application.Current.GetCurrentWindow().Bounds.Height - 100;
+            Height = (int)Avalonia.Application.Current.GetCurrentWindow()?.Bounds.Height - 100;
             Path = path;
             Image = image;
             await StoreImage();
@@ -107,12 +105,12 @@ namespace ImageManipulator.Application.ViewModels
                 new GetImageVersionsQuery
                 {
                     Path = Path
-                }, new())).Select(x => ImageConverterHelper.ConvertFromSystemDrawingBitmap(x));
+                }, new()));
 
         private async Task StoreImage() =>
             await _commandDispatcher.Dispatch<AddImageVersionCommand, System.Drawing.Bitmap>(new AddImageVersionCommand
             {
-                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image),
+                Image = Image,
                 Path = Path
             }, new CancellationToken());
 
@@ -128,12 +126,12 @@ namespace ImageManipulator.Application.ViewModels
         {
             ImageValues = await _queryDispatcher.Dispatch<GetImageValuesQuery, int[][]>(new GetImageValuesQuery
             {
-                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image)
+                Image = Image
             }, new CancellationToken());
             Luminance = (await _queryDispatcher.Dispatch<GetImageValuesQuery, int[][]>(new GetImageValuesQuery
             {
                 Luminance = true,
-                Image = ImageConverterHelper.ConvertFromAvaloniaUIBitmap(Image)
+                Image = Image
             }, new CancellationToken()))[0];
 
             _canvasLinesLuminance = new ObservableCollection<ISeries>()

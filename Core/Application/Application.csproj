@@ -6,6 +6,7 @@
     <PackageId>$(SolutionName).$(AssemblyName)</PackageId>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
+    <NoWarn>CA1416</NoWarn> <!-- Expected warning -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 

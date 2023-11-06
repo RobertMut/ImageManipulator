@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <NoWarn>CA1416</NoWarn> <!-- Expected warning -->
     <AssemblyName>$(SolutionName).$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

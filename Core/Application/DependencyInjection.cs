@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Application.Common.Services;
 using ImageManipulator.Domain.Common.CQRS.Implementation;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ImageManipulator.Application;
 
+[ExcludeFromCodeCoverage]
 public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)

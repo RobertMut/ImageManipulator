@@ -10,6 +10,7 @@
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
+			<ext:BitmapConverter x:Key="BitmapConverter"/>
 		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="0.5*"/>
@@ -19,14 +20,14 @@
 			<ColumnDefinition Width="0.7*"/>
 			<ColumnDefinition Width="0.3*"/>
 		</Grid.ColumnDefinitions>
-		<Image Grid.Column="0" Grid.Row="0" Source="{Binding BeforeImage}">
+		<Image Grid.Column="0" Grid.Row="0" Source="{Binding BeforeImage, Converter={StaticResource BitmapConverter}}">
 			<i:Interaction.Behaviors>
 				<EventTriggerBehavior EventName="EffectiveViewportChanged">
 					<InvokeCommandAction Command="{Binding CalculateSuggestions}"/>
 				</EventTriggerBehavior>
 			</i:Interaction.Behaviors>
 		</Image>
-		<Image Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage}"/>
+		<Image Grid.Column="0" Grid.Row="1" Source="{Binding AfterImage, Converter={StaticResource BitmapConverter}}"/>
 		<Grid 
 			Height="{Binding Height, ElementName=UserControl}" 
 			Grid.Column="1" 
@@ -36,9 +37,9 @@
 			VerticalAlignment="Center">
 			<DockPanel Margin="0, 0, 0, 30" VerticalAlignment="Center" HorizontalAlignment="Center">
 				<StackPanel DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top">
-					<TextBlock>Suggested lower threshold=</TextBlock>
+					<TextBlock x:Name="SuggestedLowerThreshold" >Suggested lower threshold=</TextBlock>
 					<TextBlock Text="{Binding Threshold.Lower, Converter={StaticResource intStringConverter}}"/>
-					<TextBlock>Suggested upper threshold= </TextBlock>
+					<TextBlock x:Name="SuggestedUpperThreshold">Suggested upper threshold= </TextBlock>
 					<TextBlock Text="{Binding Threshold.Upper, Converter={StaticResource intStringConverter}}"/>
 				</StackPanel>
 				
@@ -50,7 +51,7 @@
 				</StackPanel>
 			
 				<StackPanel Margin="0,30,0,0" DockPanel.Dock="Bottom" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-					<Button x:Name="stretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
+					<Button x:Name="StretchingCommand" Command="{Binding ExecuteLinearStretching}">Linearly stretch contrast</Button>
 					<Button x:Name="AcceptCommand" 
 					        Command="{Binding Accept, Mode=OneTime}" 
 					        IsEnabled="{Binding Accept.CanExecute}"

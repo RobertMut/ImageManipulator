@@ -9,6 +9,7 @@
 	<Grid>
 		<Grid.Resources>
 			<ext:IntStringConverter x:Key="intStringConverter"/>
+			<ext:BitmapConverter x:Key="BitmapConverter"/>
 		</Grid.Resources>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="0.7*"/>
@@ -18,12 +19,12 @@
 			<RowDefinition Height="0.5*"/>
 			<RowDefinition Height="0.5*"/>
 		</Grid.RowDefinitions>
-		<Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage}"/>
-		<Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage}"/>
+		<Image Grid.Row="0" Grid.Column="0" Source="{Binding BeforeImage, Converter={StaticResource BitmapConverter}}"/>
+		<Image Grid.Row="1" Grid.Column="0" Source="{Binding AfterImage, Converter={StaticResource BitmapConverter}}"/>
 		<StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
 				<TextBlock>Live preview</TextBlock>
-				<CheckBox HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
+				<CheckBox x:Name="LivePreview" HorizontalAlignment="Center" IsChecked="{Binding LivePreview, Mode=TwoWay}"/>
 			</StackPanel>
 			
 			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">

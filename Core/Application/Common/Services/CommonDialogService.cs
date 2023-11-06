@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Extensions;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
+using ImageManipulator.Common.Extensions;
 
 namespace ImageManipulator.Application.Common.Services;
 
@@ -39,8 +40,12 @@ public class CommonDialogService : ICommonDialogService
             FileTypeChoices = new[] { FilePickerFileTypes.ImageAll },
             ShowOverwritePrompt = true
         });
-        
-        bitmap?.Save(file?.Path.ToString());
+
+        await using (Stream stream = await file.OpenWriteAsync())
+        {
+            bitmap.Save(stream, file.Path.AbsolutePath.GetImageFormatFromExtension());
+            stream.Close();
+        }
     }
 
     public Task ShowDialog<TViewModel>(TViewModel viewModel)
@@ -54,7 +59,7 @@ public class CommonDialogService : ICommonDialogService
 
         var task = new TaskCompletionSource<object>();
         
-        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
         
@@ -80,7 +85,7 @@ public class CommonDialogService : ICommonDialogService
         };
         
         var task = new TaskCompletionSource<object>();
-        dialog.Closed += (s, a) => task.SetResult(default);
+        dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();
         

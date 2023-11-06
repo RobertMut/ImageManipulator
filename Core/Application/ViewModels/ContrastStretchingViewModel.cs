@@ -1,9 +1,9 @@
+using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterContrastStretch;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageThresholdLevels;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;

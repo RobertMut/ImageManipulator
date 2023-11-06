@@ -1,7 +1,7 @@
-﻿using System.Reactive;
+﻿using System.Drawing;
+using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using ReactiveUI;
 
 namespace ImageManipulator.Application.ViewModels;

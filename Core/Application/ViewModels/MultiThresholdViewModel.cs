@@ -1,11 +1,11 @@
 using System;
+using System.Drawing;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterMultiThreshold;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
 using Splat;

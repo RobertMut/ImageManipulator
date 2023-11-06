@@ -1,9 +1,8 @@
-﻿using System.Threading;
+﻿using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
-using ImageManipulator.Domain.Common.Helpers;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterThreshold;
 
@@ -21,6 +20,6 @@ public class GetImageAfterThresholdQueryHandler : GetImageQueryHandlerBase, IQue
         var bitmap = await GetCurrentlyDisplayedBitmap();
         var result = _imagePointOperationsService.Thresholding(bitmap, query.Threshold, query.ReplaceColour);
         
-        return ImageConverterHelper.ConvertFromSystemDrawingBitmap(result);
+        return result;
     }
 }

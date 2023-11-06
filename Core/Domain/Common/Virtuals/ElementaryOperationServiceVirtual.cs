@@ -24,11 +24,11 @@ namespace ImageManipulator.Domain.Common.Virtuals
             var otherImageData = anotherBitmap.LockBitmap(anotherBitmap.PixelFormat, ImageLockMode.ReadOnly);
 
             var newBitmapData = newBitmap.LockBitmap(newBitmap.PixelFormat, ImageLockMode.ReadWrite)
-                .ExecuteOnPixels((x, scan0, stride, i, j) =>
+                .ExecuteOnPixels((x, _, _, i, j) =>
                 {
                     byte* pixelData = (byte*)x.ToPointer();
                     byte* otherImagePixelData = (byte*)otherImageData.GetPixel(i, j).ToPointer();
-
+                    
                     Calculate((IntPtr)pixelData, (IntPtr)otherImagePixelData, operationType);
                 });
 
@@ -44,7 +44,7 @@ namespace ImageManipulator.Domain.Common.Virtuals
             Marshal.Copy(colorArr, 0, unmanagedColorPointer, colorArr.Length);
 
             var sourceData = bitmap.LockBitmap(bitmap.PixelFormat, ImageLockMode.ReadWrite)
-                .ExecuteOnPixels((x, scan0, stride, i, j) =>
+                .ExecuteOnPixels((x, _, _, _, _) =>
                 {
                     byte* pixelData = (byte*)x.ToPointer();
 
