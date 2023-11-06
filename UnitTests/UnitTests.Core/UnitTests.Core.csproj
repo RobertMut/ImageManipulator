@@ -5,15 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Reference Include="System.Drawing.Common">
-        <HintPath>..\Application.UnitTests\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
+    
     <ItemGroup>
       <PackageReference Include="NUnit" Version="3.13.3" />
+      <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     </ItemGroup>
 
 </Project>
