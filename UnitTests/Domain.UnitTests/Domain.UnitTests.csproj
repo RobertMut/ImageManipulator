@@ -4,9 +4,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
+        <NoWarn>CA1416</NoWarn> <!-- Expected warning -->
         <IsPackable>false</IsPackable>
-
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
