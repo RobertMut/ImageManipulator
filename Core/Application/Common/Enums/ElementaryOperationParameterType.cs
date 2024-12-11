@@ -1,9 +1,8 @@
-﻿namespace ImageManipulator.Application.Common.Enums
+﻿namespace ImageManipulator.Application.Common.Enums;
+
+public enum ElementaryOperationParameterType
 {
-    public enum ElementaryOperationParameterType
-    {
-        Image = 0,
-        Color = 1,
-        Value = 2
-    }
+    Image = 0,
+    Color = 1,
+    Value = 2
 }

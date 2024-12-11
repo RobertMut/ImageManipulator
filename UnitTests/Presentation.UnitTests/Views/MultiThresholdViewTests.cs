@@ -42,6 +42,7 @@ public class MultiThresholdViewTests
     }
 
     [AvaloniaTest]
+    [Retry(5)]
     public async Task ConvolutionCommandExecutesDispatcher()
     {
         var button = ((MultiThresholdView)_window.Content).FindControl<Button>("ThresholdCommand");

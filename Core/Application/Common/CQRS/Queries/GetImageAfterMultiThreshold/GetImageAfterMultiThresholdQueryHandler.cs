@@ -17,8 +17,8 @@ public class GetImageAfterMultiThresholdQueryHandler : GetImageQueryHandlerBase,
 
     public async Task<Bitmap> Handle(GetImageAfterMultiThresholdQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
-        var newBitmap = _imagePointOperationsService.MultiThresholding(bitmap, query.LowerThreshold, query.UpperThreshold,
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap? newBitmap = _imagePointOperationsService.MultiThresholding(bitmap, query.LowerThreshold, query.UpperThreshold,
             query.ReplaceColours);
 
         return newBitmap;

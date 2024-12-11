@@ -17,10 +17,10 @@ public class GetImageAfterBitwiseQueryHandler : GetImageQueryHandlerBase, IQuery
     
     public async Task<Bitmap> Handle(GetImageAfterBitwiseQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
         object? parameter = ParameterSelector(query);
 
-        var newBitmap = _imageBitwiseService.Execute(bitmap, parameter, query.BitwiseOperationType);
+        Bitmap? newBitmap = _imageBitwiseService.Execute(bitmap, parameter, query.BitwiseOperationType);
         return newBitmap;
     }
 }

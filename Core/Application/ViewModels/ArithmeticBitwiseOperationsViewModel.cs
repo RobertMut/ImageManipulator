@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterArithmetic;
 using ImageManipulator.Application.Common.CQRS.Queries.GetImageAfterBitwise;
 using ImageManipulator.Domain.Common.CQRS.Interfaces;
@@ -139,7 +140,7 @@ public class ArithmeticBitwiseOperationsViewModel : ImageOperationDialogViewMode
 
     private async Task SelectImageCommand()
     {
-        var storageFile = await _commonDialogService.ShowFileDialogInNewWindow();
+        IStorageFile storageFile = await _commonDialogService.ShowFileDialogInNewWindow();
         await using Stream fileStream = await storageFile.OpenReadAsync();
         OperationImage = new Bitmap(fileStream);
     }

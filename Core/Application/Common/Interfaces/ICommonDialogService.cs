@@ -2,17 +2,16 @@
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 
-namespace ImageManipulator.Application.Common.Interfaces
+namespace ImageManipulator.Application.Common.Interfaces;
+
+public interface ICommonDialogService
 {
-    public interface ICommonDialogService
-    {
-        Task<IStorageFile> ShowFileDialogInNewWindow();
+    Task<IStorageFile> ShowFileDialogInNewWindow();
 
-        Task ShowSaveFileDialog(Bitmap? bitmap, string filePath);
+    Task ShowSaveFileDialog(Bitmap? bitmap, string filePath);
 
-        public Task ShowDialog<TViewModel>(TViewModel viewModel)
-            where TViewModel : class;
+    public Task ShowDialog<TViewModel>(TViewModel viewModel)
+        where TViewModel : class;
 
-        Task ShowException(string exceptionMessage);
-    }
+    Task ShowException(string exceptionMessage);
 }

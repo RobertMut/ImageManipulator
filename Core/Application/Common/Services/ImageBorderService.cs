@@ -15,7 +15,7 @@ public class ImageBorderService : IImageBorderService
             return bitmap;
         }
             
-        var borderedBitmap = new Bitmap(bitmap.Width + left + right, bitmap.Height + top + bottom);
+        Bitmap borderedBitmap = new Bitmap(bitmap.Width + left + right, bitmap.Height + top + bottom);
         Tuple<RotateFlipType, RotateFlipType>? rotateFlipType = null;
 
         if (wrapType == ImageWrapType.BORDER_CONSTANT)

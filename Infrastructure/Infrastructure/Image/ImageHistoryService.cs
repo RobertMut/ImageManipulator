@@ -22,8 +22,8 @@ public class ImageHistoryService : IImageHistoryService
 
     public async Task<IEnumerable<System.Drawing.Image>> GetVersions(string filename)
     {
-        var fileNameWithoutPath = Path.GetFileName(filename);
-        var files = Directory.GetFiles(_tempLocation).Where(x => x.Contains(_sessionGuid) && x.Contains(fileNameWithoutPath));
+        string fileNameWithoutPath = Path.GetFileName(filename);
+        IEnumerable<string> files = Directory.GetFiles(_tempLocation).Where(x => x.Contains(_sessionGuid) && x.Contains(fileNameWithoutPath));
 
         return files.Select(x => GetBitmapWithoutLock(x));
     }
@@ -72,7 +72,7 @@ public class ImageHistoryService : IImageHistoryService
     {
         System.Drawing.Image img;
             
-        using (var bmpTemp = new Bitmap(path))
+        using (Bitmap bmpTemp = new Bitmap(path))
         {
             img = new Bitmap(bmpTemp);
         }

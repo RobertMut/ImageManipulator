@@ -1,75 +1,85 @@
 <UserControl
+    d:DataContext="{d:DesignInstance d:Type=vm:TabControlViewModel}"
+    mc:Ignorable="d"
     x:Class="ImageManipulator.Presentation.Views.TabControlView"
+    x:DataType="vm:TabControlViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2010"
     xmlns:ext="using:ImageManipulator.Application.Common.Converters"
     xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
     xmlns:iac="clr-namespace:Avalonia.Xaml.Interactions.Custom;assembly=Avalonia.Xaml.Interactions.Custom"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:paz="using:Avalonia.Controls.PanAndZoom"
-    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
-    xmlns:vm="clr-namespace:ImageManipulator.Application.ViewModels"
-    mc:Ignorable="d">
+    xmlns:vm="using:ImageManipulator.Application.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <vm:TabControlViewModel />
+    </Design.DataContext>
     <UserControl.Resources>
-        <ext:BitmapConverter x:Key="BitmapConverter"/>
+        <ext:BitmapConverter x:Key="BitmapConverter" />
     </UserControl.Resources>
 
     <Grid Height="{Binding Height}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.7*" MinWidth="300" />
-            <ColumnDefinition Width="0.3*" MinWidth="150" />
+            <ColumnDefinition MinWidth="300" Width="0.7*" />
+            <ColumnDefinition MinWidth="150" Width="0.3*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.9*" MinHeight="300" />
-            <RowDefinition Height="0.1*"/>
+            <RowDefinition Height="0.1*" />
         </Grid.RowDefinitions>
         <ScrollViewer
+            AllowAutoHide="True"
             Grid.Column="0"
             Grid.Row="0"
-            VerticalAlignment="Top"
             HorizontalContentAlignment="Left"
-            AllowAutoHide="True"
             HorizontalScrollBarVisibility="Auto"
+            VerticalAlignment="Top"
             VerticalScrollBarVisibility="Auto">
             <paz:ZoomBorder
-                Name="ZoomBorder"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
                 ClipToBounds="True"
                 Focusable="True"
+                HorizontalAlignment="Stretch"
+                Name="ZoomBorder"
                 PanButton="Left"
                 Stretch="None"
+                VerticalAlignment="Stretch"
                 ZoomSpeed="1.2">
                 <Image Source="{Binding Image, Converter={StaticResource BitmapConverter}}" />
             </paz:ZoomBorder>
         </ScrollViewer>
 
-        <Grid x:Name="HistogramsGrid" Grid.Column="1" Grid.Row="0">
+        <Grid
+            Grid.Column="1"
+            Grid.Row="0"
+            x:Name="HistogramsGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
-                <lvc:CartesianChart 
-                    Series="{Binding CanvasLinesRgb}"
-                    ZoomMode="X"/>
+                <lvc:CartesianChart Series="{Binding CanvasLinesRgb}" ZoomMode="X" />
             </Grid>
             <Grid Grid.Row="1">
-                <lvc:CartesianChart 
-                    Series="{Binding CanvasLinesLuminance}"
-                    ZoomMode="X"/>
+                <lvc:CartesianChart Series="{Binding CanvasLinesLuminance}" ZoomMode="X" />
             </Grid>
         </Grid>
-        <Grid Grid.Row="1" ColumnSpan="2" Grid.Column="0" x:Name="HistoryGrid">
-            <ListBox x:Name="HistoryListBox"
-                     ItemsSource="{Binding History, Mode=TwoWay}" 
-                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                     SelectedIndex="0"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto" FlowDirection="RightToLeft">
+        <Grid
+            ColumnSpan="2"
+            Grid.Column="0"
+            Grid.Row="1"
+            x:Name="HistoryGrid">
+            <ListBox
+                FlowDirection="RightToLeft"
+                ItemsSource="{Binding History, Mode=TwoWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                SelectedIndex="0"
+                x:Name="HistoryListBox">
                 <i:Interaction.Behaviors>
                     <EventTriggerBehavior EventName="DoubleTapped">
-                        <InvokeCommandAction Command="{Binding GetVersion}" CommandParameter="{Binding SelectedIndex, ElementName=HistoryListBox}"/>
+                        <InvokeCommandAction Command="{Binding GetVersion}" CommandParameter="{Binding SelectedIndex, ElementName=HistoryListBox}" />
                     </EventTriggerBehavior>
                 </i:Interaction.Behaviors>
                 <ListBox.ItemsPanel>
@@ -80,7 +90,10 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="1">
-                            <Image Source="{Binding}" Stretch="UniformToFill" Height="{Binding Height, ElementName=HistoryGrid, Mode=OneWay}"/>
+                            <Image
+                                Height="{Binding Height, ElementName=HistoryGrid, Mode=OneWay}"
+                                Source="{Binding Converter={StaticResource BitmapConverter}}"
+                                Stretch="UniformToFill" />
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

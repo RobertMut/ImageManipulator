@@ -17,7 +17,7 @@ public class GetImageAfterContrastStretchQueryHandler : GetImageQueryHandlerBase
     
     public async Task<Bitmap> Handle(GetImageAfterContrastStretchQuery query, CancellationToken cancellationToken)
     {
-        var currentBitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap currentBitmap = await GetCurrentlyDisplayedBitmap();
         Bitmap? image = _imagePointOperationsService.StretchContrast(currentBitmap, query.Min, query.Max);
 
         return image;

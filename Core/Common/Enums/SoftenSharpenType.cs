@@ -1,12 +1,11 @@
-﻿namespace ImageManipulator.Common.Enums
+﻿namespace ImageManipulator.Common.Enums;
+
+public enum SoftenSharpenType
 {
-    public enum SoftenSharpenType
-    {
-        SoftenAverage = 0,
-        SoftenGauss = 1,
-        SoftenAverageWithWeight = 2,
-        Laplace1 = 3,
-        Laplace2 = 4,
-        Laplace3 = 5
-    }
+    SoftenAverage = 0,
+    SoftenGauss = 1,
+    SoftenAverageWithWeight = 2,
+    Laplace1 = 3,
+    Laplace2 = 4,
+    Laplace3 = 5
 }

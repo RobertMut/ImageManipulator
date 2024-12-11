@@ -1,13 +1,12 @@
 using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 
-namespace ImageManipulator.Presentation.Views
+namespace ImageManipulator.Presentation.Views;
+
+public partial class TabControlView : ReactiveUserControl<TabControlViewModel>
 {
-    public partial class TabControlView : ReactiveUserControl<TabControlViewModel>
+    public TabControlView()
     {
-        public TabControlView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

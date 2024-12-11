@@ -49,7 +49,7 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
 
         if (!query.EdgeDetection)
         {
-            var matrix = GetMatrix(query);
+            double[,] matrix = GetMatrix(query);
 
             return query is { SoftenSharpenType: < SoftenSharpenType.Laplace1, Sobel: false }
                 ? _imageConvolutionService.Execute(bitmap, matrix, true)
@@ -65,7 +65,7 @@ public class GetPostConvolutionImageCommandHandler : GetImageQueryHandlerBase, I
         bitmap = _imageConvolutionService.Execute(bitmap,
             EdgeDetection.EdgeDetectionMatrices[query.EdgeDetectionType], true);
         
-        var gradientMagnitude =
+        double[,] gradientMagnitude =
             _imageConvolutionService.ComputeGradient(bitmap, (gx, gy) => Math.Sqrt(gx * gx + gy * gy));
         
         return _imageConvolutionService.HysteresisThresholding(bitmap.Width, bitmap.Height, 100, 210,

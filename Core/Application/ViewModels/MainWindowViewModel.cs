@@ -161,8 +161,8 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
         if (fileStream.Length != 0)
         {
-            var openedImageBitmap = new Bitmap(fileStream);
-            var newTab = new TabItem(Path.GetFileName(file.Path.AbsolutePath),
+            Bitmap openedImageBitmap = new Bitmap(fileStream);
+            TabItem newTab = new TabItem(Path.GetFileName(file.Path.AbsolutePath),
                 _serviceProvider.GetRequiredService<TabControlViewModel>());
             await newTab.ViewModel.LoadImage(openedImageBitmap, file.Path.AbsolutePath);
 
@@ -179,7 +179,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task NegateImage()
     {
-        var bitmap =
+        Bitmap? bitmap =
             _imagePointOperationsService.Negation(CurrentTab.ViewModel.Image);
 
         await ReloadImageAndReplaceTab(CurrentTab.ViewModel.Image, bitmap, CurrentTab);
@@ -230,7 +230,7 @@ public class MainWindowViewModel : ViewModelBase, IScreen
 
     private async Task ShowWindow<T>(Action<T>? action = null) where T: ImageOperationDialogViewModelBase
     {
-        var service = _serviceProvider.GetRequiredService<T>();
+        T service = _serviceProvider.GetRequiredService<T>();
 
         if (action is not null)
         {

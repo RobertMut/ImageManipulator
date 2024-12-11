@@ -17,10 +17,10 @@ public class GetImageAfterArithmeticQueryHandler : GetImageQueryHandlerBase, IQu
     
     public async Task<Bitmap> Handle(GetImageAfterArithmeticQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
         object? parameter = ParameterSelector(query);
 
-        var newBitmap =_imageArithmeticService.Execute(bitmap, parameter, query.ArithmeticOperationType);
+        Bitmap? newBitmap =_imageArithmeticService.Execute(bitmap, parameter, query.ArithmeticOperationType);
         
         return newBitmap;
     }

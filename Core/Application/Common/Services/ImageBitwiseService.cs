@@ -5,13 +5,13 @@ using ImageManipulator.Domain.Common.Helpers;
 using ImageManipulator.Application.Common.Interfaces;
 using ImageManipulator.Domain.Common.Virtuals;
 
-namespace ImageManipulator.Application.Common.Services
-{
-    public class ImageBitwiseService : ElementaryOperationServiceVirtual, IImageBitwiseService
-    {
-        public Bitmap? Execute(Bitmap? bitmap, object? parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
+namespace ImageManipulator.Application.Common.Services;
 
-        protected override IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType)
+public class ImageBitwiseService : ElementaryOperationServiceVirtual, IImageBitwiseService
+{
+    public Bitmap? Execute(Bitmap? bitmap, object? parameter, BitwiseOperationType operationType) => base.Execute(bitmap, parameter, operationType);
+
+    protected override IntPtr Calculate(IntPtr pixelData, IntPtr otherImagePixelData, Enum operationType)
         => operationType switch
         {
             BitwiseOperationType.AND => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current & other)),
@@ -22,5 +22,4 @@ namespace ImageManipulator.Application.Common.Services
             BitwiseOperationType.RightShift => pixelData.ExecuteOnPixel(otherImagePixelData, (current, other) => (byte)(current >> other)),
             _ => throw new Exception("Operation not found!")
         };
-    }
 }

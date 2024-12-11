@@ -55,7 +55,7 @@ public class TabService : ITabService
             name = GenerateNewName(name);
         }
 
-        var tabItem = new TabItem(name, viewModel);
+        TabItem tabItem = new TabItem(name, viewModel);
 
         _tabItems.Add(name, tabItem);
 
@@ -72,10 +72,10 @@ public class TabService : ITabService
 
     public TabItem? Duplicate(string name)
     {
-        var tabItem = _tabItems[name];
+        TabItem? tabItem = _tabItems[name];
         string newName = GenerateNewName(name);
 
-        var newTabItem = new TabItem(newName, tabItem.ViewModel);
+        TabItem newTabItem = new TabItem(newName, tabItem.ViewModel);
         _tabItems.Add(newName, newTabItem);
 
         return newTabItem;
@@ -83,7 +83,7 @@ public class TabService : ITabService
 
     public TabItem? Replace(string name, TabItem? tabItem)
     {
-        if (_tabItems.TryGetValue(name, out TabItem existingTabItems))
+        if (_tabItems.ContainsKey(name))
         {
             _tabItems.Remove(name);
             _tabItems.Add(tabItem.ViewModel.Path, tabItem);

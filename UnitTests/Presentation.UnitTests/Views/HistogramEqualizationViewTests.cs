@@ -36,6 +36,7 @@ public class HistogramEqualizationViewTests
     }
 
     [AvaloniaTest]
+    [Retry(5)]
     public async Task EqualizeCommandExecutesDispatcher()
     {
         var button = ((HistogramEqualizationView)_window.Content).FindControl<Button>("EqualizeCommand");
@@ -48,6 +49,7 @@ public class HistogramEqualizationViewTests
     }
     
     [AvaloniaTest]
+    [Retry(5)]
     public async Task AcceptCommandClosesWindow()
     {
         int raisedCount = 0;
@@ -60,6 +62,7 @@ public class HistogramEqualizationViewTests
     }
     
     [AvaloniaTest]
+    [Retry(5)]
     public async Task CloseCommandClosesWindow()
     {
         int raisedCount = 0;

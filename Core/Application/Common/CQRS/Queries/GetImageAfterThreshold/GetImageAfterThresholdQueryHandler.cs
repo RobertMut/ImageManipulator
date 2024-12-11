@@ -17,8 +17,8 @@ public class GetImageAfterThresholdQueryHandler : GetImageQueryHandlerBase, IQue
 
     public async Task<Bitmap> Handle(GetImageAfterThresholdQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
-        var result = _imagePointOperationsService.Thresholding(bitmap, query.Threshold, query.ReplaceColour);
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap? result = _imagePointOperationsService.Thresholding(bitmap, query.Threshold, query.ReplaceColour);
         
         return result;
     }

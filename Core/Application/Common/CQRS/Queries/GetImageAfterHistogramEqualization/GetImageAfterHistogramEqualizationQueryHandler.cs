@@ -18,8 +18,8 @@ public class GetImageAfterHistogramEqualizationQueryHandler : GetImageQueryHandl
 
     public async Task<Bitmap> Handle(GetImageAfterHistogramEqualizationQuery query, CancellationToken cancellationToken)
     {
-        var currentBitmap = await GetCurrentlyDisplayedBitmap();
-        var result = _imagePointOperationsService.HistogramEqualization(currentBitmap, query.LookupTable);
+        Bitmap currentBitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap? result = _imagePointOperationsService.HistogramEqualization(currentBitmap, query.LookupTable);
         
         return result;
     }

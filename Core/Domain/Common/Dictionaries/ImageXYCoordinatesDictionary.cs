@@ -21,8 +21,7 @@ public static class ImageXYCoordinatesDictionary
             KeyValuePair.Create<PixelFormat, Func<IntPtr, int, int, int, IntPtr>>(PixelFormat.Format1bppIndexed,
                 (scan0, stride, x, y) => (IntPtr)(byte*)(scan0 + y * stride + x / 8))
         });
-
-
+    
     public static readonly ImmutableDictionary<PixelFormat, Func<int, int, int, int>> ByteOffset =
         ImmutableDictionary.CreateRange(new[]
         {

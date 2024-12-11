@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using ImageManipulator.Application.Common.Enums;
 using ImageManipulator.Application.Common.Interfaces;
+using ImageManipulator.Application.Common.Models;
 
 namespace ImageManipulator.Application.Common.CQRS.Queries;
 
@@ -17,7 +18,7 @@ public abstract class GetImageQueryHandlerBase
 
     protected async Task<Bitmap> GetCurrentlyDisplayedBitmap()
     {
-        var tab = tabService.GetTab(tabService.CurrentTabName);
+        TabItem? tab = tabService.GetTab(tabService.CurrentTabName);
         Bitmap? bitmap = tab.ViewModel.Image;
 
         if (bitmap is null)

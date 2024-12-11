@@ -30,9 +30,9 @@ public class CommonDialogService : ICommonDialogService
 
     public async Task ShowSaveFileDialog(Bitmap? bitmap, string filePath)
     {
-        var window = new Window();
+        Window window = new Window();
 
-        var file = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        IStorageFile? file = await window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Save Image..",
             SuggestedStartLocation = await window.StorageProvider.TryGetFolderFromPathAsync(Path.GetFullPath(filePath)),
@@ -51,13 +51,13 @@ public class CommonDialogService : ICommonDialogService
     public Task ShowDialog<TViewModel>(TViewModel viewModel)
     where TViewModel : class
     {
-        var dialog = new Window()
+        Window dialog = new Window()
         {
             WindowState = WindowState.Maximized,
             DataContext = viewModel
         }.SetContent(viewModel);
 
-        var task = new TaskCompletionSource<object>();
+        TaskCompletionSource<object> task = new TaskCompletionSource<object>();
         
         dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
@@ -68,7 +68,7 @@ public class CommonDialogService : ICommonDialogService
 
     public Task ShowException(string exceptionMessage)
     {
-        var dialog = new Window
+        Window dialog = new Window
         {
             Name = "Exception",
             Content = new TextBlock
@@ -84,7 +84,7 @@ public class CommonDialogService : ICommonDialogService
             WindowStartupLocation = WindowStartupLocation.Manual,
         };
         
-        var task = new TaskCompletionSource<object>();
+        TaskCompletionSource<object> task = new TaskCompletionSource<object>();
         dialog.Closed += (_, _) => task.SetResult(default);
         dialog.Show();
         dialog.Focus();

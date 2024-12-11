@@ -41,7 +41,7 @@ public static class BitmapOperationsHelper
     /// <returns>BitmapData</returns>
     public static unsafe BitmapData ExecuteOnPixels(this BitmapData data, Action<IntPtr, IntPtr, int> action)
     {
-        var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
+        Func<IntPtr, int, int, int, IntPtr> pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
 
         Parallel.For(0, data.Height, i =>
         {
@@ -65,7 +65,7 @@ public static class BitmapOperationsHelper
     public static unsafe BitmapData ExecuteOnPixels(this BitmapData data,
         Action<IntPtr, IntPtr, int, int, int> func)
     {
-        var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
+        Func<IntPtr, int, int, int, IntPtr> pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
 
         Parallel.For(0, data.Height, i =>
         {
@@ -93,7 +93,7 @@ public static class BitmapOperationsHelper
     public static unsafe BitmapData ExecuteOnPixels(this BitmapData data, int offsetX, int targetX, int offsetY,
         int targetY, Action<IntPtr, IntPtr, int, int, int> action)
     {
-        var pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
+        Func<IntPtr, int, int, int, IntPtr> pixelDataFunc = ImageXYCoordinatesDictionary.PixelData[data.PixelFormat];
 
         Parallel.For(offsetY, targetY, i =>
         {
@@ -111,8 +111,8 @@ public static class BitmapOperationsHelper
     public static unsafe IntPtr ExecuteOnPixel(this IntPtr pixelData, IntPtr otherPixel,
         Func<byte, byte, byte> func)
     {
-        var pixelBytePointer = (byte*)pixelData.ToPointer();
-        var otherPixelBytePointer = (byte*)otherPixel.ToPointer();
+        byte* pixelBytePointer = (byte*)pixelData.ToPointer();
+        byte* otherPixelBytePointer = (byte*)otherPixel.ToPointer();
 
         pixelBytePointer[0] = func(pixelBytePointer[0], otherPixelBytePointer[0]);
         pixelBytePointer[1] = func(pixelBytePointer[1], otherPixelBytePointer[1]);

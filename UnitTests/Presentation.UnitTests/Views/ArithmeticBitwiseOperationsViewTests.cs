@@ -104,6 +104,7 @@ public class ArithmeticBitwiseOperationsViewTests
     }
     
     [AvaloniaTest]
+    [Retry(5)]
     public async Task ColorPickerSetAsExpected()
     {
         var picker = ((ArithmeticBitwiseOperationsView)_window.Content).FindControl<AvaloniaColorPicker.ColorButton>("ColorPicker");

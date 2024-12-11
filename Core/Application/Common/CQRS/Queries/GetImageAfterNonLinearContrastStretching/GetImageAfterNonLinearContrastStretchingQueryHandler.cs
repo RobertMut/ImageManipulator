@@ -18,8 +18,8 @@ public class GetImageAfterNonLinearContrastStretchingQueryHandler : GetImageQuer
     
     public async Task<Bitmap> Handle(GetImageAfterNonLinearContrastStretchingQuery query, CancellationToken cancellationToken)
     {
-        var bitmap = await GetCurrentlyDisplayedBitmap();
-        var result = _imagePointOperationsService.NonLinearlyStretchContrast(bitmap, query.Gamma);
+        Bitmap bitmap = await GetCurrentlyDisplayedBitmap();
+        Bitmap? result = _imagePointOperationsService.NonLinearlyStretchContrast(bitmap, query.Gamma);
         
         return result;
     }

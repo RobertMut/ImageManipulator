@@ -2,16 +2,15 @@ using Avalonia.ReactiveUI;
 using ImageManipulator.Application.ViewModels;
 using ReactiveUI;
 
-namespace ImageManipulator.Presentation.Views
+namespace ImageManipulator.Presentation.Views;
+
+public partial class ContrastStretchingView : ReactiveUserControl<ContrastStretchingViewModel>
 {
-    public partial class ContrastStretchingView : ReactiveUserControl<ContrastStretchingViewModel>
+    public ContrastStretchingView()
     {
-        public ContrastStretchingView()
-        {
-            InitializeComponent();
-            this.BindCommand(ViewModel, vm => vm.ExecuteLinearStretching, v => v.StretchingCommand);
-            this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
-            this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
-        }
+        InitializeComponent();
+        this.BindCommand(ViewModel, vm => vm.ExecuteLinearStretching, v => v.StretchingCommand);
+        this.BindCommand(ViewModel, vm => vm.AcceptCommand, execute => execute.AcceptCommand);
+        this.BindCommand(ViewModel, vm => vm.CancelCommand, execute => execute.CancelCommand);
     }
 }

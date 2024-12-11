@@ -3,22 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ImageManipulator.Application.Common.Converters
+namespace ImageManipulator.Application.Common.Converters;
+
+public class ValueConverterGroup : List<IValueConverter>, IValueConverter
 {
-    public class ValueConverterGroup : List<IValueConverter>, IValueConverter
+    #region IValueConverter Members
+
+    public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        #region IValueConverter Members
-
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return this.Aggregate(value, (current, converter) => converter.Convert(current, targetType, parameter, culture));
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion IValueConverter Members
+        return this.Aggregate(value, (current, converter) => converter.Convert(current, targetType, parameter, culture));
     }
+
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion IValueConverter Members
 }
